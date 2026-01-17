@@ -4,9 +4,15 @@ import './styles/index.css'
 import router from './routes'
 import { RouterProvider } from 'react-router/dom'
 import './locale/i18n'
+import { ThemeProvider } from './providers/theme-provider'
+import { LanguageProvider } from './providers/language-provider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />,
+    <ThemeProvider>
+      <LanguageProvider>
+        <RouterProvider router={router} />
+      </LanguageProvider>
+    </ThemeProvider>
   </StrictMode>,
 )
