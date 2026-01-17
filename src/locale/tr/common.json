@@ -10,5 +10,55 @@
     "profile": "Profil",
     "settings": "Ayarlar",
     "language": "Dil",
-    "change_language": "Dili değiştir"
+    "change_language": "Dili Değiştir",
+    "audience_toggle": {
+        "title": "Hedef Kitle",
+        "math_engineering": "Matematik Mühendisliği Öğrencileri",
+        "other_engineering": "Diğer Mühendislik Öğrencileri"
+    },
+    "theme_toggle": {
+        "title": "Tema",
+        "light": "Açık",
+        "dark": "Koyu",
+        "system": "Sistem"
+    },
+    "nav": {
+        "courses": {
+            "title": "Kurslar",
+            "elements": {
+                "catalog": {
+                    "title": "Kurs Kataloğu",
+                    "description": "Kurslara göz atın ve kaydolun"
+                },
+                "info": {
+                    "title": "Kurs Bilgileri",
+                    "description": "Detaylı kurs bilgilerini görüntüleyin"
+                },
+                "materials": {
+                    "title": "Kurs Materyalleri",
+                    "description": "Kurs materyallerine ve kaynaklara erişin"
+                }
+            }
+        },
+        "my_area": {
+            "title": "Benim Alanım",
+            "elements": {
+                "registered_courses": {
+                    "title": "Kayıtlı Kurslar",
+                    "description": "Kayıtlı kurslarınızı görüntüleyin ve yönetin"
+                },
+                "notes": {
+                    "title": "Notlarım",
+                    "description": "Notlarınızı görüntüleyin ve yönetin"
+                },
+                "attendance": {
+                    "title": "Yoklama",
+                    "description": "Yoklama kayıtlarınızı kontrol edin"
+                }
+            }
+        },
+        "announcements": {
+            "title": "Duyurular"
+        }
+    }
 }

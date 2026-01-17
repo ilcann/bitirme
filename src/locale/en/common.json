@@ -10,5 +10,55 @@
     "profile": "Profile",
     "settings": "Settings",
     "language": "Language",
-    "change_language": "Change Language"
+    "change_language": "Change Language",
+    "audience_toggle": {
+        "title": "Audience",
+        "math_engineering": "Math Engineering Students",
+        "other_engineering": "Other Engineering Students"
+    },
+    "theme_toggle": {
+        "title": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+    },
+    "nav": {
+        "courses": {
+            "title": "Courses",
+            "elements": {
+                "catalog": {
+                    "title": "Course Catalog",
+                    "description": "Browse and enroll in courses"
+                },
+                "info": {
+                    "title": "Course Info",
+                    "description": "View detailed course information"
+                },
+                "materials": {
+                    "title": "Course Materials",
+                    "description": "Access course materials and resources"
+                }
+            }
+        },
+        "my_area": {
+            "title": "My Area",
+            "elements": {
+                "registered_courses": {
+                    "title": "Registered Courses",
+                    "description": "View and manage your registered courses"
+                },
+                "notes": {
+                    "title": "My Notes",
+                    "description": "View and manage your notes"
+                },
+                "attendance": {
+                    "title": "Attendance",
+                    "description": "Check your attendance records"
+                }
+            }
+        },
+        "announcements": {
+            "title": "Announcements"
+        }
+    }
 }
