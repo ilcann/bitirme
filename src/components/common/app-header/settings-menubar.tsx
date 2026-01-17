@@ -10,7 +10,7 @@ interface SettingsMenubarProps {
 
 const SettingsMenubar = ({ className }: SettingsMenubarProps) => {
   return (
-    <Menubar className={cn("border-0 ml-auto w-auto", className)}>
+    <Menubar className={cn("border-0", className)}>
         <AudienceToggle />
         <LanguageToggle />
         <ThemeToggle />

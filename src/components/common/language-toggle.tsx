@@ -10,7 +10,11 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 
-export const LanguageToggle: React.FC = () => {
+type LanguageToggleProps = {
+  align?: 'start' | 'end';
+};
+
+export const LanguageToggle: React.FC<LanguageToggleProps> = ({ align = 'end' }) => {
   const { lang, setLang } = useLanguage();
   return (
     <MenubarMenu>
@@ -19,7 +23,7 @@ export const LanguageToggle: React.FC = () => {
           <Globe className="h-5 w-5" />
         </Button>
       </MenubarTrigger>
-      <MenubarContent align="end">
+      <MenubarContent align={align}>
         {Object.entries(lngs).map(([code, { nativeName }]) => (
           <MenubarItem
             key={code}

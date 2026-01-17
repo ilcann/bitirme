@@ -10,7 +10,11 @@ import {
 import { useTheme } from "@/providers/theme-provider"
 import { useTranslation } from "react-i18next";
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  align?: 'start' | 'end';
+};
+
+export function ThemeToggle( { align = 'end' }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme()
   const { t } = useTranslation();
 
@@ -23,7 +27,7 @@ export function ThemeToggle() {
           <span className="sr-only">{t("theme_toggle.title")}</span>
         </Button>
       </MenubarTrigger>
-      <MenubarContent align="end">
+      <MenubarContent align={align}>
         <MenubarItem onClick={() => setTheme("light")} disabled={theme === "light"}>
           {t("theme_toggle.light")}
         </MenubarItem>
