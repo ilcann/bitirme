@@ -1,0 +1,14 @@
+{
+    "welcome": "Welcome to our application!",
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "home": "Home",
+    "profile": "Profile",
+    "settings": "Settings",
+    "language": "Language",
+    "change_language": "Change Language"
+}

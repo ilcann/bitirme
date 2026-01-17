@@ -1,0 +1,14 @@
+{
+    "welcome": "Uygulamamıza hoş geldiniz!",
+    "login": "Giriş",
+    "logout": "Çıkış",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "submit": "Gönder",
+    "cancel": "İptal",
+    "home": "Anasayfa",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "language": "Dil",
+    "change_language": "Dili değiştir"
+}
