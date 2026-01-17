@@ -11,7 +11,7 @@ import { useTheme } from "@/providers/theme-provider"
 import { useTranslation } from "react-i18next";
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const { t } = useTranslation();
 
   return (
@@ -24,14 +24,11 @@ export function ThemeToggle() {
         </Button>
       </MenubarTrigger>
       <MenubarContent align="end">
-        <MenubarItem onClick={() => setTheme("light")}>
+        <MenubarItem onClick={() => setTheme("light")} disabled={theme === "light"}>
           {t("theme_toggle.light")}
         </MenubarItem>
-        <MenubarItem onClick={() => setTheme("dark")}>
+        <MenubarItem onClick={() => setTheme("dark")} disabled={theme === "dark"}>
           {t("theme_toggle.dark")}
-        </MenubarItem>
-        <MenubarItem onClick={() => setTheme("system")}>
-          {t("theme_toggle.system")}
         </MenubarItem>
       </MenubarContent>
     </MenubarMenu>

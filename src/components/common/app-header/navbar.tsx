@@ -6,11 +6,15 @@ import NavLink from "../nav-link";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 
-const Navbar = () => {
+interface NavbarProps {
+  className?: string;
+}
+
+const Navbar = ({ className }: NavbarProps) => {
     const { t } = useTranslation();
 
     return (
-        <NavigationMenu>
+        <NavigationMenu className={className}>
             <NavigationMenuList className="flex-wrap">
                 {/* Courses Menu */}
                 <NavigationMenuItem>

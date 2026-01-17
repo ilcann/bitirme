@@ -2,10 +2,15 @@ import { Menubar } from "@/components/ui/menubar";
 import { AudienceToggle } from "../audience-toggle";
 import { LanguageToggle } from "../language-toggle";
 import { ThemeToggle } from "../theme-toggle";
+import { cn } from "@/lib/utils";
 
-const SettingsMenubar = () => {
+interface SettingsMenubarProps {
+  className?: string;
+}
+
+const SettingsMenubar = ({ className }: SettingsMenubarProps) => {
   return (
-    <Menubar>
+    <Menubar className={cn("border-0 ml-auto w-auto", className)}>
         <AudienceToggle />
         <LanguageToggle />
         <ThemeToggle />
