@@ -6,12 +6,15 @@ import { RouterProvider } from 'react-router/dom'
 import './locale/i18n'
 import { ThemeProvider } from './providers/theme-provider'
 import { LanguageProvider } from './providers/language-provider'
+import { AudienceProvider } from './providers/audience-provider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <LanguageProvider>
-        <RouterProvider router={router} />
+        <AudienceProvider defaultAudience="math_engineering" storageKey="user-audience">
+          <RouterProvider router={router} />
+        </AudienceProvider>
       </LanguageProvider>
     </ThemeProvider>
   </StrictMode>,
