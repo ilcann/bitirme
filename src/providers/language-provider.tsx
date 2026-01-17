@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import i18n from '@/locale/i18n';
-import type { LangKey } from '@/locale/languages';
+import type { LangKey } from '@/config/languages';
 
 type LanguageState = { lang: LangKey; setLang: (l: LangKey) => void };
 

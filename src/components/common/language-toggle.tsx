@@ -1,5 +1,5 @@
 import React from 'react';
-import { lngs, type LangKey } from '@/locale/languages';
+import { lngs, type LangKey } from '@/config/languages';
 import { useLanguage } from '@/providers/language-provider';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
