@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/theme-provider";
+import { Link } from "react-router";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -15,7 +16,7 @@ export function Logo({ size = "md", className }: LogoProps) {
   };
 
   return (
-    <div className={cn("relative flex items-center justify-center", className)}>
+    <Link to="/" className={cn("relative flex items-center justify-center", className)}>
       { theme === "dark" ? (
         <img
           src={`/assets/matmuh-tr-b.png`}
@@ -35,6 +36,6 @@ export function Logo({ size = "md", className }: LogoProps) {
           )}
         />
       }
-    </div>
+    </Link>
   );
 }

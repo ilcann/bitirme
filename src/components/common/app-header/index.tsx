@@ -1,7 +1,7 @@
 import { Logo } from "../logo";
-import Navbar from "./navbar";
 import SettingsMenubar from "./settings-menubar";
 import MobileMenu from "./mobile-menu";
+import Navbar from "./navbar";
 
 const AppHeader = () => {
   return (

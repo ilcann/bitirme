@@ -59,6 +59,19 @@
         },
         "announcements": {
             "title": "Announcements"
+        },
+        "help": {
+            "title": "Help",
+            "elements": {
+                "faqs": {
+                    "title": "FAQs",
+                    "description": "Frequently Asked Questions"
+                },
+                "exams": {
+                    "title": "Exam Information",
+                    "description": "Details about exams and schedules"
+                }
+            }
         }
     }
 }

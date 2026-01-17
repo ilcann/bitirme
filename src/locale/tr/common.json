@@ -59,6 +59,19 @@
         },
         "announcements": {
             "title": "Duyurular"
+        },
+        "help": {
+            "title": "Yardım",
+            "elements": {
+                "faqs": {
+                    "title": "SSS",
+                    "description": "Sıkça Sorulan Sorulara göz atın"
+                },
+                "exams": {
+                    "title": "Sınav Bilgileri",
+                    "description": "Sınavlar ve programlar hakkında detaylar"
+                }
+            }
         }
     }
 }
