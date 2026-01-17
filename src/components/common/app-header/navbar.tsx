@@ -19,7 +19,7 @@ const Navbar = ({ variant, onNavigate, className }: NavbarProps) => {
         <NavigationMenu 
          className={cn(
             orientation === "vertical" ? 
-                "w-full justify-stretch items-stretch"
+                "w-full"
                 :"",
             className
          )}
