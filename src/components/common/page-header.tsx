@@ -41,7 +41,7 @@ export const PageHeader = ({
 
   if (variant === "compact") {
     return (
-      <div className={cn("border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-10", className)}>
+      <div className={cn("border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60", className)}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {Icon && (

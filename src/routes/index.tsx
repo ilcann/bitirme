@@ -5,8 +5,9 @@ import SuspenseWrapper from "@/components/common/suspence-wrapper";
 
 const HomePage = lazy(() => import("@/pages/public/home"));
 const NotFoundedPage = lazy(() => import("@/pages/errors/not-founded"));
-const CourseLayout = lazy(() => import("@/pages/public/courses/course/layout"));
-const CourseOverviewPage = lazy(() => import("@/pages/public/courses/course"));
+const CoursesPage = lazy(() => import("@/pages/public/courses"));
+const CoursePage = lazy(() => import("@/pages/public/courses/course"));
+const CourseOverviewPage = lazy(() => import("@/pages/public/courses/course/overview"));
 const CourseInfoPage = lazy(() => import("@/pages/public/courses/course/info"));
 const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/materials"));
 const AnnouncementsPage = lazy(() => import("@/pages/public/announcements"));
@@ -15,7 +16,6 @@ const HelpPage = lazy(() => import("@/pages/public/help"));
 const AttendancePage = lazy(() => import("@/pages/protected/me/attendance"));
 const GradesPage = lazy(() => import("@/pages/protected/me/grades"));
 const MyDashboardPage = lazy(() => import("@/pages/protected/me/dashboard"));
-const CoursesPage = lazy(() => import("@/pages/public/courses"));
 
 
 const router = createBrowserRouter(
@@ -37,7 +37,7 @@ const router = createBrowserRouter(
             },
             {
               path: ":courseId",
-              element: <SuspenseWrapper><CourseLayout /></SuspenseWrapper>,
+              element: <SuspenseWrapper><CoursePage /></SuspenseWrapper>,
               children: [
                 {
                   index: true,
