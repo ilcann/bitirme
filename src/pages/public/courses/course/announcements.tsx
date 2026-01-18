@@ -191,6 +191,7 @@ const CourseAnnouncementsPage = () => {
             ) : announcements.length > 0 ? (
                 <>
                     <motion.div
+                        key={`${searchQuery}-${showOnlyNew}-${dateFilter}`}
                         className="space-y-4"
                         initial="hidden"
                         animate="visible"
