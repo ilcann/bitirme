@@ -1,5 +1,23 @@
 type CourseAudience = "common" | "department";
 
+type MaterialType = "lecture" | "assignment" | "exam" | "document" | "video" | "link";
+
+interface CourseMaterial {
+    id: string;
+    title: {
+        tr: string;
+        en: string;
+    };
+    type: MaterialType;
+    date: string;
+    size?: string;
+    url?: string;
+    description?: {
+        tr: string;
+        en: string;
+    };
+}
+
 interface MockCourse {
     id: string;
     code: string;
@@ -10,12 +28,82 @@ interface MockCourse {
     students: number;
     color: string;
     audience: CourseAudience;
+    materials?: CourseMaterial[];
 }
 
 const MockCourses: MockCourse[] = [
     // Common Courses
-    { id: "mat103e", code: "MAT 103/E", title: { tr: "Matematik I", en: "Mathematics I" }, students: 1240, color: "chart-1", audience: "common" },
-    { id: "mat104e", code: "MAT 104/E", title: { tr: "Matematik II", en: "Mathematics II" }, students: 1180, color: "chart-2", audience: "common" },
+    { 
+        id: "mat103e", 
+        code: "MAT 103/E", 
+        title: { tr: "Matematik I", en: "Mathematics I" }, 
+        students: 1240, 
+        color: "chart-1", 
+        audience: "common",
+        materials: [
+            {
+                id: "mat103e-1",
+                title: { tr: "Ders Notları - Hafta 1", en: "Lecture Notes - Week 1" },
+                type: "lecture",
+                date: "2026-01-10",
+                size: "2.5 MB",
+                url: "/files/mat103e-week1.pdf"
+            },
+            {
+                id: "mat103e-2",
+                title: { tr: "Ödev 1 - Fonksiyonlar", en: "Assignment 1 - Functions" },
+                type: "assignment",
+                date: "2026-01-12",
+                size: "1.2 MB",
+                url: "/files/mat103e-assignment1.pdf",
+                description: { 
+                    tr: "Teslim tarihi: 19 Ocak 2026", 
+                    en: "Due date: January 19, 2026" 
+                }
+            },
+            {
+                id: "mat103e-3",
+                title: { tr: "Ders Videosu - Limit ve Süreklilik", en: "Lecture Video - Limits and Continuity" },
+                type: "video",
+                date: "2026-01-13",
+                url: "https://youtube.com/watch?v=example"
+            },
+            {
+                id: "mat103e-4",
+                title: { tr: "Ek Kaynaklar - Türev", en: "Additional Resources - Derivatives" },
+                type: "document",
+                date: "2026-01-15",
+                size: "3.1 MB",
+                url: "/files/mat103e-derivatives.pdf"
+            }
+        ]
+    },
+    { 
+        id: "mat104e", 
+        code: "MAT 104/E", 
+        title: { tr: "Matematik II", en: "Mathematics II" }, 
+        students: 1180, 
+        color: "chart-2", 
+        audience: "common",
+        materials: [
+            {
+                id: "mat104e-1",
+                title: { tr: "Ders Notları - İntegral", en: "Lecture Notes - Integration" },
+                type: "lecture",
+                date: "2026-01-11",
+                size: "3.2 MB",
+                url: "/files/mat104e-integration.pdf"
+            },
+            {
+                id: "mat104e-2",
+                title: { tr: "Ara Sınav Soruları", en: "Midterm Exam Questions" },
+                type: "exam",
+                date: "2026-01-14",
+                size: "1.8 MB",
+                url: "/files/mat104e-midterm.pdf"
+            }
+        ]
+    },
     
     // Department Courses
     { id: "mat345e", code: "MAT 345/E", title: { tr: "Olasılık ve İstatistik", en: "Probability and Statistics" }, students: 85, color: "chart-4", audience: "department" },
@@ -32,4 +120,4 @@ const MockCourses: MockCourse[] = [
 ];
 
 export { MockCourses };
-export type { MockCourse, CourseAudience };
+export type { MockCourse, CourseAudience, CourseMaterial, MaterialType };

@@ -22,25 +22,28 @@
     },
     "materials": {
         "title": "Course Materials",
-        "description": "Access course materials and resources"
-    },
-    "mat103e": "Mathematics I",
-    "mat104e": "Mathematics II",
-    "fiz101e": "Physics I",
-    "fiz102e": "Physics II",
-    "kim101e": "Chemistry I",
-    "hum111e": "Humanistic Thought",
-    "tur101": "Turkish Language",
-    "ing101e": "English I",
-    "mat251e": "Differential Equations",
-    "mat252e": "Linear Algebra",
-    "mat345e": "Probability and Statistics",
-    "mat361e": "Complex Functions Theory",
-    "mat362e": "Real Analysis",
-    "mat381e": "Abstract Mathematics I",
-    "mat382e": "Abstract Mathematics II",
-    "mat471e": "Numerical Analysis",
-    "mat491e": "Graduation Project I",
-    "mat492e": "Graduation Project II",
-    "mate": "Engineering Mathematics"
+        "description": "Access course materials and resources",
+        "types": {
+            "lecture": "Lecture Note",
+            "assignment": "Assignment",
+            "exam": "Exam",
+            "document": "Document",
+            "video": "Video",
+            "link": "Link"
+        },
+        "filterBy": "Filter By",
+        "allTypes": "All Types",
+        "sortBy": "Sort By",
+        "sort": {
+            "newest": "Newest",
+            "oldest": "Oldest",
+            "title": "Title"
+        },
+        "noMaterials": {
+            "title": "No Materials Found",
+            "description": "No materials have been added for this course yet."
+        },
+        "download": "Download",
+        "open": "Open"
+    }
 }

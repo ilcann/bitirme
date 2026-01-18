@@ -18,6 +18,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { PageHeader } from "@/components/common/page-header";
 
 const AnnouncementsPage = () => {
     const { t } = useTranslation();
@@ -103,28 +104,15 @@ const AnnouncementsPage = () => {
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
             <div className="space-y-8">
-                {/* Header */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="shrink-0 p-3 rounded-xl bg-chart-5/20">
-                            <Bell className="h-6 w-6 text-chart-5" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                                {t('announcements.list.title')}
-                            </h1>
-                            <p className="text-muted-foreground mt-1">
-                                {t('announcements.list.description')}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Audience Badge */}
-                    <Badge variant="outline" className="text-sm">
-                        <Filter className="mr-2 h-4 w-4" />
-                        {t(`common.audience.${audience}`)}
-                    </Badge>
-                </div>
+                <PageHeader
+                    variant="wide"
+                    title={t('announcements.list.title')}
+                    description={t('announcements.list.description')}
+                    icon={Bell}
+                    iconBgColor="bg-chart-5/20"
+                    iconColor="text-chart-5"
+                    showAudienceBadge={true}
+                />
 
                 {/* Search & Filters */}
                 <div className="flex flex-col sm:flex-row gap-4">

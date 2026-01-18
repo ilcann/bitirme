@@ -22,6 +22,28 @@
     },
     "materials": {
         "title": "Ders Materyalleri",
-        "description": "Ders materyallerine ve kaynaklara erişin"
+        "description": "Ders materyallerine ve kaynaklara erişin",
+        "types": {
+            "lecture": "Ders Notu",
+            "assignment": "Ödev",
+            "exam": "Sınav",
+            "document": "Doküman",
+            "video": "Video",
+            "link": "Bağlantı"
+        },
+        "filterBy": "Filtrele",
+        "allTypes": "Tüm Tipler",
+        "sortBy": "Sırala",
+        "sort": {
+            "newest": "En Yeni",
+            "oldest": "En Eski",
+            "title": "Başlık"
+        },
+        "noMaterials": {
+            "title": "Materyal Bulunamadı",
+            "description": "Bu ders için henüz materyal eklenmemiş."
+        },
+        "download": "İndir",
+        "open": "Aç"
     }
 }

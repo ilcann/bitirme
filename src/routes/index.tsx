@@ -5,6 +5,7 @@ import SuspenseWrapper from "@/components/common/suspence-wrapper";
 
 const HomePage = lazy(() => import("@/pages/public/home"));
 const NotFoundedPage = lazy(() => import("@/pages/errors/not-founded"));
+const CourseLayout = lazy(() => import("@/pages/public/courses/course/layout"));
 const CourseOverviewPage = lazy(() => import("@/pages/public/courses/course"));
 const CourseInfoPage = lazy(() => import("@/pages/public/courses/course/info"));
 const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/materials"));
@@ -36,18 +37,19 @@ const router = createBrowserRouter(
             },
             {
               path: ":courseId",
+              element: <SuspenseWrapper><CourseLayout /></SuspenseWrapper>,
               children: [
                 {
                   index: true,
-                  element: <SuspenseWrapper><CourseOverviewPage /></SuspenseWrapper>,
+                  element: <CourseOverviewPage />,
                 },
                 {
                   path: "materials",
-                  element: <SuspenseWrapper><CourseMaterialsPage /></SuspenseWrapper>,
+                  element: <CourseMaterialsPage />,
                 },
                 {
                   path: "info",
-                  element: <SuspenseWrapper><CourseInfoPage /></SuspenseWrapper>
+                  element: <CourseInfoPage />
                 }
               ]
             }
