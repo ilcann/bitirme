@@ -20,6 +20,8 @@ i18n
     },
     resources,
     ns: ns as unknown as string[],
+    nsSeparator: '.',
+    keySeparator: false,
   });
 
 

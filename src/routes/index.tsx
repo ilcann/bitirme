@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router";
-import MainLayout from "../layouts/main";
 import HomePage from "@/pages/public/home";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import CoursesListPage from "@/pages/public/courses";
@@ -12,6 +11,7 @@ import AttendancePage from "@/pages/protected/me/attendance";
 import GradesPage from "@/pages/protected/me/grades";
 import MyDashboardPage from "@/pages/protected/me/dashboard";
 import CourseMaterialsPage from "@/pages/public/courses/course/materials";
+import MainLayout from "@/pages/layout";
 
 const router = createBrowserRouter(
   [

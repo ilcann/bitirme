@@ -1,4 +1,58 @@
 {
-  "title": "Ana Sayfa",
-  "description": "Öğrenme platformumuza hoş geldiniz"
+    "title": "Ana Sayfa",
+    "description": "Öğrenme platformumuza hoş geldiniz",
+    "hero": {
+        "badge": "Ders Yönetim Sistemi",
+        "title": "Ders sayfaları: Müfredat • Materyaller • Sınavlar • Duyurular",
+        "description": "Bir dersi seç; dersin kendi sayfasında müfredat, çalışma materyali ve sınav bilgilerine hızlıca ulaş. Duyurular hem genel hem ders bazlı filtrelenebilir.",
+        "activeView": "Aktif görünüm",
+        "viewHint": "Dersler sayfası bu görünüme göre filtrelenir"
+    },
+    "search": {
+      "placeholder": "MAT103E, MAT471E, Calculus...",
+      "button": "Ara"
+    },
+    "actions": {
+      "courses": "Dersler",
+      "announcements": "Duyurular",
+      "rules": "Kurallar"
+    },
+    "notice": {
+      "pool": {
+        "title": "MAT Havuz Dersleri",
+        "line1": "MAT Havuz dersleri (MAT 103/E, 104/E) ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Kayıtlı olduğunuz dersin öğretim elemanı, ayrıca Moodle veya Ninova'yı da kullanabilir.",
+        "line2": "MAT 201/E, 202/E, 210/E, 261/E, 271/E, 281/E dersleri Matematik Bölümü tarafından verilmemektedir. Bu derslerle ilgili sorular veya istekler dersi açan bölüme yöneltilmelidir."
+      },
+      "department": {
+        "title": "MAT Bölümü",
+        "line1": "MAT ve MATE öğrencileri ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Kayıtlı olduğunuz dersin öğretim elemanı, ayrıca Ninova'yı da kullanabilir.",
+        "line2": "MAT 103/E, 104/E havuz dersleri sitesi için",
+        "poolLink": "tıklayınız"
+      }
+    },
+    "featured": {
+      "title": "Öne Çıkan Dersler",
+      "description": "Aktif görünümüne göre seçilmiş hızlı girişler.",
+      "viewAll": "Tüm dersleri gör",
+      "open": "Aç",
+      "materials": "Materyaller"
+    },
+    "announcements": {
+      "title": "Son Duyurular",
+      "description": "Tüm duyurular sayfasında arama ve ders filtresi kullanabilirsin.",
+      "viewAll": "Tüm duyurular",
+      "filter": "Duyuruları filtrele",
+      "midterm": "Vize sınavı programı yayınlandı",
+      "officeHours": "Ofis saatleri güncellendi",
+      "newMaterials": "Yeni materyaller eklendi",
+      "viewTheAnnouncement": "Duyuruya git"
+    },
+    "rules": {
+      "title": "Kurallar",
+      "description": "Sınav, devamsızlık ve iletişim kuralları için tek referans noktası.",
+      "item1": "Make-up ve sınav politikaları",
+      "item2": "Devamsızlık limitleri ve uyarılar",
+      "item3": "Duyuru/iletişim akışı",
+      "button": "Kuralları oku"
+    }
 }

@@ -11,11 +11,11 @@
     "settings": "Settings",
     "language": "Language",
     "change_language": "Change Language",
-    "audience_toggle": {
-        "title": "Audience",
-        "math_engineering": "Math Engineering Students",
-        "other_engineering": "Other Engineering Students"
+    "audience": {
+        "department": "Math Engineering Students",
+        "pool": "Other Engineering Students"
     },
+    "audience_toggle": "Audience",
     "theme_toggle": {
         "title": "Theme",
         "light": "Light",

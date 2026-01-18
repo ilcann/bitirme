@@ -1,18 +1,23 @@
 {
-  "list": {
-    "title": "Courses",
-    "description": "Browse and explore available courses"
-  },
-  "overview": {
-    "title": "Course Overview",
-    "description": "Overview of course content and structure"
-  },
-  "info": {
-    "title": "Course Information",
-    "description": "Detailed information about this course"
-  },
-  "materials": {
-    "title": "Course Materials",
-    "description": "Access course materials and resources"
-  }
+    "list": {
+        "title": "Courses",
+        "description": "Browse and explore available courses"
+    },
+    "overview": {
+        "title": "Course Overview",
+        "description": "Overview of course content and structure"
+    },
+    "info": {
+        "title": "Course Information",
+        "description": "Detailed information about this course"
+    },
+    "materials": {
+        "title": "Course Materials",
+        "description": "Access course materials and resources"
+    },
+    "mat103e": "Mathematics I",
+    "mat104e": "Mathematics II",
+    "mat345e": "Probability and Statistics",
+    "mat471e": "Numerical Analysis",
+    "mate": "Engineering Mathematics"
 }

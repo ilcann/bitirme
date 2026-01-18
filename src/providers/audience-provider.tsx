@@ -7,7 +7,7 @@ type AudienceState = {
 };
 
 const initial: AudienceState = { 
-  audience: 'math_engineering' as AudienceKey, 
+  audience: 'department' as AudienceKey, 
   setAudience: () => {} 
 };
 
@@ -15,7 +15,7 @@ const AudienceContext = createContext<AudienceState>(initial);
 
 export function AudienceProvider({
   children,
-  defaultAudience = 'math_engineering',
+  defaultAudience = 'department',
   storageKey = 'app-audience'
 }: {
   children: React.ReactNode;

@@ -11,11 +11,11 @@
     "settings": "Ayarlar",
     "language": "Dil",
     "change_language": "Dili Değiştir",
-    "audience_toggle": {
-        "title": "Hedef Kitle",
-        "math_engineering": "Matematik Mühendisliği Öğrencileri",
-        "other_engineering": "Diğer Mühendislik Öğrencileri"
+    "audience": {
+        "department": "Matematik Mühendisliği Öğrencileri",
+        "pool": "Diğer Mühendislik Öğrencileri"
     },
+    "audience_toggle": "Hedef Kitle",
     "theme_toggle": {
         "title": "Tema",
         "light": "Açık",

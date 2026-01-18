@@ -1,4 +1,58 @@
 {
-  "title": "Home",
-  "description": "Welcome to our learning platform"
+    "title": "Home",
+    "description": "Welcome to our learning platform",
+    "hero": {
+        "badge": "Course Management System",
+        "title": "Course pages: Syllabus • Materials • Exams • Announcements",
+        "description": "Select a course; quickly access the syllabus, study materials, and exam information on the course's own page. Announcements can be filtered both globally and by course.",
+        "activeView": "Active view",
+        "viewHint": "The Courses page is filtered according to this view"
+    },
+    "search": {
+      "placeholder": "MAT103E, MAT471E, Calculus...",
+      "button": "Search"
+    },
+    "actions": {
+      "courses": "Courses",
+      "announcements": "Announcements",
+      "rules": "Rules"
+    },
+    "notice": {
+      "pool": {
+        "title": "MAT Pool Courses",
+        "line1": "General announcements regarding MAT Pool courses (MAT 103/E, 104/E) are made through this site. The instructor of the course you are enrolled in may also use Moodle or Ninova.",
+        "line2": "MAT 201/E, 202/E, 210/E, 261/E, 271/E, 281/E courses are not offered by the Mathematics Department. Questions or requests regarding these courses should be directed to the department that offers the course."
+      },
+      "department": {
+        "title": "MAT Department",
+        "line1": "General announcements regarding MAT and MATE students are made through this site. The instructor of the course you are enrolled in may also use Ninova.",
+        "line2": "For MAT 103/E, 104/E pool courses site",
+        "poolLink": "click here"
+      }
+    },
+    "featured": {
+      "title": "Featured Courses",
+      "description": "Quick access selected according to your active view.",
+      "viewAll": "View all courses",
+      "open": "Open",
+      "materials": "Materials"
+    },
+    "announcements": {
+      "title": "Recent Announcements",
+      "description": "You can use search and course filters on the all announcements page.",
+      "viewAll": "All announcements",
+      "filter": "Filter announcements",
+      "midterm": "Midterm exam schedule published",
+      "officeHours": "Office hours updated",
+      "newMaterials": "New materials added",
+      "viewTheAnnouncement": "View the announcement"
+    },
+    "rules": {
+      "title": "Rules",
+      "description": "Single reference point for exam, absence and communication rules.",
+      "item1": "Make-up and exam policies",
+      "item2": "Absence limits and warnings",
+      "item3": "Announcement/communication flow",
+      "button": "Read rules"
+    }
 }

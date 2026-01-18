@@ -1,11 +1,11 @@
 export const audiences = {
-  math_engineering: {
-    key: 'math_engineering',
-    translationKey: 'audience_toggle.math_engineering',
+  department: {
+    key: 'department',
+    translationKey: 'common.audience.department',
   },
-  other_engineering: {
-    key: 'other_engineering',
-    translationKey: 'audience_toggle.other_engineering',
+  pool: {
+    key: 'pool',
+    translationKey: 'common.audience.pool',
   },
 } as const;
 
