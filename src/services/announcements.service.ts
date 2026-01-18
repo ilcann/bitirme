@@ -1,34 +1,14 @@
 import { MockAnnouncements } from "@/mock/announcements";
-import type { AudienceKey } from "@/config/audiences";
-import type { Announcement } from "@/types/announcement";
+import type {
+    GetAnnouncementsParams,
+    GetAnnouncementsResponse
+} from "./types";
 
 /**
  * Announcements Service
  * Handles all announcement-related API operations
  * Currently uses mock data, ready for API integration
  */
-
-export type AnnouncementSortBy = "newest" | "oldest";
-export type DateFilter = "all" | "today" | "week" | "month";
-
-export interface GetAnnouncementsParams {
-    audience?: AudienceKey;
-    offset?: number;
-    limit?: number;
-    search?: string;
-    courseIds?: string[];
-    showOnlyNew?: boolean;
-    dateFilter?: DateFilter;
-    sortBy?: AnnouncementSortBy;
-}
-
-export interface GetAnnouncementsResponse {
-    data: Announcement[];
-    total: number;
-    offset: number;
-    limit: number;
-    hasMore: boolean;
-}
 
 /**
  * Get announcements with pagination, filtering, and sorting

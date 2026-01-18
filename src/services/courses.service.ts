@@ -1,30 +1,16 @@
 import { MockCourses } from "@/mock/courses";
 import type { Course, CompactCourse } from "@/types/course";
 import type { AudienceKey } from "@/config/audiences";
+import type {
+    GetCoursesParams,
+    GetCoursesResponse
+} from "./types";
 
 /**
  * Courses Service
  * Handles all course-related API operations
  * Currently uses mock data, ready for API integration
  */
-
-export type CourseSortBy = "students" | "code" | "title";
-
-export interface GetCoursesParams {
-    audience?: AudienceKey;
-    offset?: number;
-    limit?: number;
-    search?: string;
-    sortBy?: CourseSortBy;
-}
-
-export interface GetCoursesResponse {
-    data: Course[];
-    total: number;
-    offset: number;
-    limit: number;
-    hasMore: boolean;
-}
 
 /**
  * Get courses with pagination, filtering, and sorting

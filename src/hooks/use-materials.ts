@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { getMaterials, type MaterialSortBy, type GetMaterialsParams } from "@/services/materials.service";
+import { getMaterials } from "@/services/materials.service";
+import type { MaterialSortBy, GetMaterialsParams } from "@/services/types";
 import type { MaterialType } from "@/types/course-material";
 
 interface UseMaterialsOptions {

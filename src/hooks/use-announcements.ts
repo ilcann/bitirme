@@ -1,6 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { getAnnouncements, type GetAnnouncementsParams, type DateFilter } from "@/services/announcements.service";
+import { getAnnouncements } from "@/services/announcements.service";
+import type { GetAnnouncementsParams, DateFilter } from "@/services/types";
 import type { AudienceKey } from "@/config/audiences";
 
 interface UseAnnouncementsOptions {

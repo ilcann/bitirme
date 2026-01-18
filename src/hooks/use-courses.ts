@@ -1,6 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { getCourses, type GetCoursesParams, type CourseSortBy } from "@/services/courses.service";
+import { getCourses } from "@/services/courses.service";
+import type { GetCoursesParams, CourseSortBy } from "@/services/types";
 import type { AudienceKey } from "@/config/audiences";
 
 interface UseCoursesOptions {
