@@ -7,7 +7,7 @@ import { useLanguage } from "@/providers/language-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCourses } from "@/hooks/use-courses";
 import { useViewMode } from "@/hooks/use-view-mode";
-import { BookOpen, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { BookOpen, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/common/page-header";
 
@@ -85,8 +85,11 @@ const CoursesPage = () => {
         {/* Results Count */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {total} {t("courses.list.resultsFound")}
+            {isLoading ? t('common.pagination.loading') : `${total} ${t("courses.list.resultsFound")}`}
           </p>
+          {isFetching && !isLoading && (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          )}
         </div>
 
         {/* Loading State */}
