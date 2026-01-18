@@ -44,6 +44,17 @@
             "description": "No materials have been added for this course yet."
         },
         "download": "Download",
-        "open": "Open"
+        "open": "Open",
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next",
+            "page": "Page",
+            "of": " / "
+        },
+        "loading": "Loading materials...",
+        "clearFilters": "Clear All Filters",
+        "filters": {
+            "type": "Types"
+        }
     }
 }

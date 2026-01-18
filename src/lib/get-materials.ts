@@ -1,9 +1,13 @@
-import { MockMaterials } from "@/mock/materials";
+import { getMaterials } from "@/services/materials.service";
 
 /**
- * Get materials for a specific course
- * Simulates API call: GET /api/courses/:courseId/materials
+ * Get materials for a specific course (simplified wrapper)
+ * @deprecated Use getMaterials from services instead for better control
  */
-export const getMaterialsByCourseId = (courseId: string) => {
-    return MockMaterials.filter(m => m.courseId === courseId);
+export const getMaterialsByCourseId = async (courseId: string) => {
+    const response = await getMaterials({ 
+        courseId, 
+        limit: 1000 // Get all materials for now
+    });
+    return response.data;
 };

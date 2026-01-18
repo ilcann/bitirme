@@ -44,6 +44,17 @@
             "description": "Bu ders için henüz materyal eklenmemiş."
         },
         "download": "İndir",
-        "open": "Aç"
+        "open": "Aç",
+        "pagination": {
+            "previous": "Önceki",
+            "next": "Sonraki",
+            "page": "Sayfa",
+            "of": " / "
+        },
+        "loading": "Materyaller yükleniyor...",
+        "clearFilters": "Tüm Filtreleri Temizle",
+        "filters": {
+            "type": "Tipler"
+        }
     }
 }
