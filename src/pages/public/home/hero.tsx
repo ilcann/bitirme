@@ -105,7 +105,7 @@ const Hero = ({ audience }: HeroProps) => {
                 </Button>
               </form>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-1/10 hover:border-chart-1/50 hover:text-foreground transition-colors">
                   <Link to="/courses">
                     <BookOpen className="mr-2 h-4 w-4" />
@@ -118,17 +118,13 @@ const Hero = ({ audience }: HeroProps) => {
                     {t("home.actions.announcements")}
                   </Link>
                 </Button>
-              </div>
-
-              <Button asChild variant="ghost" className="w-full justify-between text-muted-foreground hover:text-foreground group">
-                <Link to="/rules">
-                  <span className="flex items-center">
+                <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-3/10 hover:border-chart-3/50 hover:text-foreground transition-colors">
+                  <Link to="/help">
                     <Scale className="mr-2 h-4 w-4" />
-                    {t("home.actions.rules")}
-                  </span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
+                    {t("home.actions.help")}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -18,12 +18,7 @@
     "actions": {
         "courses": "Courses",
         "announcements": "Announcements",
-        "rules": "Rules & Policies"
-    },
-    "stats": {
-        "courses": "Active Courses",
-        "announcements": "New Announcements",
-        "materials": "Materials"
+        "help": "Help"
     },
     "notice": {
         "common": {
@@ -41,7 +36,10 @@
     },
     "featured": {
         "title": "Featured Courses",
-        "description": "Popular courses based on your current view",
+        "description": {
+            "common": "Most popular courses among MAT Common courses",
+            "department": "Most popular courses among MAT Department courses"
+        },
         "viewAll": "View All Courses",
         "open": "Go to Course",
         "materials": "Materials",
@@ -57,13 +55,5 @@
         "newMaterials": "New course materials added",
         "viewTheAnnouncement": "View Announcement",
         "new": "New"
-    },
-    "rules": {
-        "title": "Rules & Policies",
-        "description": "Single reference for exam, absence, and communication rules",
-        "item1": "Make-up exam and retake policies",
-        "item2": "Absence limits and consequences",
-        "item3": "Announcement and communication channels",
-        "button": "Read All Rules"
     }
 }

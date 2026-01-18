@@ -27,7 +27,7 @@ const FeaturedCourses = () => {
             </h2>
           </div>
           <p className="text-muted-foreground">
-            {t("home.featured.description")}
+            {t(`home.featured.description.${audience}`)}
           </p>
         </div>
         <Button asChild variant="outline" className="hidden sm:flex rounded-xl border-2">

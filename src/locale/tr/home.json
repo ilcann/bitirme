@@ -18,12 +18,7 @@
     "actions": {
         "courses": "Dersler",
         "announcements": "Duyurular",
-        "rules": "Kurallar ve Politikalar"
-    },
-    "stats": {
-        "courses": "Aktif Ders",
-        "announcements": "Yeni Duyuru",
-        "materials": "Materyal"
+        "help": "Yardım"
     },
     "notice": {
         "common": {
@@ -41,7 +36,10 @@
     },
     "featured": {
         "title": "Öne Çıkan Dersler",
-        "description": "Görünümüne göre seçilmiş popüler dersler",
+        "description": {
+            "common": "MAT Havuz dersleri arasında en popüler dersler",
+            "department": "MAT Bölümü dersleri arasında en popüler dersler"
+        },
         "viewAll": "Tüm Dersleri Gör",
         "open": "Derse Git",
         "materials": "Materyaller",
@@ -57,13 +55,5 @@
         "newMaterials": "Yeni ders materyalleri eklendi",
         "viewTheAnnouncement": "Duyuruyu Görüntüle",
         "new": "Yeni"
-    },
-    "rules": {
-        "title": "Kurallar ve Politikalar",
-        "description": "Sınav, devamsızlık ve iletişim kuralları için tek kaynak",
-        "item1": "Telafi sınavı ve make-up politikaları",
-        "item2": "Devamsızlık limitleri ve yaptırımlar",
-        "item3": "Duyuru ve iletişim kanalları",
-        "button": "Tüm Kuralları Oku"
     }
 }

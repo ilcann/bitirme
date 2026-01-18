@@ -2,7 +2,6 @@ import { useAudience } from "@/providers/audience-provider";
 import Hero from "./hero";
 import FeaturedCourses from "./featured-courses";
 import LatestAnnouncements from "./latest-announcements";
-import RulesSection from "./rules-section";
 
 const HomePage = () => {
   const { audience } = useAudience();
@@ -12,7 +11,6 @@ const HomePage = () => {
       <Hero audience={audience} />
       <FeaturedCourses />
       <LatestAnnouncements />
-      <RulesSection />
     </main>
   );
 };
