@@ -5,11 +5,13 @@ import type { MockCourse } from "@/mock/courses";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaterialCard } from "@/components/common/material-card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { 
     FileText,
     Filter,
-    ArrowUpDown
+    ArrowUpDown,
+    Search
 } from "lucide-react";
 import type { MaterialType } from "@/mock/courses";
 import {
@@ -22,6 +24,7 @@ import {
 const CourseMaterialsPage = () => {
     const { t, i18n } = useTranslation('courses');
     const { course } = useOutletContext<{ course: MockCourse }>();
+    const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState<MaterialType | "all">("all");
     const [sortBy, setSortBy] = useState<"newest" | "oldest" | "title">("newest");
     
@@ -35,9 +38,18 @@ const CourseMaterialsPage = () => {
 
         let filtered = course.materials;
         
-        // Filter
+        // Filter by type
         if (filterType !== "all") {
             filtered = filtered.filter(m => m.type === filterType);
+        }
+
+        // Filter by search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(m => 
+                m.title[i18n.language as 'tr' | 'en'].toLowerCase().includes(query) ||
+                (m.description && m.description[i18n.language as 'tr' | 'en'].toLowerCase().includes(query))
+            );
         }
 
         // Sort
@@ -57,13 +69,23 @@ const CourseMaterialsPage = () => {
         });
 
         return sorted;
-    }, [course, filterType, sortBy, i18n.language]);
+    }, [course, filterType, sortBy, searchQuery, i18n.language]);
 
     return (
         <section className="container mx-auto py-4 px-4 space-y-6">
-            {/* Filters and Sort */}
-            <div className="flex flex-wrap gap-3">
-                <DropdownMenu>
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={t("home.search.placeholder")}
+                        className="pl-10 h-11 rounded-xl border-2"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">
                             <Filter className="h-4 w-4 mr-2" />
@@ -101,6 +123,7 @@ const CourseMaterialsPage = () => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                </div>
             </div>
 
             {/* Materials List */}

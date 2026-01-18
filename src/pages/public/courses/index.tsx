@@ -1,13 +1,13 @@
 import { CourseCard } from "@/components/common/course-card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
-import { BookOpen, Filter, Search } from "lucide-react";
-import React from "react";
+import { useCourseSearch } from "@/hooks/use-course-search";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { BookOpen, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/common/page-header";
 
@@ -15,28 +15,19 @@ const CoursesPage = () => {
   const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [viewMode, setViewMode] = React.useState<"compact" | "wide">("compact");
-
+  
   useDocumentTitle(
     t('courses.list.title'),
     t('courses.list.description')
   );
 
-  // Filter courses by audience and search query
-  const filteredCourses = React.useMemo(() => {
-    return MockCourses
-      .filter(course => course.audience === audience)
-      .filter(course => {
-        if (!searchQuery.trim()) return true;
-        const query = searchQuery.toLowerCase();
-        return (
-          course.code.toLowerCase().includes(query) ||
-          course.title[lang].toLowerCase().includes(query)
-        );
-      })
-      .sort((a, b) => b.students - a.students);
-  }, [audience, searchQuery, lang]);
+  const { searchQuery, setSearchQuery, filteredCourses } = useCourseSearch({
+    courses: MockCourses,
+    audience,
+    language: lang
+  });
+
+  const { viewMode, setViewMode } = useViewMode();
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
       <div className="space-y-8">
