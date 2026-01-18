@@ -9,14 +9,21 @@
   },
   "sections": {
     "examGuide": {
-      "title": "Quick Exam Guide",
-      "description": "Duration: 120 minutes",
+      "title": "Exam Guide",
+      "description": "Exam rules and important notices",
       "rules": {
-        "rule1": "Exams will consist of 20 multiple choice questions. Each question is worth 5 points.",
-        "rule2": "Identity verification will be conducted by showing ID card, driver's license, or passport.",
-        "rule3": "Students arriving after the first 30 minutes will not be admitted to the exam.",
-        "rule4": "If a student is caught cheating, their raw score will be considered zero."
+        "rule1": "Students with a VF grade cannot sit the final; if they do, the exam will not be evaluated. VF status can be checked on the 'Results' page.",
+        "rule2": "Exams consist of 20 multiple-choice questions. Scoring: the raw score is calculated by subtracting one quarter of the number of wrong answers from the number of correct answers; negative raw scores are treated as zero.",
+        "rule3": "Identity verification will be performed. Students must present their student ID, valid national ID, driver's license, or passport.",
+        "rule4": "Students arriving after the first 30 minutes will not be admitted. Additionally, during the first 45 minutes students may not leave the classroom; except for emergencies, if a student leaves the exam their answer sheet will be collected and the exam considered finished.",
+        "rule5": "Optical answer sheets must be filled in correctly and completely using a pencil.",
+        "rule6": "No extra paper or calculators will be allowed. Mobile phones, smartwatches, etc. must be turned off and not on the student during the exam.",
+        "rule7": "Students who do not attend their registered exam will have their exam invalidated.",
+        "rule8": "If copying, aiding copying, or other dishonest behavior is detected, the involved students' exams will be invalidated and disciplinary procedures will be applied according to Article 54 of the Higher Education Law (No. 2547).",
+        "rule9": "For detailed information, see: Faculty of Science and Letters Pool Course Exam Rules."
       }
+    ,
+    "conclusion": "We wish you success in the exams."
     },
     "makeupExamGuide": {
       "title": "End of Semester Makeup Exams",

@@ -66,6 +66,10 @@ const HelpPage = () => {
         }
     ];
 
+    const examRuleKeys = [
+        'rule1','rule2','rule3','rule4','rule5','rule6','rule7','rule8','rule9'
+    ];
+
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
             <div className="space-y-12">
@@ -156,28 +160,6 @@ const HelpPage = () => {
                                             <span className="font-semibold">{t('help.sections.examGuide.title')}</span>
                                             <Badge variant="outline" className="ml-2">{t('help.sections.examGuide.description')}</Badge>
                                         </div>
-                                        <div className="grid gap-2">
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="font-mono text-sm font-medium">MAT103/E</span>
-                                                    <span className="text-sm text-muted-foreground">13.01.2026</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                                    <span className="text-sm">09:00 - 11:00</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="font-mono text-sm font-medium">MAT104/E</span>
-                                                    <span className="text-sm text-muted-foreground">13.01.2026</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                                    <span className="text-sm">15:00 - 17:00</span>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     {/* Önemli Kurallar */}
@@ -187,21 +169,21 @@ const HelpPage = () => {
                                             {t('help.sections.examGuide.title')}
                                         </h4>
                                         <div className="space-y-2 text-sm">
-                                            <div className="flex items-start gap-2">
-                                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                                                <p>{t('help.sections.examGuide.rules.rule1')}</p>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                                                <p>{t('help.sections.examGuide.rules.rule2')}</p>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                                                <p>{t('help.sections.examGuide.rules.rule3')}</p>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-                                                <p className="text-destructive">{t('help.sections.examGuide.rules.rule4')}</p>
+                                            {examRuleKeys.map((key) => (
+                                                <div key={key} className="flex items-start gap-2">
+                                                    {key === 'rule8' ? (
+                                                        <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                                                    ) : (
+                                                        <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                                                    )}
+                                                    <p className={key === 'rule8' ? 'text-destructive' : ''}>
+                                                        {t(`help.sections.examGuide.rules.${key}`)}
+                                                    </p>
+                                                </div>
+                                            ))}
+
+                                            <div className="pt-4">
+                                                <p className="text-sm text-muted-foreground">{t('help.sections.examGuide.conclusion')}</p>
                                             </div>
                                         </div>
                                     </div>

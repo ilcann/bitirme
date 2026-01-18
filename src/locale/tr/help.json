@@ -9,14 +9,21 @@
   },
   "sections": {
     "examGuide": {
-      "title": "Kısa Sınav Rehberi",
-      "description": "Süre: 120 dakika",
+      "title": "Sınav Rehberi",
+      "description": "Sınav kuralları ve dikkat edilmesi gereken hususlar",
       "rules": {
-        "rule1": "Sınavlar 20 adet çoktan seçmeli sorudan oluşacaktır. Her soru 5 puan değerindedir.",
-        "rule2": "Sınava kimlik kartı, ehliyet veya pasaport göstermek suretiyle kimlik kontrolü yapılacaktır.",
-        "rule3": "Sınava ilk 30 dakikasından sonra gelen öğrenci sınava alınmayacaktır.",
-        "rule4": "Öğrencinin kopya çekme durumu tespit edilirse ham puan sıfır kabul edilecektir."
+        "rule1": "Notu VF olan öğrenci finale giremez; girse bile sınavı değerlendirmeye alınmaz. VF durumunu 'Sonuçlar' sayfasından kontrol edebilirsiniz.",
+        "rule2": "Sınavlar 20 adet çoktan seçmeli sorudan oluşur. Puanlama: doğru sayısından yanlışların dörtte biri çıkarılarak ham puan bulunur; negatif ise ham puan sıfır kabul edilir.",
+        "rule3": "Sınavda kimlik kontrolü yapılacaktır. Öğrencinin yanında kimlik kartı, geçerli TC kimlik kartı, ehliyet veya pasaport bulundurması gerekir.",
+        "rule4": "Sınava ilk 30 dakikadan sonra gelen öğrenci sınava alınmaz. Ayrıca sınavın ilk 45 dakikasında öğrenciler sınıftan ayrılamaz; acil durum hariç çıkan öğrencinin sınavı sonlandırılır ve cevap kağıdı teslim alınır.",
+        "rule5": "Optik cevap kâğıdı doğru ve eksiksiz şekilde kurşun kalemle doldurulmalıdır.",
+        "rule6": "Sınav süresince fazla kağıt, hesap makinesi, cep telefonu, akıllı saat gibi cihazlar kullanılmaz; telefonlar kapalı ve öğrencinin üzerinde bulunmayacaktır.",
+        "rule7": "Sınava girmeyen öğrencinin sınavı geçersiz sayılır.",
+        "rule8": "Kopya çekme, kopya verme veya sınavı aldatmaya yönelik davranış tespit edilirse ilgili öğrencinin sınavı geçersiz sayılır ve 2547 sayılı Yükseköğretim Kanunu'nun 54. maddesi gereği işlem yapılır.",
+        "rule9": "Ayrıntılı bilgi için: Fen-Edebiyat Fakültesi Havuz Dersleri Sınav Kuralları."
       }
+    ,
+    "conclusion": "Sınavlarda başarılar dileriz."
     },
     "makeupExamGuide": {
       "title": "Yarıyıl Sonu Mazeret Sınavları",
