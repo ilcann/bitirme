@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useDocumentTitle } from "@/hooks/use-document-title";
+import { useMaterialFilter } from "@/hooks/use-material-filter";
 import { useOutletContext } from "react-router";
 import type { MockCourse } from "@/mock/courses";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaterialCard } from "@/components/common/material-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
 import { 
     FileText,
     Filter,
@@ -22,54 +22,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const CourseMaterialsPage = () => {
-    const { t, i18n } = useTranslation('courses');
+    const { t } = useTranslation('courses');
     const { course } = useOutletContext<{ course: MockCourse }>();
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filterType, setFilterType] = useState<MaterialType | "all">("all");
-    const [sortBy, setSortBy] = useState<"newest" | "oldest" | "title">("newest");
-    
+
     useDocumentTitle(
         `${course?.code} - ${t('materials.title')}`,
         t('materials.description')
     );
 
-    const filteredAndSortedMaterials = useMemo(() => {
-        if (!course?.materials) return [];
-
-        let filtered = course.materials;
-        
-        // Filter by type
-        if (filterType !== "all") {
-            filtered = filtered.filter(m => m.type === filterType);
-        }
-
-        // Filter by search query
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(m => 
-                m.title[i18n.language as 'tr' | 'en'].toLowerCase().includes(query) ||
-                (m.description && m.description[i18n.language as 'tr' | 'en'].toLowerCase().includes(query))
-            );
-        }
-
-        // Sort
-        const sorted = [...filtered].sort((a, b) => {
-            switch (sortBy) {
-                case "newest":
-                    return new Date(b.date).getTime() - new Date(a.date).getTime();
-                case "oldest":
-                    return new Date(a.date).getTime() - new Date(b.date).getTime();
-                case "title":
-                    return a.title[i18n.language as 'tr' | 'en'].localeCompare(
-                        b.title[i18n.language as 'tr' | 'en']
-                    );
-                default:
-                    return 0;
-            }
-        });
-
-        return sorted;
-    }, [course, filterType, sortBy, searchQuery, i18n.language]);
+    const {
+        searchQuery,
+        setSearchQuery,
+        filterType,
+        setFilterType,
+        sortBy,
+        setSortBy,
+        filteredAndSortedMaterials,
+    } = useMaterialFilter(course?.materials);
 
     return (
         <section className="container mx-auto py-4 px-4 space-y-6">
