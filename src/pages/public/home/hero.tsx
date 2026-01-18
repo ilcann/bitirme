@@ -1,5 +1,4 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { Button } from "@/components/ui/button";
 import { Highlighter } from "@/components/ui/highlighter";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { Button as CTAButton } from "@/components/ui/moving-border";
+import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
 
 type HeroProps = {
     audience: "department" | "common";
@@ -42,11 +42,11 @@ const Hero = ({ audience }: HeroProps) => {
                   : "bg-chart-1/10 text-chart-1"
                 }`}>
                   <Sparkles className="h-4 w-4" />
-                  <AnimatedGradientText>
+                  <AnimatedShinyText>
                   {audience === "department" 
                     ? t("home.hero.badge.department") 
                     : t("home.hero.badge.common")}
-                  </AnimatedGradientText>
+                  </AnimatedShinyText>
                 </div>
               
               <div className="space-y-4">
