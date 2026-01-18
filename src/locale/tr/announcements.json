@@ -12,20 +12,6 @@
     "title": "Duyuru Detayı",
     "description": "Bu duyuru hakkında detaylı bilgileri görüntüleyin"
   },
-  "titles": {
-    "midterm": "Vize sınavı programı yayınlandı",
-    "officeHours": "Ofis saatleri güncellendi",
-    "projectDeadline": "Proje teslim tarihi yakınıyor",
-    "newMaterials": "Yeni ders materyalleri eklendi",
-    "labSession": "Laboratuvar oturumu duyurusu",
-    "examResults": "Sınav sonuçları açıklandı",
-    "lectureCancel": "Ders iptal edildi",
-    "makeupExam": "Mazeret sınavı duyurusu",
-    "homeworkSubmission": "Ödev teslim hatırlatması",
-    "guestLecture": "Konuk konuşmacı semineri",
-    "libraryAccess": "Kütüphane erişim bilgileri",
-    "studyGroup": "Çalışma grubu duyurusu"
-  },
   "viewTheAnnouncement": "Duyuruyu Görüntüle",
   "new": "Yeni"
 }

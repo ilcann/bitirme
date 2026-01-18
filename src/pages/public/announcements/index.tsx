@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Bell, Calendar, Filter } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/providers/language-provider";
 
 const AnnouncementsPage = () => {
-    const { t } = useTranslation('announcements');
+    const { t } = useTranslation();
+    const { lang } = useLanguage();
     const [showOnlyNew, setShowOnlyNew] = useState(false);
 
     const filteredAnnouncements = showOnlyNew 
@@ -17,7 +19,7 @@ const AnnouncementsPage = () => {
     const newCount = MockAnnouncements.filter(a => a.isNew).length;
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-background via-muted/20 to-background">
+       <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10 space-y-16">
             <div className="container mx-auto px-4 py-8 space-y-8">
                 {/* Header */}
                 <div className="space-y-4">
@@ -26,8 +28,8 @@ const AnnouncementsPage = () => {
                             <Bell className="h-8 w-8 text-chart-5" />
                         </div>
                         <div>
-                            <h1 className="text-4xl font-bold tracking-tight">{t('list.title')}</h1>
-                            <p className="text-muted-foreground text-lg">{t('list.description')}</p>
+                            <h1 className="text-4xl font-bold tracking-tight">{t('announcements.list.title')}</h1>
+                            <p className="text-muted-foreground text-lg">{t('announcements.list.description')}</p>
                         </div>
                     </div>
 
@@ -36,12 +38,12 @@ const AnnouncementsPage = () => {
                         <div className="flex items-center gap-2">
                             <Badge variant="secondary" className="px-3 py-1 text-sm">
                                 <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                                {filteredAnnouncements.length} {t('list.title')}
+                                {filteredAnnouncements.length} {t('announcements.list.title')}
                             </Badge>
                             {newCount > 0 && (
                                 <Badge className="px-3 py-1 text-sm bg-chart-5 hover:bg-chart-5">
                                     <Bell className="h-3.5 w-3.5 mr-1.5" />
-                                    {newCount} {t('new')}
+                                    {newCount} {t('announcements.new')}
                                 </Badge>
                             )}
                         </div>
@@ -54,7 +56,7 @@ const AnnouncementsPage = () => {
                                 className="gap-2"
                             >
                                 <Filter className="h-4 w-4" />
-                                {showOnlyNew ? t('new') : t('list.showAll')}
+                                {showOnlyNew ? t('announcements.new') : t('announcements.list.showAll')}
                             </Button>
                         </div>
                     </div>
@@ -68,7 +70,7 @@ const AnnouncementsPage = () => {
                                 key={announcement.id}
                                 id={announcement.id}
                                 courseId={announcement.courseId}
-                                title={announcement.title}
+                                title={announcement.title[lang]}
                                 date={announcement.date}
                                 isNew={announcement.isNew}
                             />
@@ -80,13 +82,13 @@ const AnnouncementsPage = () => {
                             <Bell className="h-12 w-12 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-xl font-semibold">{t('list.noResults.title')}</h3>
-                            <p className="text-muted-foreground">{t('list.noResults.description')}</p>
+                            <h3 className="text-xl font-semibold">{t('announcements.list.noResults.title')}</h3>
+                            <p className="text-muted-foreground">{t('announcements.list.noResults.description')}</p>
                         </div>
                     </div>
                 )}
             </div>
-        </div>
+        </main>
     );
 }
 
