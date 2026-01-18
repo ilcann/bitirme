@@ -7,6 +7,7 @@ import { getCurrentPath } from "@/lib/utils";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
 
 const CoursePage = () => {
     const { courseId } = useParams<{ courseId: string }>();
@@ -46,37 +47,49 @@ const CoursePage = () => {
     };
 
     return (
-        <main className="min-h-screen max-w-7xl mx-auto space-y-8 px-4 py-8 md:py-10">
-            <PageHeader
-                variant="wide"
-                title={course.code}
-                description={
-                    <>
-                        <span className="block mb-2">{course.title[lang]}</span>
-                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                            <Users className="h-4 w-4" />
-                            <span className="font-medium">{course.students}</span>
-                            <span>{t("home.featured.students")}</span>
-                        </div>
-                    </>
-                }
-                icon={BookOpen}
-                iconBgColor={colors.bgLight}
-                iconColor={colors.text}
-            />
+        <main className="max-w-7xl mx-auto space-y-8 px-4 py-8 md:py-10">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <PageHeader
+                    variant="wide"
+                    title={course.code}
+                    description={
+                        <>
+                            <span className="block mb-2">{course.title[lang]}</span>
+                            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                <Users className="h-4 w-4" />
+                                <span className="font-medium">{course.students}</span>
+                                <span>{t("home.featured.students")}</span>
+                            </div>
+                        </>
+                    }
+                    icon={BookOpen}
+                    iconBgColor={colors.bgLight}
+                    iconColor={colors.text}
+                />
+            </motion.div>
             
-            <Tabs value={getCurrentTab()} onValueChange={handleTabChange} className="w-full">
-                <TabsList>
-                    {tabs.map((tab) => (
-                        <TabsTrigger key={tab.value} value={tab.value}>
-                            {tab.label}
-                        </TabsTrigger>
-                ))}
-                </TabsList>
-                <TabsContent value={getCurrentTab()}>
-                    <Outlet context={{ course }} />
-                </TabsContent>
-            </Tabs>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+            >
+                <Tabs value={getCurrentTab()} onValueChange={handleTabChange} className="w-full">
+                    <TabsList>
+                        {tabs.map((tab) => (
+                            <TabsTrigger key={tab.value} value={tab.value}>
+                                {tab.label}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    <TabsContent value={getCurrentTab()}>
+                        <Outlet context={{ course }} />
+                    </TabsContent>
+                </Tabs>
+            </motion.div>
         </main>
     );
 }

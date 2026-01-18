@@ -8,6 +8,7 @@ import { MaterialCardSkeleton } from "@/components/common/material-card-skeleton
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 import { 
     FileText,
     Filter,
@@ -65,9 +66,14 @@ const CourseMaterialsPage = () => {
     const activeFilterCount = selectedTypes.length + (sortBy !== 'newest' ? 1 : 0);
 
     return (
-        <section className="container mx-auto py-4 px-4 space-y-6">
+        <section className="space-y-6">
             {/* Search & Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-col sm:flex-row gap-3"
+            >
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
@@ -131,10 +137,15 @@ const CourseMaterialsPage = () => {
                         </Button>
                     )}
                 </div>
-            </div>
+            </motion.div>
 
             {/* Results Count & Pagination Info */}
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="flex items-center justify-between text-sm text-muted-foreground"
+            >
                 <span>
                     {isLoading ? t('common:common.pagination.loading') : `${total} ${t('courses.materials.resultsCount')}`}
                 </span>
@@ -148,7 +159,7 @@ const CourseMaterialsPage = () => {
                         <Loader2 className="h-4 w-4 animate-spin" />
                     )}
                 </div>
-            </div>
+            </motion.div>
 
             {/* Materials List */}
             {isLoading ? (
@@ -167,11 +178,31 @@ const CourseMaterialsPage = () => {
                 </Card>
             ) : (
                 <>
-                    <div className="grid gap-4">
+                    <motion.div
+                        className="grid gap-4"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            visible: {
+                                transition: {
+                                    staggerChildren: 0.06
+                                }
+                            }
+                        }}
+                    >
                         {materials.map((material) => (
-                            <MaterialCard key={material.id} material={material} />
+                            <motion.div
+                                key={material.id}
+                                variants={{
+                                    hidden: { opacity: 0, y: 15 },
+                                    visible: { opacity: 1, y: 0 }
+                                }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                            >
+                                <MaterialCard material={material} />
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
 
                     {/* Pagination Buttons */}
                     {totalPages > 1 && (

@@ -23,7 +23,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10 space-y-16">
+    <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10 space-y-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

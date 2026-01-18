@@ -42,13 +42,6 @@ const CoursesPage = () => {
 
   const { viewMode, setViewMode } = useViewMode();
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 40 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-50px" },
-    transition: { duration: 0.5, ease: "easeOut" }
-  };
-
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
       <div className="space-y-8">
