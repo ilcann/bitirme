@@ -133,14 +133,21 @@ const CourseMaterialsPage = () => {
                 </div>
             </div>
 
-            {/* Results Count */}
+            {/* Results Count & Pagination Info */}
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>
                     {isLoading ? t('common:common.pagination.loading') : `${total} ${t('courses.materials.resultsCount')}`}
                 </span>
-                {isFetching && !isLoading && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                )}
+                <div className="flex items-center gap-3">
+                    {totalPages > 1 && (
+                        <span>
+                            {t('common.pagination.page', { current: currentPage + 1, total: totalPages })}
+                        </span>
+                    )}
+                    {isFetching && !isLoading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    )}
+                </div>
             </div>
 
             {/* Materials List */}
@@ -166,32 +173,27 @@ const CourseMaterialsPage = () => {
                         ))}
                     </div>
 
-                    {/* Pagination */}
+                    {/* Pagination Buttons */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between pt-4">
-                            <div className="text-sm text-muted-foreground">
-                                {t('common.pagination.page', { current: currentPage + 1, total: totalPages })}
-                            </div>
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={goToPreviousPage}
-                                    disabled={!hasPreviousPage || isFetching}
-                                >
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    {t('common.pagination.previous')}
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={goToNextPage}
-                                    disabled={!hasNextPage || isFetching}
-                                >
-                                    {t('common.pagination.next')}
-                                    <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
-                            </div>
+                        <div className="flex items-center justify-center gap-2 pt-4">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={goToPreviousPage}
+                                disabled={!hasPreviousPage || isFetching}
+                            >
+                                <ChevronLeft className="h-4 w-4 mr-1" />
+                                {t('common.pagination.previous')}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={goToNextPage}
+                                disabled={!hasNextPage || isFetching}
+                            >
+                                {t('common.pagination.next')}
+                                <ChevronRight className="h-4 w-4 ml-1" />
+                            </Button>
                         </div>
                     )}
                 </>
