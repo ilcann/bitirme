@@ -179,6 +179,7 @@ const CourseMaterialsPage = () => {
             ) : (
                 <>
                     <motion.div
+                        key={`${selectedTypes.join('-')}-${searchQuery}-${sortBy}`}
                         className="grid gap-4"
                         initial="hidden"
                         animate="visible"

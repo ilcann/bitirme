@@ -65,12 +65,11 @@ export const useMaterials = ({ courseId, initialLimit = 20 }: UseMaterialsOption
     const toggleType = (type: MaterialType) => {
         setSelectedTypes(prev => {
             const exists = prev.includes(type);
-            const newTypes = exists 
+            return exists 
                 ? prev.filter(t => t !== type)
                 : [...prev, type];
-            resetPagination(); // Reset to first page when filter changes
-            return newTypes;
         });
+        resetPagination(); // Reset to first page when filter changes
     };
 
     const clearTypes = () => {
