@@ -78,5 +78,11 @@
                 }
             }
         }
+    },
+    "pagination": {
+        "loading": "Yükleniyor...",
+        "page": "Sayfa {{current}} / {{total}}",
+        "previous": "Önceki",
+        "next": "Sonraki"
     }
 }

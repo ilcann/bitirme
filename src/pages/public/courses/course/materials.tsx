@@ -4,6 +4,7 @@ import { useMaterials } from "@/hooks/use-materials";
 import { useOutletContext } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaterialCard } from "@/components/common/material-card";
+import { MaterialCardSkeleton } from "@/components/common/material-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +58,7 @@ const CourseMaterialsPage = () => {
         clearAllFilters,
     } = useMaterials({ 
         courseId: course?.id || "",
-        initialLimit: 10
+        initialLimit: 5
     });
 
     const materialTypes: MaterialType[] = ["lecture", "assignment", "exam", "document", "video", "link"];
@@ -135,7 +136,7 @@ const CourseMaterialsPage = () => {
             {/* Results Count */}
             <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>
-                    {isLoading ? 'Loading...' : `${total} materials`}
+                    {isLoading ? t('common:common.pagination.loading') : `${total} ${t('courses.materials.resultsCount')}`}
                 </span>
                 {isFetching && !isLoading && (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -144,12 +145,11 @@ const CourseMaterialsPage = () => {
 
             {/* Materials List */}
             {isLoading ? (
-                <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-12">
-                        <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">{t('courses.materials.loading')}</p>
-                    </CardContent>
-                </Card>
+                <div className="grid gap-4">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <MaterialCardSkeleton key={index} />
+                    ))}
+                </div>
             ) : materials.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
@@ -170,7 +170,7 @@ const CourseMaterialsPage = () => {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-between pt-4">
                             <div className="text-sm text-muted-foreground">
-                                {t('courses.materials.pagination.page')} {currentPage + 1} {t('courses.materials.pagination.of')} {totalPages}
+                                {t('common.pagination.page', { current: currentPage + 1, total: totalPages })}
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -180,7 +180,7 @@ const CourseMaterialsPage = () => {
                                     disabled={!hasPreviousPage || isFetching}
                                 >
                                     <ChevronLeft className="h-4 w-4 mr-1" />
-                                    {t('courses.materials.pagination.previous')}
+                                    {t('common.pagination.previous')}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -188,7 +188,7 @@ const CourseMaterialsPage = () => {
                                     onClick={goToNextPage}
                                     disabled={!hasNextPage || isFetching}
                                 >
-                                    {t('courses.materials.pagination.next')}
+                                    {t('common.pagination.next')}
                                     <ChevronRight className="h-4 w-4 ml-1" />
                                 </Button>
                             </div>

@@ -55,6 +55,7 @@
         "clearFilters": "Clear All Filters",
         "filters": {
             "type": "Types"
-        }
+        },
+        "resultsCount": "materials"
     }
 }

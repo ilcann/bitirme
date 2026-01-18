@@ -55,6 +55,7 @@
         "clearFilters": "Tüm Filtreleri Temizle",
         "filters": {
             "type": "Tipler"
-        }
+        },
+        "resultsCount": "materyal"
     }
 }

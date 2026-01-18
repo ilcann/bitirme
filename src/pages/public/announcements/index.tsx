@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { AnnouncementCard } from "@/components/common/announcement-card";
+import { AnnouncementCardSkeleton } from "@/components/common/announcement-card-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Calendar, Filter, Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,6 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { PageHeader } from "@/components/common/page-header";
-import { Card, CardContent } from "@/components/ui/card";
 
 const AnnouncementsPage = () => {
     const { t } = useTranslation();
@@ -54,7 +54,7 @@ const AnnouncementsPage = () => {
         clearAllFilters,
     } = useAnnouncements({ 
         audience,
-        initialLimit: 10
+        initialLimit: 5
     });
 
     // Get available courses for filters
@@ -192,7 +192,7 @@ const AnnouncementsPage = () => {
                 {/* Results Count */}
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                        {isLoading ? 'Loading...' : `${total} ${t('announcements.list.results')}`}
+                        {isLoading ? t('common.pagination.loading') : `${total} ${t('announcements.list.results')}`}
                     </p>
                     {isFetching && !isLoading && (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -201,12 +201,11 @@ const AnnouncementsPage = () => {
 
                 {/* Announcements List */}
                 {isLoading ? (
-                    <Card>
-                        <CardContent className="flex flex-col items-center justify-center py-12">
-                            <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground">Loading announcements...</p>
-                        </CardContent>
-                    </Card>
+                    <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <AnnouncementCardSkeleton key={index} variant="wide" />
+                        ))}
+                    </div>
                 ) : announcements.length > 0 ? (
                     <>
                         <div className="space-y-4">
@@ -228,7 +227,7 @@ const AnnouncementsPage = () => {
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between pt-4">
                                 <div className="text-sm text-muted-foreground">
-                                    Page {currentPage + 1} of {totalPages}
+                                    {t('common.pagination.page', { current: currentPage + 1, total: totalPages })}
                                 </div>
                                 <div className="flex gap-2">
                                     <Button
@@ -238,7 +237,7 @@ const AnnouncementsPage = () => {
                                         disabled={!hasPreviousPage || isFetching}
                                     >
                                         <ChevronLeft className="h-4 w-4 mr-1" />
-                                        Previous
+                                        {t('common.pagination.previous')}
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -246,7 +245,7 @@ const AnnouncementsPage = () => {
                                         onClick={goToNextPage}
                                         disabled={!hasNextPage || isFetching}
                                     >
-                                        Next
+                                        {t('common.pagination.next')}
                                         <ChevronRight className="h-4 w-4 ml-1" />
                                     </Button>
                                 </div>

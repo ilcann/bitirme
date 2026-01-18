@@ -78,5 +78,11 @@
                 }
             }
         }
+    },
+    "pagination": {
+        "loading": "Loading...",
+        "page": "Page {{current}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next"
     }
 }
