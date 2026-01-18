@@ -1,11 +1,23 @@
 import { useEffect } from 'react';
 
-export function useDocumentTitle(title: string, description?: string) {
+// Get the app title from the initial document title (set in index.html)
+const getAppTitle = (() => {
+  let appTitle: string | null = null;
+  return () => {
+    if (appTitle === null) {
+      appTitle = document.title || 'ITU MAT';
+    }
+    return appTitle;
+  };
+})();
+
+export function useDocumentTitle(pageTitle: string, description?: string) {
   useEffect(() => {
-    const prevTitle = document.title;
+    const appTitle = getAppTitle();
     
-    if (title) {
-      document.title = title;
+    if (pageTitle) {
+      // Format: "App Title - Page Title"
+      document.title = `${appTitle} - ${pageTitle}`;
     }
 
     // Set meta description if provided
@@ -20,10 +32,5 @@ export function useDocumentTitle(title: string, description?: string) {
       
       metaDescription.setAttribute('content', description);
     }
-
-    // Cleanup on unmount
-    return () => {
-      document.title = prevTitle;
-    };
-  }, [title, description]);
+  }, [pageTitle, description]);
 }
