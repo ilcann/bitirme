@@ -1,7 +1,12 @@
 {
   "list": {
     "title": "Duyurular",
-    "description": "En son haberler ve duyurulardan haberdar olun"
+    "description": "En son haberler ve duyurulardan haberdar olun",
+    "showAll": "Tümünü Göster",
+    "noResults": {
+      "title": "Duyuru Bulunamadı",
+      "description": "Seçili filtrelere uygun duyuru bulunamadı."
+    }
   },
   "detail": {
     "title": "Duyuru Detayı",

@@ -5,10 +5,12 @@ import { ArrowRight, Bell } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { useLanguage } from "@/providers/language-provider";
 
 const LatestAnnouncements = () => {
   const { t } = useTranslation();
-
+  const { lang } = useLanguage();
+ 
   // Get latest 3 announcements sorted by date (newest first)
   const latestAnnouncements = React.useMemo(() => {
     return [...MockAnnouncements]
@@ -46,7 +48,7 @@ const LatestAnnouncements = () => {
             key={a.id}
             id={a.id}
             courseId={a.courseId}
-            titleKey={a.titleKey}
+            title={a.title[lang]}
             date={a.date}
             isNew={a.isNew}
           />

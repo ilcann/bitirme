@@ -1,20 +1,20 @@
-import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { ArrowRight, Bell, Calendar } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 interface AnnouncementCardProps {
     id: string;
     courseId: string;
-    titleKey: string;
+    title: string;
     date: string;
     isNew?: boolean;
 }
 
-export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: AnnouncementCardProps) => {
-    const { t } = useTranslation();
+export const AnnouncementCard = ({ id, courseId, title, date, isNew }: AnnouncementCardProps) => {
+    const { t } = useTranslation('announcements');
 
     // Define color scheme based on announcement status
     const colors = isNew ? {
@@ -49,7 +49,7 @@ export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: Announ
                         </Badge>
                     </div>
                     <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-2">
-                        {t(titleKey)}
+                        {title}
                     </h3>
                 </div>
             </div>

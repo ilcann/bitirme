@@ -1,7 +1,12 @@
 {
   "list": {
     "title": "Announcements",
-    "description": "Stay updated with the latest news and announcements"
+    "description": "Stay updated with the latest news and announcements",
+    "showAll": "Show All",
+    "noResults": {
+      "title": "No Announcements Found",
+      "description": "No announcements matched the selected filters."
+    }
   },
   "detail": {
     "title": "Announcement Detail",
