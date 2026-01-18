@@ -1,11 +1,19 @@
 import { useAudience } from "@/providers/audience-provider";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import Hero from "./hero";
 import FeaturedCourses from "./featured-courses";
 import LatestAnnouncements from "./latest-announcements";
 
 const HomePage = () => {
   const { audience } = useAudience();
+  const { t } = useTranslation();
+  
+  useDocumentTitle(
+    t('home.title'),
+    t('home.description')
+  );
 
   const fadeInUp = {
     initial: { opacity: 0, y: 40 },

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { BookOpen, Filter, Search } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,11 @@ const CoursesPage = () => {
   const { audience } = useAudience();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [viewMode, setViewMode] = React.useState<"compact" | "wide">("compact");
+
+  useDocumentTitle(
+    t('courses.list.title'),
+    t('courses.list.description')
+  );
 
   // Filter courses by audience and search query
   const filteredCourses = React.useMemo(() => {

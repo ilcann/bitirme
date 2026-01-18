@@ -11,6 +11,7 @@ import {
     XCircle
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { motion } from "framer-motion";
 import {
     Accordion,
@@ -21,6 +22,11 @@ import {
 
 const HelpPage = () => {
     const { t } = useTranslation();
+
+    useDocumentTitle(
+        t('help.main.title'),
+        t('help.main.description')
+    );
 
     const fadeInUp = {
         initial: { opacity: 0, y: 40 },

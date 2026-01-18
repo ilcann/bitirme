@@ -8,6 +8,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/providers/language-provider";
 import { useAudience } from "@/providers/audience-provider";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -26,6 +27,11 @@ const AnnouncementsPage = () => {
     const [showOnlyNew, setShowOnlyNew] = useState(false);
     const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
     const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+
+    useDocumentTitle(
+        t('announcements.list.title'),
+        t('announcements.list.description')
+    );
 
     // Get unique courses from announcements, filtered by current audience
     const availableCourses = useMemo(() => {
