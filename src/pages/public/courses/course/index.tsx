@@ -48,7 +48,7 @@ const CoursePage = () => {
     return (
         <main className="min-h-screen max-w-7xl mx-auto space-y-8 px-4 py-8 md:py-10">
             <PageHeader
-                variant="compact"
+                variant="wide"
                 title={course.code}
                 description={
                     <>
