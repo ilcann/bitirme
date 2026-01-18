@@ -48,7 +48,7 @@ const MobileMenu = () => {
         {/* Navbar mobile variant: kendi içinde scroll var */}
         <Navbar
           variant="mobile"
-          onNavigate={() => setIsOpen(false)}
+          onNavigate={closeMenu}
           className="h-[calc(100%-64px)]"
         />
       </SheetContent>

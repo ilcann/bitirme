@@ -5,13 +5,15 @@ interface NavLinkProps extends React.ComponentPropsWithoutRef<'li'> {
   to: string;
   title: string;
   icon?: React.ReactNode;
+  onClick?: () => void;
 }
 
-function NavLink({ title, children, to, icon }: NavLinkProps) {
+function NavLink({ title, children, to, icon, onClick }: NavLinkProps) {
   return (
     <NavigationMenuLink asChild>
       <Link
         to={to}
+        onClick={onClick}
         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
       >
         <div className="flex items-center gap-2 text-sm font-medium leading-none">
