@@ -19,7 +19,7 @@ export function Logo({ size = "md", className }: LogoProps) {
     <Link to="/" className={cn("relative flex items-center justify-center", className)}>
       { theme === "dark" ? (
         <img
-          src={`/assets/matmuh-tr-b.png`}
+          src={`assets/matmuh-tr-b.png`}
           alt="İTÜ Logo"
           className={cn(
             "w-auto drop-shadow-sm p-2",
@@ -28,7 +28,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         />
       ) : 
         <img
-          src={`/assets/matmuh-navy.png`}
+          src={`assets/matmuh-navy.png`}
           alt="İTÜ Logo"
           className={cn(
             "w-auto drop-shadow-sm",

@@ -83,7 +83,10 @@ const router = createBrowserRouter(
         }
       ],
     },
-  ]
+  ],
+  {
+    basename: '/ilcan21/',
+  }
 );
 
 

@@ -35,28 +35,28 @@ const HelpPage = () => {
             icon: BookOpen,
             color: "chart-1",
             gradient: "from-chart-1/5 to-transparent",
-            pdfUrl: "/files/kisasinav_rehberi.pdf"
+            pdfUrl: "files/kisasinav_rehberi.pdf"
         },
         {
             id: "opticalForm",
             icon: ClipboardCheck,
             color: "chart-2",
             gradient: "from-chart-2/5 to-transparent",
-            pdfUrl: "/files/optical_form.pdf"
+            pdfUrl: "files/optical_form.pdf"
         },
         {
             id: "makeupExams",
             icon: Calendar,
             color: "chart-4",
             gradient: "from-chart-4/5 to-transparent",
-            pdfUrl: "/files/mazeret_makeup.pdf"
+            pdfUrl: "files/mazeret_makeup.pdf"
         },
         {
             id: "examAppeals",
             icon: AlertCircle,
             color: "chart-5",
             gradient: "from-chart-5/5 to-transparent",
-            pdfUrl: "/files/itiraz_objection.pdf"
+            pdfUrl: "files/itiraz_objection.pdf"
         }
     ];
 
