@@ -1,4 +1,4 @@
-import { FeaturedCourseCard } from "@/components/common/featured-course-card";
+import { CourseCard } from "@/components/common/course-card";
 import { Button } from "@/components/ui/button";
 import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
@@ -42,19 +42,20 @@ const FeaturedCourses = () => {
         </Button>
       </div>
 
+      {/* Compact Cards Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {featuredCourses.map((course) => (
-          <FeaturedCourseCard
+          <CourseCard
             key={course.id}
             id={course.id}
             code={course.code}
             titleKey={course.titleKey}
             students={course.students}
             color={course.color}
+            variant="compact"
           />
         ))}
       </div>
-
       <Button asChild variant="outline" className="w-full sm:hidden rounded-xl border-2">
         <Link to="/courses">
           {t("home.featured.viewAll")}

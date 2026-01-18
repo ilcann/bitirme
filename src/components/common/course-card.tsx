@@ -3,16 +3,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, FileText, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { cn } from "@/lib/utils";
 
-type FeaturedCourseCardProps = {
+type CourseCardProps = {
   id: string;
   code: string;
   titleKey: string;
   students: number;
   color: string;
+  variant?: "compact" | "wide";
 };
 
-export function FeaturedCourseCard({ id, code, titleKey, students, color }: FeaturedCourseCardProps) {
+export function CourseCard({ id, code, titleKey, students, color, variant = "compact" }: CourseCardProps) {
   const { t } = useTranslation();
 
   // Map color names to actual Tailwind classes
@@ -61,12 +63,78 @@ export function FeaturedCourseCard({ id, code, titleKey, students, color }: Feat
 
   const colors = colorClasses[color as keyof typeof colorClasses] || colorClasses['chart-1'];
 
+  if (variant === "wide") {
+    return (
+      <Card className={cn(
+        "group relative rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden",
+        colors.hoverBorder
+      )}>
+        {/* Gradient background overlay */}
+        <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
+        
+        <CardContent className="relative p-6">
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Left: Icon & Course Info */}
+            <div className="flex items-start gap-4 flex-1 min-w-0">
+              <div className={`shrink-0 p-3 rounded-2xl ${colors.bgLight} transition-transform group-hover:scale-110`}>
+                <BookOpen className={`h-6 w-6 ${colors.text}`} />
+              </div>
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="font-bold text-xl group-hover:text-primary transition-colors">
+                  {code}
+                </h3>
+                <p className="text-base text-muted-foreground line-clamp-2">
+                  {t(titleKey)}
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span className="font-medium">{students}</span>
+                    <span>{t("home.featured.students")}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex sm:flex-col gap-2 sm:min-w-40">
+              <Button 
+                asChild 
+                size="default" 
+                className="flex-1 sm:w-full rounded-lg font-medium"
+              >
+                <Link to={`/courses/${id}`}>
+                  {t("home.featured.open")}
+                </Link>
+              </Button>
+              <Button 
+                asChild 
+                size="default" 
+                variant="outline" 
+                className="flex-1 sm:w-full rounded-lg font-medium"
+              >
+                <Link to={`/courses/${id}/materials`}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  {t("home.featured.materials")}
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Compact variant (default)
   return (
-    <Card className={`group relative rounded-2xl border-2 transition-all hover:shadow-xl ${colors.hoverBorder} overflow-hidden`}>
+    <Card className={cn(
+      "group relative rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden",
+      colors.hoverBorder
+    )}>
       {/* Gradient background overlay */}
       <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
       
-      <CardContent className="relative p-4 space-y-3 py-2">
+      <CardContent className="relative p-4 space-y-4 py-2">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
