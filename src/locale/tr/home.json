@@ -49,11 +49,6 @@
         "title": "Son Duyurular",
         "description": "Tüm duyurular sayfasında arama ve filtreleme yapabilirsin",
         "viewAll": "Tüm Duyurular",
-        "filter": "Duyuruları Filtrele",
-        "midterm": "Vize sınavı programı yayınlandı",
-        "officeHours": "Ofis saatleri güncellendi",
-        "newMaterials": "Yeni ders materyalleri eklendi",
-        "viewTheAnnouncement": "Duyuruyu Görüntüle",
-        "new": "Yeni"
+        "filter": "Duyuruları Filtrele"
     }
 }

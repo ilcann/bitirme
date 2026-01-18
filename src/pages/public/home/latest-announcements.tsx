@@ -1,12 +1,20 @@
 import { AnnouncementCard } from "@/components/common/announcement-card";
 import { Button } from "@/components/ui/button";
-import { MockLatestAnnouncements } from "@/mock/latest-announcements";
+import { MockAnnouncements } from "@/mock/announcements";
 import { ArrowRight, Bell } from "lucide-react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 const LatestAnnouncements = () => {
   const { t } = useTranslation();
+
+  // Get latest 3 announcements sorted by date (newest first)
+  const latestAnnouncements = React.useMemo(() => {
+    return [...MockAnnouncements]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 3);
+  }, []);
 
   return (
     <section className="space-y-6">
@@ -31,7 +39,7 @@ const LatestAnnouncements = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {MockLatestAnnouncements.map((a) => (
+        {latestAnnouncements.map((a) => (
           <AnnouncementCard
             key={a.id}
             id={a.id}

@@ -6,5 +6,21 @@
   "detail": {
     "title": "Announcement Detail",
     "description": "View detailed information about this announcement"
-  }
+  },
+  "titles": {
+    "midterm": "Midterm exam schedule published",
+    "officeHours": "Office hours updated",
+    "projectDeadline": "Project deadline approaching",
+    "newMaterials": "New course materials added",
+    "labSession": "Laboratory session announcement",
+    "examResults": "Exam results published",
+    "lectureCancel": "Lecture cancelled",
+    "makeupExam": "Makeup exam announcement",
+    "homeworkSubmission": "Homework submission reminder",
+    "guestLecture": "Guest speaker seminar",
+    "libraryAccess": "Library access information",
+    "studyGroup": "Study group announcement"
+  },
+  "viewTheAnnouncement": "View Announcement",
+  "new": "New"
 }

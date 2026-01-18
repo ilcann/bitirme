@@ -24,7 +24,7 @@ export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: Announ
                 <div className="flex items-center gap-2">
                     {isNew && (
                     <Badge className="bg-chart-5 hover:bg-chart-5 text-primary-foreground text-[0.625rem] px-1.5 py-0">
-                        {t("home.announcements.new")}
+                        {t("announcements:new")}
                     </Badge>
                     )}
                     <Badge variant="outline" className="font-mono text-xs">
@@ -47,7 +47,7 @@ export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: Announ
         <CardContent className="pt-0">
             <Button asChild variant="ghost" size="sm" className="w-full justify-between px-0 text-primary hover:bg-transparent group/btn">
                 <Link to={`/announcements/${id}`}>
-                    {t("home.announcements.viewTheAnnouncement")}
+                    {t("announcements.viewTheAnnouncement")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
             </Button>

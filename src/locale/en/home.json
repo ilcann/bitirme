@@ -49,11 +49,6 @@
         "title": "Recent Announcements",
         "description": "Use search and filters on the announcements page",
         "viewAll": "All Announcements",
-        "filter": "Filter Announcements",
-        "midterm": "Midterm exam schedule published",
-        "officeHours": "Office hours updated",
-        "newMaterials": "New course materials added",
-        "viewTheAnnouncement": "View Announcement",
-        "new": "New"
+        "filter": "Filter Announcements"
     }
 }
