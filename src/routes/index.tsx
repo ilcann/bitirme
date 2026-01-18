@@ -1,16 +1,20 @@
 import { createBrowserRouter } from "react-router";
-import HomePage from "@/pages/public/home";
-import NotFoundedPage from "@/pages/errors/not-founded";
-import CourseOverviewPage from "@/pages/public/courses/course";
-import CourseInfoPage from "@/pages/public/courses/course/info";
-import AnnouncementsPage from "@/pages/public/announcements";
-import HelpPage from "@/pages/public/help";
-import AttendancePage from "@/pages/protected/me/attendance";
-import GradesPage from "@/pages/protected/me/grades";
-import MyDashboardPage from "@/pages/protected/me/dashboard";
-import CourseMaterialsPage from "@/pages/public/courses/course/materials";
+import { lazy } from "react";
 import MainLayout from "@/pages/layout";
-import CoursesPage from "@/pages/public/courses";
+import SuspenseWrapper from "@/components/common/suspence-wrapper";
+
+const HomePage = lazy(() => import("@/pages/public/home"));
+const NotFoundedPage = lazy(() => import("@/pages/errors/not-founded"));
+const CourseOverviewPage = lazy(() => import("@/pages/public/courses/course"));
+const CourseInfoPage = lazy(() => import("@/pages/public/courses/course/info"));
+const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/materials"));
+const AnnouncementsPage = lazy(() => import("@/pages/public/announcements"));
+const HelpPage = lazy(() => import("@/pages/public/help"));
+const AttendancePage = lazy(() => import("@/pages/protected/me/attendance"));
+const GradesPage = lazy(() => import("@/pages/protected/me/grades"));
+const MyDashboardPage = lazy(() => import("@/pages/protected/me/dashboard"));
+const CoursesPage = lazy(() => import("@/pages/public/courses"));
+
 
 const router = createBrowserRouter(
   [
@@ -20,29 +24,29 @@ const router = createBrowserRouter(
       children: [
         {
           index: true,
-          element: <HomePage />,
+          element: <SuspenseWrapper><HomePage /></SuspenseWrapper>,
         },
         {
           path: "courses",
           children: [
             {
               index: true,
-              element: <CoursesPage />,
+              element: <SuspenseWrapper><CoursesPage /></SuspenseWrapper>,
             },
             {
               path: ":courseId",
               children: [
                 {
                   index: true,
-                  element: <CourseOverviewPage />,
+                  element: <SuspenseWrapper><CourseOverviewPage /></SuspenseWrapper>,
                 },
                 {
                   path: "materials",
-                  element: <CourseMaterialsPage />,
+                  element: <SuspenseWrapper><CourseMaterialsPage /></SuspenseWrapper>,
                 },
                 {
                   path: "info",
-                  element: <CourseInfoPage />
+                  element: <SuspenseWrapper><CourseInfoPage /></SuspenseWrapper>
                 }
               ]
             }
@@ -53,29 +57,29 @@ const router = createBrowserRouter(
           children: [
             {
               index: true,
-              element: <MyDashboardPage />,
+              element: <SuspenseWrapper><MyDashboardPage /></SuspenseWrapper>,
             },
             {
               path: "grades",
-              element: <GradesPage />,
+              element: <SuspenseWrapper><GradesPage /></SuspenseWrapper>,
             },
             {
               path: "attendance",
-              element: <AttendancePage />,
+              element: <SuspenseWrapper><AttendancePage /></SuspenseWrapper>,
             }
           ]
         },
         {
           path: "announcements",
-          element: <AnnouncementsPage />,
+          element: <SuspenseWrapper><AnnouncementsPage /></SuspenseWrapper>,
         },
         {
           path: "help",
-          element: <HelpPage />,
+          element: <SuspenseWrapper><HelpPage /></SuspenseWrapper>,
         },
         {
           path: "*",
-          element: <NotFoundedPage />,
+          element: <SuspenseWrapper><NotFoundedPage /></SuspenseWrapper>,
         }
       ],
     },
