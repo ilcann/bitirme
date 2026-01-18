@@ -1,0 +1,18 @@
+{
+  "list": {
+    "title": "Dersler",
+    "description": "Mevcut derslere göz atın ve keşfedin"
+  },
+  "overview": {
+    "title": "Ders Özeti",
+    "description": "Ders içeriği ve yapısına genel bakış"
+  },
+  "info": {
+    "title": "Ders Bilgileri",
+    "description": "Bu ders hakkında detaylı bilgiler"
+  },
+  "materials": {
+    "title": "Ders Materyalleri",
+    "description": "Ders materyallerine ve kaynaklara erişin"
+  }
+}

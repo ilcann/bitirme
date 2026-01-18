@@ -1,0 +1,10 @@
+{
+  "not_found": {
+    "title": "404 - Page Not Found",
+    "description": "The page you are looking for could not be found."
+  },
+  "unauthorized": {
+    "title": "401 - Unauthorized Access",
+    "description": "You do not have permission to access this page."
+  }
+}

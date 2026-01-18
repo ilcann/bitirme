@@ -1,0 +1,14 @@
+{
+  "dashboard": {
+    "title": "Kontrol Panelim",
+    "description": "Kişiselleştirilmiş kontrol paneliniz ve genel bakış"
+  },
+  "attendance": {
+    "title": "Devam",
+    "description": "Devam kayıtlarınızı ve istatistiklerinizi görüntüleyin"
+  },
+  "grades": {
+    "title": "Notlar",
+    "description": "Notlarınızı ve akademik performansınızı kontrol edin"
+  }
+}

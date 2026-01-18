@@ -1,0 +1,10 @@
+{
+  "list": {
+    "title": "Duyurular",
+    "description": "En son haberler ve duyurulardan haberdar olun"
+  },
+  "detail": {
+    "title": "Duyuru Detayı",
+    "description": "Bu duyuru hakkında detaylı bilgileri görüntüleyin"
+  }
+}

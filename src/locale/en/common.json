@@ -22,6 +22,10 @@
         "dark": "Dark",
         "system": "System"
     },
+    "under_construction": {
+        "title": "Under Construction",
+        "description": "This page is currently being designed. Please check back soon!"
+    },
     "nav": {
         "courses": {
             "title": "Courses",

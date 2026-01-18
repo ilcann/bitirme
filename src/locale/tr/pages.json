@@ -1,0 +1,68 @@
+{
+  "errors": {
+    "not_found": {
+      "title": "404 - Sayfa Bulunamadı",
+      "description": "Aradığınız sayfa bulunamadı."
+    },
+    "unauthorized": {
+      "title": "401 - Yetkisiz Erişim",
+      "description": "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+    }
+  },
+  "home": {
+    "title": "Ana Sayfa",
+    "description": "Öğrenme platformumuza hoş geldiniz"
+  },
+  "announcements": {
+    "list": {
+      "title": "Duyurular",
+      "description": "En son haberler ve duyurulardan haberdar olun"
+    },
+    "detail": {
+      "title": "Duyuru Detayı",
+      "description": "Bu duyuru hakkında detaylı bilgileri görüntüleyin"
+    }
+  },
+  "courses": {
+    "list": {
+      "title": "Dersler",
+      "description": "Mevcut derslere göz atın ve keşfedin"
+    },
+    "overview": {
+      "title": "Ders Özeti",
+      "description": "Ders içeriği ve yapısına genel bakış"
+    },
+    "info": {
+      "title": "Ders Bilgileri",
+      "description": "Bu ders hakkında detaylı bilgiler"
+    },
+    "materials": {
+      "title": "Ders Materyalleri",
+      "description": "Ders materyallerine ve kaynaklara erişin"
+    }
+  },
+  "help": {
+    "main": {
+      "title": "Yardım ve Destek",
+      "description": "Sorularınıza cevap bulun ve yardım alın"
+    },
+    "exams": {
+      "title": "Sınav Bilgileri",
+      "description": "Sınavlar ve programlar hakkında önemli bilgiler"
+    }
+  },
+  "me": {
+    "dashboard": {
+      "title": "Kontrol Panelim",
+      "description": "Kişiselleştirilmiş kontrol paneliniz ve genel bakış"
+    },
+    "attendance": {
+      "title": "Devam",
+      "description": "Devam kayıtlarınızı ve istatistiklerinizi görüntüleyin"
+    },
+    "grades": {
+      "title": "Notlar",
+      "description": "Notlarınızı ve akademik performansınızı kontrol edin"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "dashboard": {
+    "title": "My Dashboard",
+    "description": "Your personalized dashboard and overview"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "description": "View your attendance records and statistics"
+  },
+  "grades": {
+    "title": "Grades",
+    "description": "Check your grades and academic performance"
+  }
+}

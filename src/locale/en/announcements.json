@@ -1,0 +1,10 @@
+{
+  "list": {
+    "title": "Announcements",
+    "description": "Stay updated with the latest news and announcements"
+  },
+  "detail": {
+    "title": "Announcement Detail",
+    "description": "View detailed information about this announcement"
+  }
+}

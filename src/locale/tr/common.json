@@ -22,6 +22,10 @@
         "dark": "Koyu",
         "system": "Sistem"
     },
+    "under_construction": {
+        "title": "Yapım Aşamasında",
+        "description": "Bu sayfa şu anda tasarlanıyor. Lütfen daha sonra tekrar kontrol edin!"
+    },
     "nav": {
         "courses": {
             "title": "Kurslar",

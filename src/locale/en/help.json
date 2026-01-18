@@ -1,0 +1,10 @@
+{
+  "main": {
+    "title": "Help & Support",
+    "description": "Find answers to your questions and get assistance"
+  },
+  "exams": {
+    "title": "Exam Information",
+    "description": "Important information about exams and schedules"
+  }
+}

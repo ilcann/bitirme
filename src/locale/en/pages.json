@@ -1,0 +1,68 @@
+{
+  "errors": {
+    "not_found": {
+      "title": "404 - Page Not Found",
+      "description": "The page you are looking for could not be found."
+    },
+    "unauthorized": {
+      "title": "401 - Unauthorized Access",
+      "description": "You do not have permission to access this page."
+    }
+  },
+  "home": {
+    "title": "Home",
+    "description": "Welcome to our learning platform"
+  },
+  "announcements": {
+    "list": {
+      "title": "Announcements",
+      "description": "Stay updated with the latest news and announcements"
+    },
+    "detail": {
+      "title": "Announcement Detail",
+      "description": "View detailed information about this announcement"
+    }
+  },
+  "courses": {
+    "list": {
+      "title": "Courses",
+      "description": "Browse and explore available courses"
+    },
+    "overview": {
+      "title": "Course Overview",
+      "description": "Overview of course content and structure"
+    },
+    "info": {
+      "title": "Course Information",
+      "description": "Detailed information about this course"
+    },
+    "materials": {
+      "title": "Course Materials",
+      "description": "Access course materials and resources"
+    }
+  },
+  "help": {
+    "main": {
+      "title": "Help & Support",
+      "description": "Find answers to your questions and get assistance"
+    },
+    "exams": {
+      "title": "Exam Information",
+      "description": "Important information about exams and schedules"
+    }
+  },
+  "me": {
+    "dashboard": {
+      "title": "My Dashboard",
+      "description": "Your personalized dashboard and overview"
+    },
+    "attendance": {
+      "title": "Attendance",
+      "description": "View your attendance records and statistics"
+    },
+    "grades": {
+      "title": "Grades",
+      "description": "Check your grades and academic performance"
+    }
+  }
+}

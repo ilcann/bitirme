@@ -1,0 +1,10 @@
+{
+  "not_found": {
+    "title": "404 - Sayfa Bulunamadı",
+    "description": "Aradığınız sayfa bulunamadı."
+  },
+  "unauthorized": {
+    "title": "401 - Yetkisiz Erişim",
+    "description": "Bu sayfaya erişim yetkiniz bulunmamaktadır."
+  }
+}
