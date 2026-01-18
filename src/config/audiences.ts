@@ -3,9 +3,9 @@ export const audiences = {
     key: 'department',
     translationKey: 'common.audience.department',
   },
-  pool: {
-    key: 'pool',
-    translationKey: 'common.audience.pool',
+  common: {
+    key: 'common',
+    translationKey: 'common.audience.common',
   },
 } as const;
 

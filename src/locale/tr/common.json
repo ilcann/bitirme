@@ -13,7 +13,7 @@
     "change_language": "Dili Değiştir",
     "audience": {
         "department": "Matematik Mühendisliği Öğrencileri",
-        "pool": "Diğer Mühendislik Öğrencileri"
+        "common": "Diğer Mühendislik Öğrencileri"
     },
     "audience_toggle": "Hedef Kitle",
     "theme_toggle": {
@@ -28,19 +28,19 @@
     },
     "nav": {
         "courses": {
-            "title": "Kurslar",
+            "title": "Dersler",
             "elements": {
                 "catalog": {
-                    "title": "Kurs Kataloğu",
-                    "description": "Kurslara göz atın ve kaydolun"
+                    "title": "Ders Kataloğu",
+                    "description": "Derslere göz atın ve kaydolun"
                 },
                 "info": {
-                    "title": "Kurs Bilgileri",
-                    "description": "Detaylı kurs bilgilerini görüntüleyin"
+                    "title": "Ders Bilgileri",
+                    "description": "Detaylı ders bilgilerini görüntüleyin"
                 },
                 "materials": {
-                    "title": "Kurs Materyalleri",
-                    "description": "Kurs materyallerine ve kaynaklara erişin"
+                    "title": "Ders Materyalleri",
+                    "description": "Ders materyallerine ve kaynaklara erişin"
                 }
             }
         },
@@ -48,14 +48,14 @@
             "title": "Benim Alanım",
             "elements": {
                 "registered_courses": {
-                    "title": "Kayıtlı Kurslar",
-                    "description": "Kayıtlı kurslarınızı görüntüleyin ve yönetin"
+                    "title": "Kayıtlı Dersler",
+                    "description": "Kayıtlı derslerinizi görüntüleyin"
                 },
                 "notes": {
                     "title": "Notlarım",
-                    "description": "Notlarınızı görüntüleyin ve yönetin"
+                    "description": "Notlarınızı görüntüleyin"
                 },
-                "attendance": {
+                "attendance": { 
                     "title": "Yoklama",
                     "description": "Yoklama kayıtlarınızı kontrol edin"
                 }

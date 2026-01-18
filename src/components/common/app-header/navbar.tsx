@@ -40,7 +40,7 @@ const Navbar = ({ variant, onNavigate, className }: NavbarProps) => {
                 <NavigationMenuItem>
                     <NavLink 
                         to="/courses"
-                        title={t('nav.courses.title')}
+                        title={t('common.nav.courses.title')}
                         icon={<BookOpen className="h-4 w-4" />}
                         onClick={onNavigate}
                     />
@@ -50,7 +50,7 @@ const Navbar = ({ variant, onNavigate, className }: NavbarProps) => {
                 <NavigationMenuItem>
                     <NavLink
                         to="/announcements"
-                        title={t('nav.announcements.title')}
+                        title={t('common.nav.announcements.title')}
                         icon={<Bell className="h-4 w-4" />}
                         onClick={onNavigate}
                     />
@@ -60,7 +60,7 @@ const Navbar = ({ variant, onNavigate, className }: NavbarProps) => {
                 <NavigationMenuItem>
                     <NavLink
                         to="/help"
-                        title={t('nav.help.title')}
+                        title={t('common.nav.help.title')}
                         icon={<HelpCircle className="h-4 w-4" />}
                         onClick={onNavigate}
                     />

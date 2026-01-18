@@ -1,58 +1,69 @@
 {
     "title": "Ana Sayfa",
-    "description": "Öğrenme platformumuza hoş geldiniz",
+    "description": "Matematik Bölümü Ders Yönetim Sistemi",
     "hero": {
-        "badge": "Ders Yönetim Sistemi",
-        "title": "Ders sayfaları: Müfredat • Materyaller • Sınavlar • Duyurular",
-        "description": "Bir dersi seç; dersin kendi sayfasında müfredat, çalışma materyali ve sınav bilgilerine hızlıca ulaş. Duyurular hem genel hem ders bazlı filtrelenebilir.",
+        "badge": {
+            "common": "MAT Havuz Dersleri",
+            "department": "MAT Bölüm Dersleri"
+        },
+        "title": "Müfredat • Materyaller • Sınavlar • Duyurular",
+        "description": "Bir ders seç, sayfasında müfredat, çalışma materyali ve sınav bilgilerine anında ulaş. Duyuruları genel veya ders bazlı filtrele.",
         "activeView": "Aktif görünüm",
-        "viewHint": "Dersler sayfası bu görünüme göre filtrelenir"
+        "viewHint": "Dersler bu görünüme göre filtrelenir"
     },
     "search": {
-      "placeholder": "MAT103E, MAT471E, Calculus...",
-      "button": "Ara"
+        "placeholder": "MAT103E, MAT471E, Calculus...",
+        "button": "Ders Ara"
     },
     "actions": {
-      "courses": "Dersler",
-      "announcements": "Duyurular",
-      "rules": "Kurallar"
+        "courses": "Dersler",
+        "announcements": "Duyurular",
+        "rules": "Kurallar ve Politikalar"
+    },
+    "stats": {
+        "courses": "Aktif Ders",
+        "announcements": "Yeni Duyuru",
+        "materials": "Materyal"
     },
     "notice": {
-      "pool": {
-        "title": "MAT Havuz Dersleri",
-        "line1": "MAT Havuz dersleri (MAT 103/E, 104/E) ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Kayıtlı olduğunuz dersin öğretim elemanı, ayrıca Moodle veya Ninova'yı da kullanabilir.",
-        "line2": "MAT 201/E, 202/E, 210/E, 261/E, 271/E, 281/E dersleri Matematik Bölümü tarafından verilmemektedir. Bu derslerle ilgili sorular veya istekler dersi açan bölüme yöneltilmelidir."
-      },
-      "department": {
-        "title": "MAT Bölümü",
-        "line1": "MAT ve MATE öğrencileri ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Kayıtlı olduğunuz dersin öğretim elemanı, ayrıca Ninova'yı da kullanabilir.",
-        "line2": "MAT 103/E, 104/E havuz dersleri sitesi için",
-        "poolLink": "tıklayınız"
-      }
+        "common": {
+            "title": "MAT Havuz Dersleri Hakkında",
+            "line1": "MAT Havuz dersleri (MAT 103/E, 104/E) ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Dersin öğretim elemanı ayrıca Moodle veya Ninova kullanabilir.",
+            "line2": "MAT 201/E, 202/E, 210/E, 261/E, 271/E, 281/E dersleri Matematik Bölümü tarafından verilmemektedir.",
+            "changeAudience": "Mat bölümü dersleri için üst menüde bulunan ⇆ simgesini kullanarak geçiş yapabilirsiniz"
+        },
+        "department": {
+            "title": "MAT Bölümü Öğrencileri",
+            "line1": "MAT ve MATE öğrencileri ile ilgili genel duyurular bu site üzerinden yapılmaktadır. Dersin öğretim elemanı ayrıca Ninova kullanabilir.",
+            "line2": "",
+            "changeAudience": "Havuz dersleri için üst menüde bulunan ⇆ simgesini kullanarak geçiş yapabilirsiniz"
+        }
     },
     "featured": {
-      "title": "Öne Çıkan Dersler",
-      "description": "Aktif görünümüne göre seçilmiş hızlı girişler.",
-      "viewAll": "Tüm dersleri gör",
-      "open": "Aç",
-      "materials": "Materyaller"
+        "title": "Öne Çıkan Dersler",
+        "description": "Görünümüne göre seçilmiş popüler dersler",
+        "viewAll": "Tüm Dersleri Gör",
+        "open": "Derse Git",
+        "materials": "Materyaller",
+        "students": "öğrenci"
     },
     "announcements": {
-      "title": "Son Duyurular",
-      "description": "Tüm duyurular sayfasında arama ve ders filtresi kullanabilirsin.",
-      "viewAll": "Tüm duyurular",
-      "filter": "Duyuruları filtrele",
-      "midterm": "Vize sınavı programı yayınlandı",
-      "officeHours": "Ofis saatleri güncellendi",
-      "newMaterials": "Yeni materyaller eklendi",
-      "viewTheAnnouncement": "Duyuruya git"
+        "title": "Son Duyurular",
+        "description": "Tüm duyurular sayfasında arama ve filtreleme yapabilirsin",
+        "viewAll": "Tüm Duyurular",
+        "filter": "Duyuruları Filtrele",
+        "midterm": "Vize sınavı programı yayınlandı",
+        "officeHours": "Ofis saatleri güncellendi",
+        "newMaterials": "Yeni ders materyalleri eklendi",
+        "viewTheAnnouncement": "Duyuruyu Görüntüle",
+        "new": "Yeni"
     },
     "rules": {
-      "title": "Kurallar",
-      "description": "Sınav, devamsızlık ve iletişim kuralları için tek referans noktası.",
-      "item1": "Make-up ve sınav politikaları",
-      "item2": "Devamsızlık limitleri ve uyarılar",
-      "item3": "Duyuru/iletişim akışı",
-      "button": "Kuralları oku"
+        "title": "Kurallar ve Politikalar",
+        "description": "Sınav, devamsızlık ve iletişim kuralları için tek kaynak",
+        "item1": "Telafi sınavı ve make-up politikaları",
+        "item2": "Devamsızlık limitleri ve yaptırımlar",
+        "item3": "Duyuru ve iletişim kanalları",
+        "button": "Tüm Kuralları Oku"
     }
 }
