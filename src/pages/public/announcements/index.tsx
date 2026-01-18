@@ -1,15 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { AnnouncementCard } from "@/components/common/announcement-card";
 import { AnnouncementCardSkeleton } from "@/components/common/announcement-card-skeleton";
+import { CourseFilter } from "@/components/common/course-filter";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Calendar, Filter, Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Bell, Calendar, Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/providers/language-provider";
 import { useAudience } from "@/providers/audience-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useAnnouncements } from "@/hooks/use-announcements";
-import { useMemo } from "react";
-import { MockCourses } from "@/mock/courses";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -57,13 +56,6 @@ const AnnouncementsPage = () => {
         initialLimit: 5
     });
 
-    // Get available courses for filters
-    const availableCourses = useMemo(() => {
-        const allAnnouncements = announcements;
-        const courseIds = [...new Set(allAnnouncements.map(a => a.courseId))];
-        return MockCourses.filter(c => courseIds.includes(c.id) && c.audience === audience);
-    }, [announcements, audience]);
-
     const newCount = announcements.filter(a => a.isNew).length;
 
     return (
@@ -107,32 +99,11 @@ const AnnouncementsPage = () => {
                         </Button>
 
                         {/* Course Filter */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="rounded-xl gap-2">
-                                    <Filter className="h-4 w-4" />
-                                    {t('announcements.list.courses')}
-                                    {selectedCourses.length > 0 && (
-                                        <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                                            {selectedCourses.length}
-                                        </Badge>
-                                    )}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel>{t('announcements.list.selectCourses')}</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {availableCourses.map(course => (
-                                    <DropdownMenuCheckboxItem
-                                        key={course.id}
-                                        checked={selectedCourses.includes(course.id)}
-                                        onCheckedChange={() => toggleCourse(course.id)}
-                                    >
-                                        <span className="font-mono text-xs mr-2">{course.code}</span>
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <CourseFilter
+                            audience={audience}
+                            selectedCourses={selectedCourses}
+                            onToggleCourse={toggleCourse}
+                        />
 
                         {/* Date Filter */}
                         <DropdownMenu>

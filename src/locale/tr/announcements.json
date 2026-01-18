@@ -7,6 +7,7 @@
     "results": "Sonuç",
     "courses": "Dersler",
     "selectCourses": "Ders Seç",
+    "noCourses": "Ders Bulunamadı",
     "audience": "Hedef Kitle",
     "selectAudience": "Hedef Kitle Seç",
     "allAudiences": "Tüm Duyurular",

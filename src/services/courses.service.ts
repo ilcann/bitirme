@@ -1,5 +1,5 @@
 import { MockCourses } from "@/mock/courses";
-import type { Course } from "@/types/course";
+import type { Course, CompactCourse } from "@/types/course";
 import type { AudienceKey } from "@/config/audiences";
 
 /**
@@ -96,4 +96,34 @@ export const getCourseById = async (courseId: string): Promise<Course | null> =>
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
     return MockCourses.find(course => course.id === courseId) || null;
+};
+
+/**
+ * Get compact course list for filters
+ * Returns all courses in compact format (without students count)
+ * 
+ * @param audience - Filter by audience
+ * @returns Compact course list
+ */
+export const getCoursesCompact = async (audience?: AudienceKey): Promise<CompactCourse[]> => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    let courses = MockCourses;
+
+    // Filter by audience if provided
+    if (audience) {
+        courses = courses.filter(course => course.audience === audience);
+    }
+
+    // Map to compact format and sort by code
+    return courses
+        .map(course => ({
+            id: course.id,
+            code: course.code,
+            title: course.title,
+            color: course.color,
+            audience: course.audience
+        }))
+        .sort((a, b) => a.code.localeCompare(b.code));
 };

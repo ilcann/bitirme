@@ -12,4 +12,15 @@ interface Course {
     audience: AudienceKey;
 }
 
-export type { Course };
+interface CompactCourse {
+    id: string;
+    code: string;
+    title: {
+        tr: string;
+        en: string;
+    };
+    color: string;
+    audience: AudienceKey;
+}
+
+export type { Course, CompactCourse };
