@@ -7,9 +7,10 @@ import type { AudienceKey } from "@/config/audiences";
 interface UseAnnouncementsOptions {
     audience?: AudienceKey;
     initialLimit?: number;
+    courseId?: string;
 }
 
-export const useAnnouncements = ({ audience, initialLimit = 10 }: UseAnnouncementsOptions) => {
+export const useAnnouncements = ({ audience, initialLimit = 10, courseId }: UseAnnouncementsOptions) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [showOnlyNew, setShowOnlyNew] = useState(false);
     const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
@@ -23,11 +24,11 @@ export const useAnnouncements = ({ audience, initialLimit = 10 }: UseAnnouncemen
         offset: currentPage * limit,
         limit,
         search: searchQuery || undefined,
-        courseIds: selectedCourses.length > 0 ? selectedCourses : undefined,
+        courseIds: courseId ? [courseId] : (selectedCourses.length > 0 ? selectedCourses : undefined),
         showOnlyNew,
         dateFilter,
         sortBy: "newest" as const,
-    }), [audience, currentPage, limit, searchQuery, selectedCourses, showOnlyNew, dateFilter]);
+    }), [audience, currentPage, limit, searchQuery, selectedCourses, showOnlyNew, dateFilter, courseId]);
 
     // Fetch announcements with TanStack Query
     const { data, isLoading, isFetching, error } = useQuery({

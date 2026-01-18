@@ -25,6 +25,7 @@ const CoursePage = () => {
     const tabs = [
         { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title') },
         { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title') },
+        { path: `/courses/${courseId}/announcements`, value: 'announcements', label: t('announcements.list.title') },
         { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title') },
     ];
 
