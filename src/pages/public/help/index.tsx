@@ -26,7 +26,7 @@ const HelpPage = () => {
         initial: { opacity: 0, y: 40 },
         whileInView: { opacity: 1, y: 0 },
         viewport: { once: true, margin: "-100px" },
-        transition: { duration: 0.6, ease: "easeOut" }
+        transition: { duration: 0.6, ease: "easeOut" as const }
     };
 
     const helpSections = [
@@ -87,7 +87,7 @@ const HelpPage = () => {
                     <div
                         className="grid grid-cols-1 md:grid-cols-2 gap-6"
                     >
-                        {helpSections.map((section, index) => {
+                        {helpSections.map((section, ) => {
                             const Icon = section.icon;
                             return (
                                 <a 
@@ -95,7 +95,6 @@ const HelpPage = () => {
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="block h-full"
-                                    index={index}
                                 >
                                     <Card className={`group relative rounded-xl border-2 transition-all duration-300 hover:shadow-xl hover:border-${section.color}/40 overflow-hidden h-full cursor-pointer`}>
                                         <div className={`absolute inset-0 bg-linear-to-br ${section.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />

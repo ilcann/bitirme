@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <LanguageProvider>
-        <AudienceProvider defaultAudience="math_engineering" storageKey="user-audience">
+        <AudienceProvider defaultAudience="department" storageKey="user-audience">
           <RouterProvider router={router} />
         </AudienceProvider>
       </LanguageProvider>
