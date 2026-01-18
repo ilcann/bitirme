@@ -30,11 +30,11 @@ export function ThemeToggle( { align = 'end' }: ThemeToggleProps) {
       <MenubarContent align={align}>
         <MenubarItem onClick={() => setTheme("light")} disabled={theme === "light"}>
           <Sun className="h-[1.2rem] w-[1.2rem] transition-all" />
-          {t("theme_toggle.light")}
+          {t("common.theme_toggle.light")}
         </MenubarItem>
         <MenubarItem onClick={() => setTheme("dark")} disabled={theme === "dark"}>
           <Moon className="h-[1.2rem] w-[1.2rem] transition-all" />
-          {t("theme_toggle.dark")}
+          {t("common.theme_toggle.dark")}
         </MenubarItem>
       </MenubarContent>
     </MenubarMenu>
