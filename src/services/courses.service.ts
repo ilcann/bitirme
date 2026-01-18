@@ -3,27 +3,90 @@ import type { Course } from "@/types/course";
 import type { AudienceKey } from "@/config/audiences";
 
 /**
- * Course Service
+ * Courses Service
  * Handles all course-related API operations
  * Currently uses mock data, ready for API integration
  */
 
-/**
- * Get all courses
- */
-export const getAllCourses = async (): Promise<Course[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return MockCourses;
-};
+export type CourseSortBy = "students" | "code" | "title";
+
+export interface GetCoursesParams {
+    audience?: AudienceKey;
+    offset?: number;
+    limit?: number;
+    search?: string;
+    sortBy?: CourseSortBy;
+}
+
+export interface GetCoursesResponse {
+    data: Course[];
+    total: number;
+    offset: number;
+    limit: number;
+    hasMore: boolean;
+}
 
 /**
- * Get courses filtered by audience
+ * Get courses with pagination, filtering, and sorting
+ * Ready for TanStack Query pagination
+ * 
+ * @param params - Query parameters
+ * @returns Paginated courses response
  */
-export const getCoursesByAudience = async (audience: AudienceKey): Promise<Course[]> => {
+export const getCourses = async (params: GetCoursesParams): Promise<GetCoursesResponse> => {
+    const {
+        audience,
+        offset = 0,
+        limit = 20,
+        search,
+        sortBy = "students"
+    } = params;
+
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    return MockCourses.filter(course => course.audience === audience);
+
+    let courses = MockCourses;
+
+    // Filter by audience if provided
+    if (audience) {
+        courses = courses.filter(course => course.audience === audience);
+    }
+
+    // Search in code and title
+    if (search && search.trim()) {
+        const searchQuery = search.toLowerCase();
+        courses = courses.filter(course => 
+            course.code.toLowerCase().includes(searchQuery) ||
+            course.title.tr.toLowerCase().includes(searchQuery) ||
+            course.title.en.toLowerCase().includes(searchQuery)
+        );
+    }
+
+    // Sort courses
+    const sortedCourses = [...courses].sort((a, b) => {
+        switch (sortBy) {
+            case "students":
+                return b.students - a.students;
+            case "code":
+                return a.code.localeCompare(b.code);
+            case "title":
+                return a.title.en.localeCompare(b.title.en);
+            default:
+                return 0;
+        }
+    });
+
+    const total = sortedCourses.length;
+    const paginatedCourses = sortedCourses.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    return {
+        data: paginatedCourses,
+        total,
+        offset,
+        limit,
+        hasMore
+    };
 };
 
 /**
@@ -33,31 +96,4 @@ export const getCourseById = async (courseId: string): Promise<Course | null> =>
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
     return MockCourses.find(course => course.id === courseId) || null;
-};
-
-/**
- * Search courses by query
- */
-export const searchCourses = async (query: string, audience?: AudienceKey): Promise<Course[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    let courses = MockCourses;
-    
-    // Filter by audience if provided
-    if (audience) {
-        courses = courses.filter(course => course.audience === audience);
-    }
-    
-    // Search in code and title
-    if (query.trim()) {
-        const searchQuery = query.toLowerCase();
-        courses = courses.filter(course => 
-            course.code.toLowerCase().includes(searchQuery) ||
-            course.title.tr.toLowerCase().includes(searchQuery) ||
-            course.title.en.toLowerCase().includes(searchQuery)
-        );
-    }
-    
-    return courses;
 };

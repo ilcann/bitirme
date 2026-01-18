@@ -1,13 +1,13 @@
 import { CourseCard } from "@/components/common/course-card";
+import { CourseCardSkeleton } from "@/components/common/course-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
-import { useCourseSearch } from "@/hooks/use-course-search";
+import { useCourses } from "@/hooks/use-courses";
 import { useViewMode } from "@/hooks/use-view-mode";
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/common/page-header";
 
@@ -21,10 +21,22 @@ const CoursesPage = () => {
     t('courses.list.description')
   );
 
-  const { searchQuery, setSearchQuery, filteredCourses } = useCourseSearch({
-    courses: MockCourses,
+  const {
+    courses,
+    total,
+    isLoading,
+    isFetching,
+    searchQuery,
+    updateSearch,
+    currentPage,
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
+    goToNextPage,
+    goToPreviousPage,
+  } = useCourses({
     audience,
-    language: lang
+    initialLimit: 9
   });
 
   const { viewMode, setViewMode } = useViewMode();
@@ -47,7 +59,7 @@ const CoursesPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => updateSearch(e.target.value)}
               placeholder={t("home.search.placeholder")}
               className="pl-10 h-11 rounded-xl border-2"
             />
@@ -73,29 +85,70 @@ const CoursesPage = () => {
         {/* Results Count */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {filteredCourses.length} {t("courses.list.resultsFound")}
+            {total} {t("courses.list.resultsFound")}
           </p>
         </div>
 
-        {/* Courses Grid/List */}
-        {filteredCourses.length > 0 ? (
+        {/* Loading State */}
+        {isLoading ? (
           <div className={
             viewMode === "compact"
               ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
               : "space-y-4"
           }>
-            {filteredCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                id={course.id}
-                code={course.code}
-                title={course.title[lang]}
-                students={course.students}
-                color={course.color}
-                variant={viewMode}
-              />
+            {Array.from({ length: 9 }).map((_, index) => (
+              <CourseCardSkeleton key={index} variant={viewMode} />
             ))}
           </div>
+        ) : courses.length > 0 ? (
+          <>
+            <div className={
+              viewMode === "compact"
+                ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                : "space-y-4"
+            }>
+              {courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  id={course.id}
+                  code={course.code}
+                  title={course.title[lang]}
+                  students={course.students}
+                  color={course.color}
+                  variant={viewMode}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4">
+                <div className="text-sm text-muted-foreground">
+                  {t('common.pagination.page', { current: currentPage + 1, total: totalPages })}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={goToPreviousPage}
+                    disabled={!hasPreviousPage || isFetching}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    {t('common.pagination.previous')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={goToNextPage}
+                    disabled={!hasNextPage || isFetching}
+                  >
+                    {t('common.pagination.next')}
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="rounded-full bg-muted p-6 mb-4">
