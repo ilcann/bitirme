@@ -68,7 +68,7 @@ const AnnouncementsDetailPage = () => {
                                                 </Badge>
                                             )}
                                             <span className="text-sm text-muted-foreground">
-                                                {formatRelativeDate(announcement.date, lang)}
+                                                {formatRelativeDate(announcement.date)}
                                             </span>
                                         </div>
                                         <CardTitle className="text-2xl md:text-3xl leading-tight">

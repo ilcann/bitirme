@@ -217,7 +217,7 @@ const AnnouncementsPage = () => {
                                 }
                             }}
                         >
-                            {announcements.map((announcement, index) => (
+                            {announcements.map((announcement, ) => (
                                 <motion.div
                                     key={announcement.id}
                                     variants={{

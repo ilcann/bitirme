@@ -7,7 +7,11 @@
             "department": "MAT Department Courses"
         },
         "title": "Syllabus • Materials • Exams • Announcements",
-        "description": "Select a course and instantly access syllabus, study materials, and exam information. Filter announcements globally or by course.",
+        "description": {
+            "part1": "Select a course and",
+            "highlight": "instantly access",
+            "part2": "syllabus, study materials, and exam information."
+        },
         "activeView": "Active view",
         "viewHint": "Courses are filtered by this view"
     },

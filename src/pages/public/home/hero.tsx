@@ -1,11 +1,14 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { Button } from "@/components/ui/button";
+import { Highlighter } from "@/components/ui/highlighter";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Bell, BookOpen, Megaphone, Scale, Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
+import { Button as CTAButton } from "@/components/ui/moving-border";
 
 type HeroProps = {
     audience: "department" | "common";
@@ -38,10 +41,12 @@ const Hero = ({ audience }: HeroProps) => {
                   ? "bg-chart-4/10 text-chart-4" 
                   : "bg-chart-1/10 text-chart-1"
                 }`}>
-                <Sparkles className="h-4 w-4" />
-                {audience === "department" 
-                  ? t("home.hero.badge.department") 
-                  : t("home.hero.badge.common")}
+                  <Sparkles className="h-4 w-4" />
+                  <AnimatedGradientText>
+                  {audience === "department" 
+                    ? t("home.hero.badge.department") 
+                    : t("home.hero.badge.common")}
+                  </AnimatedGradientText>
                 </div>
               
               <div className="space-y-4">
@@ -49,7 +54,11 @@ const Hero = ({ audience }: HeroProps) => {
                   {t("home.hero.title")}
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                  {t("home.hero.description")}
+                  {t("home.hero.description.part1")}{" "}
+                  <Highlighter action="underline" color="#87CEFA" isView>
+                    {t("home.hero.description.highlight")}
+                  </Highlighter>
+                  . {t("home.hero.description.part2")}
                 </p>
               </div>
 
@@ -99,10 +108,15 @@ const Hero = ({ audience }: HeroProps) => {
                     className="pl-12 h-12 text-base rounded-xl border-2 bg-background transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-                <Button type="submit" size="lg" className="w-full rounded-xl h-12 font-semibold cursor-pointer">
+                <CTAButton 
+                  type="submit" 
+                  containerClassName="w-full h-12"
+                  className="rounded-xl font-semibold cursor-pointer bg-primary/90 border-primary/30"
+                  borderRadius="0.75rem"
+                >
                   {t("home.search.button")}
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                </CTAButton>
               </form>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">

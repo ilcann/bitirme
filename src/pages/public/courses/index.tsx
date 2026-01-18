@@ -148,7 +148,7 @@ const CoursesPage = () => {
                 }
               }}
             >
-              {courses.map((course, index) => (
+              {courses.map((course,) => (
                 <motion.div
                   key={course.id}
                   variants={{

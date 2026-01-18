@@ -7,7 +7,11 @@
             "department": "MAT Bölüm Dersleri"
         },
         "title": "Müfredat • Materyaller • Sınavlar • Duyurular",
-        "description": "Bir ders seç, sayfasında müfredat, çalışma materyali ve sınav bilgilerine anında ulaş. Duyuruları genel veya ders bazlı filtrele.",
+        "description": {
+            "part1": "Bir ders seç, sayfasında müfredat, çalışma materyali ve sınav bilgilerine",
+            "highlight": "anında ulaş",
+            "part2": "."
+        },
         "activeView": "Aktif görünüm",
         "viewHint": "Dersler bu görünüme göre filtrelenir"
     },
