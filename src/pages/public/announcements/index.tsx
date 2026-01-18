@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { AnnouncementCard } from "@/components/common/announcement-card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Calendar, Filter, Search, X } from "lucide-react";
+import { Bell, Calendar, Filter, Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/providers/language-provider";
 import { useAudience } from "@/providers/audience-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
-import { useAnnouncementFilter } from "@/hooks/use-announcement-filter";
+import { useAnnouncements } from "@/hooks/use-announcements";
+import { useMemo } from "react";
+import { MockCourses } from "@/mock/courses";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -17,6 +19,7 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { PageHeader } from "@/components/common/page-header";
+import { Card, CardContent } from "@/components/ui/card";
 
 const AnnouncementsPage = () => {
     const { t } = useTranslation();
@@ -29,20 +32,39 @@ const AnnouncementsPage = () => {
     );
 
     const {
+        announcements,
+        total,
+        currentPage,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+        isLoading,
+        isFetching,
         searchQuery,
-        setSearchQuery,
         showOnlyNew,
-        setShowOnlyNew,
         selectedCourses,
         dateFilter,
-        setDateFilter,
-        availableCourses,
-        filteredAnnouncements,
-        newCount,
         activeFilterCount,
-        handleCourseToggle,
+        updateSearch,
+        updateShowOnlyNew,
+        toggleCourse,
+        updateDateFilter,
+        goToNextPage,
+        goToPreviousPage,
         clearAllFilters,
-    } = useAnnouncementFilter({ lang, audience });
+    } = useAnnouncements({ 
+        audience,
+        initialLimit: 10
+    });
+
+    // Get available courses for filters
+    const availableCourses = useMemo(() => {
+        const allAnnouncements = announcements;
+        const courseIds = [...new Set(allAnnouncements.map(a => a.courseId))];
+        return MockCourses.filter(c => courseIds.includes(c.id) && c.audience === audience);
+    }, [announcements, audience]);
+
+    const newCount = announcements.filter(a => a.isNew).length;
 
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
@@ -64,7 +86,7 @@ const AnnouncementsPage = () => {
                         <Input
                             placeholder={t('announcements.list.search')}
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => updateSearch(e.target.value)}
                             className="pl-10 h-11 rounded-xl border-2"
                         />
                     </div>
@@ -72,7 +94,7 @@ const AnnouncementsPage = () => {
                         {/* New Filter */}
                         <Button
                             variant={showOnlyNew ? "default" : "outline"}
-                            onClick={() => setShowOnlyNew(!showOnlyNew)}
+                            onClick={() => updateShowOnlyNew(!showOnlyNew)}
                             className="rounded-xl gap-2"
                         >
                             <Bell className="h-4 w-4" />
@@ -104,7 +126,7 @@ const AnnouncementsPage = () => {
                                     <DropdownMenuCheckboxItem
                                         key={course.id}
                                         checked={selectedCourses.includes(course.id)}
-                                        onCheckedChange={() => handleCourseToggle(course.id)}
+                                        onCheckedChange={() => toggleCourse(course.id)}
                                     >
                                         <span className="font-mono text-xs mr-2">{course.code}</span>
                                     </DropdownMenuCheckboxItem>
@@ -128,25 +150,25 @@ const AnnouncementsPage = () => {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuCheckboxItem
                                     checked={dateFilter === 'all'}
-                                    onCheckedChange={() => setDateFilter('all')}
+                                    onCheckedChange={() => updateDateFilter('all')}
                                 >
                                     {t('announcements.list.allDates')}
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={dateFilter === 'today'}
-                                    onCheckedChange={() => setDateFilter('today')}
+                                    onCheckedChange={() => updateDateFilter('today')}
                                 >
                                     {t('announcements.list.today')}
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={dateFilter === 'week'}
-                                    onCheckedChange={() => setDateFilter('week')}
+                                    onCheckedChange={() => updateDateFilter('week')}
                                 >
                                     {t('announcements.list.lastWeek')}
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem
                                     checked={dateFilter === 'month'}
-                                    onCheckedChange={() => setDateFilter('month')}
+                                    onCheckedChange={() => updateDateFilter('month')}
                                 >
                                     {t('announcements.list.lastMonth')}
                                 </DropdownMenuCheckboxItem>
@@ -170,26 +192,67 @@ const AnnouncementsPage = () => {
                 {/* Results Count */}
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                        {filteredAnnouncements.length} {t('announcements.list.results')}
+                        {isLoading ? 'Loading...' : `${total} ${t('announcements.list.results')}`}
                     </p>
+                    {isFetching && !isLoading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    )}
                 </div>
 
                 {/* Announcements List */}
-                {filteredAnnouncements.length > 0 ? (
-                    <div className="space-y-4">
-                        {filteredAnnouncements.map((announcement) => (
-                            <AnnouncementCard
-                                key={announcement.id}
-                                id={announcement.id}
-                                courseId={announcement.courseId}
-                                title={announcement.title[lang]}
-                                description={announcement.description[lang]}
-                                date={announcement.date}
-                                isNew={announcement.isNew}
-                                variant="wide"
-                            />
-                        ))}
-                    </div>
+                {isLoading ? (
+                    <Card>
+                        <CardContent className="flex flex-col items-center justify-center py-12">
+                            <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+                            <p className="text-muted-foreground">Loading announcements...</p>
+                        </CardContent>
+                    </Card>
+                ) : announcements.length > 0 ? (
+                    <>
+                        <div className="space-y-4">
+                            {announcements.map((announcement) => (
+                                <AnnouncementCard
+                                    key={announcement.id}
+                                    id={announcement.id}
+                                    courseId={announcement.courseId}
+                                    title={announcement.title[lang]}
+                                    description={announcement.description[lang]}
+                                    date={announcement.date}
+                                    isNew={announcement.isNew}
+                                    variant="wide"
+                                />
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between pt-4">
+                                <div className="text-sm text-muted-foreground">
+                                    Page {currentPage + 1} of {totalPages}
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={goToPreviousPage}
+                                        disabled={!hasPreviousPage || isFetching}
+                                    >
+                                        <ChevronLeft className="h-4 w-4 mr-1" />
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={goToNextPage}
+                                        disabled={!hasNextPage || isFetching}
+                                    >
+                                        Next
+                                        <ChevronRight className="h-4 w-4 ml-1" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <div className="rounded-full bg-muted p-6 mb-4">

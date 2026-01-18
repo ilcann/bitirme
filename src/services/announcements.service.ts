@@ -8,86 +8,119 @@ import type { Announcement } from "@/types/announcement";
  * Currently uses mock data, ready for API integration
  */
 
-/**
- * Get all announcements
- */
-export const getAllAnnouncements = async (): Promise<Announcement[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return MockAnnouncements;
-};
+export type AnnouncementSortBy = "newest" | "oldest";
+export type DateFilter = "all" | "today" | "week" | "month";
+
+export interface GetAnnouncementsParams {
+    audience?: AudienceKey;
+    offset?: number;
+    limit?: number;
+    search?: string;
+    courseIds?: string[];
+    showOnlyNew?: boolean;
+    dateFilter?: DateFilter;
+    sortBy?: AnnouncementSortBy;
+}
+
+export interface GetAnnouncementsResponse {
+    data: Announcement[];
+    total: number;
+    offset: number;
+    limit: number;
+    hasMore: boolean;
+}
 
 /**
- * Get announcements filtered by audience
+ * Get announcements with pagination, filtering, and sorting
+ * Ready for TanStack Query pagination
+ * 
+ * @param params - Query parameters
+ * @returns Paginated announcements response
  */
-export const getAnnouncementsByAudience = async (audience: AudienceKey): Promise<Announcement[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return MockAnnouncements.filter(announcement => announcement.audience === audience);
-};
+export const getAnnouncements = async (params: GetAnnouncementsParams): Promise<GetAnnouncementsResponse> => {
+    const {
+        audience,
+        offset = 0,
+        limit = 10,
+        search,
+        courseIds,
+        showOnlyNew = false,
+        dateFilter = "all",
+        sortBy = "newest"
+    } = params;
 
-/**
- * Get a single announcement by ID
- */
-export const getAnnouncementById = async (announcementId: string): Promise<Announcement | null> => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    return MockAnnouncements.find(announcement => announcement.id === announcementId) || null;
-};
 
-/**
- * Get announcements for a specific course
- */
-export const getAnnouncementsByCourseId = async (courseId: string): Promise<Announcement[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return MockAnnouncements.filter(announcement => announcement.courseId === courseId);
-};
+    let announcements = [...MockAnnouncements];
 
-/**
- * Get only new announcements
- */
-export const getNewAnnouncements = async (audience?: AudienceKey): Promise<Announcement[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    let announcements = MockAnnouncements.filter(announcement => announcement.isNew);
-    
+    // Filter by audience
     if (audience) {
-        announcements = announcements.filter(announcement => announcement.audience === audience);
+        announcements = announcements.filter(a => a.audience === audience);
     }
-    
-    return announcements;
-};
 
-/**
- * Search announcements by query
- */
-export const searchAnnouncements = async (
-    query: string,
-    audience?: AudienceKey
-): Promise<Announcement[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    let announcements = MockAnnouncements;
-    
-    // Filter by audience if provided
-    if (audience) {
-        announcements = announcements.filter(announcement => announcement.audience === audience);
+    // Filter by new
+    if (showOnlyNew) {
+        announcements = announcements.filter(a => a.isNew);
     }
-    
-    // Search in title, description, and courseId
-    if (query.trim()) {
-        const searchQuery = query.toLowerCase();
-        announcements = announcements.filter(announcement => 
-            announcement.title.tr.toLowerCase().includes(searchQuery) ||
-            announcement.title.en.toLowerCase().includes(searchQuery) ||
-            announcement.description.tr.toLowerCase().includes(searchQuery) ||
-            announcement.description.en.toLowerCase().includes(searchQuery) ||
-            announcement.courseId.toLowerCase().includes(searchQuery)
+
+    // Filter by course IDs
+    if (courseIds && courseIds.length > 0) {
+        announcements = announcements.filter(a => courseIds.includes(a.courseId));
+    }
+
+    // Filter by date
+    if (dateFilter !== "all") {
+        const today = new Date("2026-01-18");
+        announcements = announcements.filter(a => {
+            const announcementDate = new Date(a.date);
+            const diffDays = Math.floor((today.getTime() - announcementDate.getTime()) / (1000 * 60 * 60 * 24));
+            
+            if (dateFilter === "today") return diffDays === 0;
+            if (dateFilter === "week") return diffDays <= 7;
+            if (dateFilter === "month") return diffDays <= 30;
+            return true;
+        });
+    }
+
+    // Filter by search query
+    if (search && search.trim()) {
+        const searchQuery = search.toLowerCase();
+        announcements = announcements.filter(a => 
+            a.title.tr.toLowerCase().includes(searchQuery) ||
+            a.title.en.toLowerCase().includes(searchQuery) ||
+            a.description.tr.toLowerCase().includes(searchQuery) ||
+            a.description.en.toLowerCase().includes(searchQuery) ||
+            a.courseId.toLowerCase().includes(searchQuery)
         );
     }
-    
-    return announcements;
+
+    // Sort announcements
+    const sorted = [...announcements].sort((a, b) => {
+        switch (sortBy) {
+            case "newest":
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            case "oldest":
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            default:
+                return 0;
+        }
+    });
+
+    // Get total count
+    const total = sorted.length;
+
+    // Apply pagination
+    const paginatedData = sorted.slice(offset, offset + limit);
+
+    // Check if there are more items
+    const hasMore = offset + limit < total;
+
+    return {
+        data: paginatedData,
+        total,
+        offset,
+        limit,
+        hasMore
+    };
 };
