@@ -66,32 +66,30 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
   if (variant === "wide") {
     return (
       <Card className={cn(
-        "group relative rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden",
+        "group relative rounded-xl border-2 transition-all duration-300 hover:shadow-xl overflow-hidden",
         colors.hoverBorder
       )}>
         {/* Gradient background overlay */}
-        <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
+        <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
         
         <CardContent className="relative p-6">
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Left: Icon & Course Info */}
             <div className="flex items-start gap-4 flex-1 min-w-0">
-              <div className={`shrink-0 p-3 rounded-2xl ${colors.bgLight} transition-transform group-hover:scale-110`}>
+              <div className={`shrink-0 p-3 rounded-xl ${colors.bgLight} transition-transform duration-300 group-hover:scale-110`}>
                 <BookOpen className={`h-6 w-6 ${colors.text}`} />
               </div>
-              <div className="flex-1 min-w-0 space-y-2">
-                <h3 className="font-bold text-xl group-hover:text-primary transition-colors">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors duration-200 mb-2">
                   {code}
                 </h3>
-                <p className="text-base text-muted-foreground line-clamp-2">
+                <p className="text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3">
                   {title}
                 </p>
-                <div className="flex items-center gap-2 pt-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    <span className="font-medium">{students}</span>
-                    <span>{t("home.featured.students")}</span>
-                  </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span className="font-medium">{students}</span>
+                  <span>{t("home.featured.students")}</span>
                 </div>
               </div>
             </div>
@@ -101,7 +99,7 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
               <Button 
                 asChild 
                 size="default" 
-                className="flex-1 sm:w-full rounded-lg font-medium"
+                className="flex-1 sm:w-full rounded-lg font-medium h-10"
               >
                 <Link to={`/courses/${id}`}>
                   {t("home.featured.open")}
@@ -111,7 +109,7 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
                 asChild 
                 size="default" 
                 variant="outline" 
-                className="flex-1 sm:w-full rounded-lg font-medium"
+                className="flex-1 sm:w-full rounded-lg font-medium h-10"
               >
                 <Link to={`/courses/${id}/materials`}>
                   <FileText className="mr-2 h-4 w-4" />
@@ -128,45 +126,41 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
   // Compact variant (default)
   return (
     <Card className={cn(
-      "group relative rounded-2xl border-2 transition-all hover:shadow-xl overflow-hidden",
+      "group relative rounded-xl border-2 transition-all duration-300 hover:shadow-xl overflow-hidden",
       colors.hoverBorder
     )}>
       {/* Gradient background overlay */}
-      <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
+      <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
       
-      <CardContent className="relative p-4 space-y-4 py-2">
+      <CardContent className="relative p-5">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className={`shrink-0 p-2.5 rounded-xl ${colors.bgLight} transition-transform group-hover:scale-110`}>
-              <BookOpen className={`h-5 w-5 ${colors.text}`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-lg group-hover:text-primary transition-colors truncate">
-                {code}
-              </h3>
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">
-                {title}
-              </p>
-            </div>
+        <div className="flex items-start gap-3 mb-4">
+          <div className={`shrink-0 p-2.5 rounded-xl ${colors.bgLight} transition-transform duration-300 group-hover:scale-110`}>
+            <BookOpen className={`h-5 w-5 ${colors.text}`} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-base leading-tight group-hover:text-primary transition-colors duration-200 mb-1.5">
+              {code}
+            </h3>
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+              {title}
+            </p>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-2 pt-2 border-t">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Users className="h-3.5 w-3.5" />
-            <span className="font-medium">{students}</span>
-            <span>{t("home.featured.students")}</span>
-          </div>
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pb-3 mb-3 border-b">
+          <Users className="h-3.5 w-3.5" />
+          <span className="font-medium">{students}</span>
+          <span>{t("home.featured.students")}</span>
         </div>
 
         {/* Actions */}
-        <div className="grid grid-cols-2 gap-2 pt-2">
+        <div className="grid grid-cols-2 gap-2">
           <Button 
             asChild 
             size="sm" 
-            className="rounded-lg font-medium"
+            className="rounded-lg font-medium h-9"
           >
             <Link to={`/courses/${id}`}>
               {t("home.featured.open")}
@@ -176,7 +170,7 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
             asChild 
             size="sm" 
             variant="outline" 
-            className="rounded-lg font-medium"
+            className="rounded-lg font-medium h-9"
           >
             <Link to={`/courses/${id}/materials`}>
               <FileText className="mr-1.5 h-3.5 w-3.5" />

@@ -76,7 +76,7 @@ const AnnouncementsPage = () => {
         return filtered;
     }, [searchQuery, showOnlyNew, selectedCourses, audience, dateFilter, lang]);
 
-    const newCount = MockAnnouncements.filter(a => a.isNew).length;
+    const newCount = MockAnnouncements.filter(a => a.isNew && a.audience === audience).length;
     const activeFilterCount = (showOnlyNew ? 1 : 0) + (selectedCourses.length > 0 ? 1 : 0) + (dateFilter !== 'all' ? 1 : 0);
 
     const handleCourseToggle = (courseId: string) => {
@@ -95,187 +95,176 @@ const AnnouncementsPage = () => {
     };
 
     return (
-        <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10 space-y-8">
-            {/* Header */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-2xl bg-chart-5/10">
-                        <Bell className="h-8 w-8 text-chart-5" />
+        <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="shrink-0 p-3 rounded-xl bg-chart-5/20">
+                            <Bell className="h-6 w-6 text-chart-5" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                                {t('announcements.list.title')}
+                            </h1>
+                            <p className="text-muted-foreground mt-1">
+                                {t('announcements.list.description')}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight">{t('announcements.list.title')}</h1>
-                        <p className="text-muted-foreground text-lg">{t('announcements.list.description')}</p>
-                    </div>
+
+                    {/* Audience Badge */}
+                    <Badge variant="outline" className="text-sm">
+                        <Filter className="mr-2 h-4 w-4" />
+                        {t(`common.audience.${audience}`)}
+                    </Badge>
                 </div>
 
-                {/* Search and Filters */}
-                <div className="space-y-4 pt-4">
-                    {/* Search Bar */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                {/* Search & Filters */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
                             placeholder={t('announcements.list.search')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 pr-9"
+                            className="pl-10 h-11 rounded-xl border-2"
                         />
-                        {searchQuery && (
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                        {/* New Filter */}
+                        <Button
+                            variant={showOnlyNew ? "default" : "outline"}
+                            onClick={() => setShowOnlyNew(!showOnlyNew)}
+                            className="rounded-xl gap-2"
+                        >
+                            <Bell className="h-4 w-4" />
+                            {t('announcements.new')}
+                            {newCount > 0 && (
+                                <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                                    {newCount}
+                                </Badge>
+                            )}
+                        </Button>
+
+                        {/* Course Filter */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="rounded-xl gap-2">
+                                    <Filter className="h-4 w-4" />
+                                    {t('announcements.list.courses')}
+                                    {selectedCourses.length > 0 && (
+                                        <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                                            {selectedCourses.length}
+                                        </Badge>
+                                    )}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuLabel>{t('announcements.list.selectCourses')}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {availableCourses.map(course => (
+                                    <DropdownMenuCheckboxItem
+                                        key={course.id}
+                                        checked={selectedCourses.includes(course.id)}
+                                        onCheckedChange={() => handleCourseToggle(course.id)}
+                                    >
+                                        <span className="font-mono text-xs mr-2">{course.code}</span>
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Date Filter */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="rounded-xl gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    {t('announcements.list.date')}
+                                    {dateFilter !== 'all' && (
+                                        <Badge variant="secondary" className="ml-1">1</Badge>
+                                    )}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuLabel>{t('announcements.list.selectDate')}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuCheckboxItem
+                                    checked={dateFilter === 'all'}
+                                    onCheckedChange={() => setDateFilter('all')}
+                                >
+                                    {t('announcements.list.allDates')}
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={dateFilter === 'today'}
+                                    onCheckedChange={() => setDateFilter('today')}
+                                >
+                                    {t('announcements.list.today')}
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={dateFilter === 'week'}
+                                    onCheckedChange={() => setDateFilter('week')}
+                                >
+                                    {t('announcements.list.lastWeek')}
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                    checked={dateFilter === 'month'}
+                                    onCheckedChange={() => setDateFilter('month')}
+                                >
+                                    {t('announcements.list.lastMonth')}
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Clear All */}
+                        {activeFilterCount > 0 && (
                             <Button
                                 variant="ghost"
-                                size="sm"
-                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
-                                onClick={() => setSearchQuery("")}
+                                onClick={clearAllFilters}
+                                className="rounded-xl gap-2"
                             >
                                 <X className="h-4 w-4" />
+                                {t('announcements.list.clearAll')}
                             </Button>
                         )}
                     </div>
-
-                    {/* Filter Buttons */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* Stats Badges */}
-                        <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="px-3 py-1 text-sm">
-                                <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                                {filteredAnnouncements.length} {t('announcements.list.results')}
-                            </Badge>
-                            {newCount > 0 && (
-                                <Badge className="px-3 py-1 text-sm bg-chart-5 hover:bg-chart-5">
-                                    <Bell className="h-3.5 w-3.5 mr-1.5" />
-                                    {newCount} {t('announcements.new')}
-                                </Badge>
-                            )}
-                        </div>
-
-                        <div className="flex-1" />
-
-                        {/* Filters */}
-                        <div className="flex items-center gap-2">
-                            {/* New Filter */}
-                            <Button
-                                variant={showOnlyNew ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setShowOnlyNew(!showOnlyNew)}
-                                className="gap-2"
-                            >
-                                <Bell className="h-4 w-4" />
-                                {t('announcements.new')}
-                            </Button>
-
-                            {/* Course Filter */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2">
-                                        <Filter className="h-4 w-4" />
-                                        {t('announcements.list.courses')}
-                                        {selectedCourses.length > 0 && (
-                                            <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                                                {selectedCourses.length}
-                                            </Badge>
-                                        )}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56">
-                                    <DropdownMenuLabel>{t('announcements.list.selectCourses')}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    {availableCourses.map(course => (
-                                        <DropdownMenuCheckboxItem
-                                            key={course.id}
-                                            checked={selectedCourses.includes(course.id)}
-                                            onCheckedChange={() => handleCourseToggle(course.id)}
-                                        >
-                                            <span className="font-mono text-xs mr-2">{course.code}</span>
-                                            <span className="text-xs truncate">{course.title[lang]}</span>
-                                        </DropdownMenuCheckboxItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            {/* Date Filter */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2">
-                                        <Calendar className="h-4 w-4" />
-                                        {t('announcements.list.date')}
-                                        {dateFilter !== 'all' && (
-                                            <Badge variant="secondary" className="ml-1">1</Badge>
-                                        )}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
-                                    <DropdownMenuLabel>{t('announcements.list.selectDate')}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuCheckboxItem
-                                        checked={dateFilter === 'all'}
-                                        onCheckedChange={() => setDateFilter('all')}
-                                    >
-                                        {t('announcements.list.allDates')}
-                                    </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem
-                                        checked={dateFilter === 'today'}
-                                        onCheckedChange={() => setDateFilter('today')}
-                                    >
-                                        {t('announcements.list.today')}
-                                    </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem
-                                        checked={dateFilter === 'week'}
-                                        onCheckedChange={() => setDateFilter('week')}
-                                    >
-                                        {t('announcements.list.lastWeek')}
-                                    </DropdownMenuCheckboxItem>
-                                    <DropdownMenuCheckboxItem
-                                        checked={dateFilter === 'month'}
-                                        onCheckedChange={() => setDateFilter('month')}
-                                    >
-                                        {t('announcements.list.lastMonth')}
-                                    </DropdownMenuCheckboxItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            {/* Clear All */}
-                            {activeFilterCount > 0 && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={clearAllFilters}
-                                    className="gap-2"
-                                >
-                                    <X className="h-4 w-4" />
-                                    {t('announcements.list.clearAll')}
-                                </Button>
-                            )}
-                        </div>
-                    </div>
                 </div>
+
+                {/* Results Count */}
+                <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                        {filteredAnnouncements.length} {t('announcements.list.results')}
+                    </p>
+                </div>
+
+                {/* Announcements List */}
+                {filteredAnnouncements.length > 0 ? (
+                    <div className="space-y-4">
+                        {filteredAnnouncements.map((announcement) => (
+                            <AnnouncementCard
+                                key={announcement.id}
+                                id={announcement.id}
+                                courseId={announcement.courseId}
+                                title={announcement.title[lang]}
+                                description={announcement.description[lang]}
+                                date={announcement.date}
+                                isNew={announcement.isNew}
+                                variant="wide"
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <div className="rounded-full bg-muted p-6 mb-4">
+                            <Bell className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">{t('announcements.list.noResults.title')}</h3>
+                        <p className="text-muted-foreground max-w-md">
+                            {t('announcements.list.noResults.description')}
+                        </p>
+                    </div>
+                )}
             </div>
-
-            {/* Announcements List */}
-            {filteredAnnouncements.length > 0 ? (
-                <div className="space-y-3">
-                    {filteredAnnouncements.map((announcement) => (
-                        <AnnouncementCard
-                            key={announcement.id}
-                            id={announcement.id}
-                            courseId={announcement.courseId}
-                            title={announcement.title[lang]}
-                            description={announcement.description[lang]}
-                            date={announcement.date}
-                            isNew={announcement.isNew}
-                            variant="wide"
-                        />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-16 space-y-4">
-                    <div className="inline-flex p-6 rounded-full bg-muted/50">
-                        <Bell className="h-12 w-12 text-muted-foreground" />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-semibold">{t('announcements.list.noResults.title')}</h3>
-                        <p className="text-muted-foreground">{t('announcements.list.noResults.description')}</p>
-                    </div>
-                </div>
-            )}
         </main>
     );
 }
