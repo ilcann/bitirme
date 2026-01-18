@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 type CourseCardProps = {
   id: string;
   code: string;
-  titleKey: string;
+  title: string;
   students: number;
   color: string;
   variant?: "compact" | "wide";
 };
 
-export function CourseCard({ id, code, titleKey, students, color, variant = "compact" }: CourseCardProps) {
+export function CourseCard({ id, code, title, students, color, variant = "compact" }: CourseCardProps) {
   const { t } = useTranslation();
 
   // Map color names to actual Tailwind classes
@@ -84,7 +84,7 @@ export function CourseCard({ id, code, titleKey, students, color, variant = "com
                   {code}
                 </h3>
                 <p className="text-base text-muted-foreground line-clamp-2">
-                  {t(titleKey)}
+                  {title}
                 </p>
                 <div className="flex items-center gap-2 pt-1">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -146,7 +146,7 @@ export function CourseCard({ id, code, titleKey, students, color, variant = "com
                 {code}
               </h3>
               <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">
-                {t(titleKey)}
+                {title}
               </p>
             </div>
           </div>

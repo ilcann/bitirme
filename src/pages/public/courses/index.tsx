@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { BookOpen, Filter, Search } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 const CoursesPage = () => {
+  const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -23,12 +25,11 @@ const CoursesPage = () => {
         const query = searchQuery.toLowerCase();
         return (
           course.code.toLowerCase().includes(query) ||
-          t(course.titleKey).toLowerCase().includes(query)
+          course.title[lang].toLowerCase().includes(query)
         );
       })
       .sort((a, b) => b.students - a.students);
-  }, [audience, searchQuery, t]);
-
+  }, [audience, searchQuery, lang]);
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
       <div className="space-y-8">
@@ -103,7 +104,7 @@ const CoursesPage = () => {
                 key={course.id}
                 id={course.id}
                 code={course.code}
-                titleKey={course.titleKey}
+                title={course.title[lang]}
                 students={course.students}
                 color={course.color}
                 variant={viewMode}

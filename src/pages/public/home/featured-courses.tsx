@@ -2,12 +2,14 @@ import { CourseCard } from "@/components/common/course-card";
 import { Button } from "@/components/ui/button";
 import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 const FeaturedCourses = () => {
+  const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
 
@@ -49,7 +51,7 @@ const FeaturedCourses = () => {
             key={course.id}
             id={course.id}
             code={course.code}
-            titleKey={course.titleKey}
+            title={course.title[lang]}
             students={course.students}
             color={course.color}
             variant="compact"
