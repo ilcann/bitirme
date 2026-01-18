@@ -2,6 +2,7 @@ type MaterialType = "lecture" | "assignment" | "exam" | "document" | "video" | "
 
 interface CourseMaterial {
     id: string;
+    courseId: string;
     title: {
         tr: string;
         en: string;
