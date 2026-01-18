@@ -10,6 +10,7 @@ import { useAudience } from "@/providers/audience-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useAnnouncements } from "@/hooks/use-announcements";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -58,10 +59,22 @@ const AnnouncementsPage = () => {
 
     const newCount = announcements.filter(a => a.isNew).length;
 
+    const fadeInUp = {
+        initial: { opacity: 0, y: 40 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-50px" },
+        transition: { duration: 0.5, ease: "easeOut" }
+    };
+
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
             <div className="space-y-8">
-                <PageHeader
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                >
+                    <PageHeader
                     variant="wide"
                     title={t('announcements.list.title')}
                     description={t('announcements.list.description')}
@@ -70,9 +83,15 @@ const AnnouncementsPage = () => {
                     iconColor="text-chart-5"
                     showAudienceBadge={true}
                 />
+                </motion.div>
 
                 {/* Search & Filters */}
-                <div className="flex flex-col sm:flex-row gap-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+                >
+                    <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
@@ -159,8 +178,14 @@ const AnnouncementsPage = () => {
                         )}
                     </div>
                 </div>
+                </motion.div>
 
                 {/* Results Count & Pagination Info */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
                         {isLoading ? t('common.pagination.loading') : `${total} ${t('announcements.list.results')}`}
@@ -176,6 +201,7 @@ const AnnouncementsPage = () => {
                         )}
                     </div>
                 </div>
+                </motion.div>
 
                 {/* Announcements List */}
                 {isLoading ? (
@@ -186,11 +212,29 @@ const AnnouncementsPage = () => {
                     </div>
                 ) : announcements.length > 0 ? (
                     <>
-                        <div className="space-y-4">
-                            {announcements.map((announcement) => (
-                                <AnnouncementCard
+                        <motion.div
+                            className="space-y-4"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                visible: {
+                                    transition: {
+                                        staggerChildren: 0.08
+                                    }
+                                }
+                            }}
+                        >
+                            {announcements.map((announcement, index) => (
+                                <motion.div
                                     key={announcement.id}
-                                    id={announcement.id}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20 },
+                                        visible: { opacity: 1, y: 0 }
+                                    }}
+                                    transition={{ duration: 0.4, ease: "easeOut" }}
+                                >
+                                    <AnnouncementCard
+                                        id={announcement.id}
                                     courseId={announcement.courseId}
                                     title={announcement.title[lang]}
                                     description={announcement.description[lang]}
@@ -198,8 +242,9 @@ const AnnouncementsPage = () => {
                                     isNew={announcement.isNew}
                                     variant="wide"
                                 />
+                                </motion.div>
                             ))}
-                        </div>
+                        </motion.div>
 
                         {/* Pagination Buttons */}
                         {totalPages > 1 && (
