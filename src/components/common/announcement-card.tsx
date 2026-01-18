@@ -63,7 +63,7 @@ export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: Announ
             {/* Action */}
             <Button 
                 asChild 
-                variant="outline" 
+                variant="ghost" 
                 size="sm" 
                 className="w-full justify-between px-0 text-primary group/btn mt-2"
             >
