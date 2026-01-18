@@ -76,7 +76,6 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
                         <div className="flex sm:flex-col sm:min-w-40">
                             <Button 
                                 asChild 
-                                variant="ghost"
                                 className="w-full rounded-lg font-medium h-10"
                             >
                                 <Link to={`/announcements/${id}`}>
@@ -133,7 +132,6 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
                     {/* Action */}
                     <Button 
                         asChild 
-                        variant="ghost" 
                         size="sm" 
                         className="w-full justify-between px-3 group/btn h-9"
                     >
