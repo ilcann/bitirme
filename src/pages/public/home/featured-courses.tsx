@@ -23,7 +23,9 @@ const FeaturedCourses = () => {
       <div className="flex items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="h-5 w-5 text-chart-3" />
+            <div className={`shrink-0 p-2.5 rounded-xl bg-chart-3/10 transition-transform group-hover:scale-110`}>
+                <TrendingUp className={`h-5 w-5 text-chart-3`} />
+            </div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
               {t("home.featured.title")}
             </h2>
