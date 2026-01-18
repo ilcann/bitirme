@@ -133,6 +133,7 @@ const CoursesPage = () => {
         ) : courses.length > 0 ? (
           <>
             <motion.div
+              key={`${searchQuery}-${viewMode}`}
               className={
                 viewMode === "compact"
                   ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
