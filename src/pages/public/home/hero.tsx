@@ -105,7 +105,7 @@ const Hero = ({ audience }: HeroProps) => {
                 </Button>
               </form>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                 <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-1/10 hover:border-chart-1/50 hover:text-foreground transition-colors">
                   <Link to="/courses">
                     <BookOpen className="mr-2 h-4 w-4" />
