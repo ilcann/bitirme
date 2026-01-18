@@ -1,8 +1,8 @@
+import type { Course } from "@/types/course";
 import { useState, useMemo } from "react";
-import type { MockCourse } from "@/mock/courses";
 
 interface UseCourseSearchProps {
-    courses: MockCourse[];
+    courses: Course[];
     audience: string;
     language: string;
 }

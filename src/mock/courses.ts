@@ -1,37 +1,6 @@
-type CourseAudience = "common" | "department";
+import type { Course } from "@/types/course";
 
-type MaterialType = "lecture" | "assignment" | "exam" | "document" | "video" | "link";
-
-interface CourseMaterial {
-    id: string;
-    title: {
-        tr: string;
-        en: string;
-    };
-    type: MaterialType;
-    date: string;
-    size?: string;
-    url?: string;
-    description?: {
-        tr: string;
-        en: string;
-    };
-}
-
-interface MockCourse {
-    id: string;
-    code: string;
-    title: {
-        tr: string;
-        en: string;
-    };
-    students: number;
-    color: string;
-    audience: CourseAudience;
-    materials?: CourseMaterial[];
-}
-
-const MockCourses: MockCourse[] = [
+const MockCourses: Course[] = [
     // Common Courses
     { 
         id: "mat103e", 
@@ -120,4 +89,3 @@ const MockCourses: MockCourse[] = [
 ];
 
 export { MockCourses };
-export type { MockCourse, CourseAudience, CourseMaterial, MaterialType };

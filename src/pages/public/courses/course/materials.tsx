@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useMaterialFilter } from "@/hooks/use-material-filter";
 import { useOutletContext } from "react-router";
-import type { MockCourse } from "@/mock/courses";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaterialCard } from "@/components/common/material-card";
 import { Button } from "@/components/ui/button";
@@ -13,17 +12,18 @@ import {
     ArrowUpDown,
     Search
 } from "lucide-react";
-import type { MaterialType } from "@/mock/courses";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { Course } from "@/types/course";
+import type { MaterialType } from "@/types/course-material";
 
 const CourseMaterialsPage = () => {
     const { t } = useTranslation('courses');
-    const { course } = useOutletContext<{ course: MockCourse }>();
+    const { course } = useOutletContext<{ course: Course }>();
 
     useDocumentTitle(
         `${course?.code} - ${t('materials.title')}`,

@@ -1,20 +1,6 @@
-interface MockAnnouncement {
-    id: string;
-    title: {
-        tr: string;
-        en: string;
-    };
-    description: {
-        tr: string;
-        en: string;
-    };
-    date: string;
-    courseId: string;
-    audience: 'common' | 'department';
-    isNew: boolean;
-}
+import type { Announcement } from "@/types/announcement";
 
-const MockAnnouncements: MockAnnouncement[] = [
+const MockAnnouncements: Announcement[] = [
     { 
         id: "a1", 
         title: { tr: "Vize sınavı programı yayınlandı", en: "Midterm exam schedule published" },
@@ -117,4 +103,3 @@ const MockAnnouncements: MockAnnouncement[] = [
 ];
 
 export { MockAnnouncements };
-export type { MockAnnouncement };

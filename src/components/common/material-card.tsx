@@ -13,11 +13,11 @@ import {
     ExternalLink,
     Calendar
 } from "lucide-react";
-import type { MaterialType, CourseMaterial as Material } from "@/mock/courses";
 import { useTranslation } from "react-i18next";
+import type { CourseMaterial, MaterialType } from "@/types/course-material";
 
 interface MaterialCardProps {
-    material: Material;
+    material: CourseMaterial;
 }
 
 const getMaterialIcon = (type: MaterialType) => {

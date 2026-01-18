@@ -1,10 +1,10 @@
+import type { CourseMaterial, MaterialType } from "@/types/course-material";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import type { CourseMaterial as Material , MaterialType } from "@/mock/courses";
 
 type SortOption = "newest" | "oldest" | "title";
 
-export const useMaterialFilter = (materials: Material[] | undefined) => {
+export const useMaterialFilter = (materials: CourseMaterial[] | undefined) => {
     const { i18n } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState<MaterialType | "all">("all");
