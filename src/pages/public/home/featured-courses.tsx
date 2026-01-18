@@ -1,6 +1,6 @@
 import { FeaturedCourseCard } from "@/components/common/featured-course-card";
 import { Button } from "@/components/ui/button";
-import { MockFeaturedCommonLessons, MockFeaturedDepartmentLessons } from "@/mock/featured-lessons";
+import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import React from "react";
@@ -11,9 +11,11 @@ const FeaturedCourses = () => {
   const { t } = useTranslation();
   const { audience } = useAudience();
 
-  // Featured courses (mock)
   const featuredCourses = React.useMemo(() => {
-    return (audience === "common" ? MockFeaturedCommonLessons : MockFeaturedDepartmentLessons).slice(0, 6);
+    return MockCourses
+      .filter(course => course.audience === audience)
+      .sort((a, b) => b.students - a.students)
+      .slice(0, 3);
   }, [audience]);
 
   return (
