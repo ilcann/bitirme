@@ -24,7 +24,8 @@
     },
     "under_construction": {
         "title": "Under Construction",
-        "description": "This page is currently being designed. Please check back soon!"
+        "description": "This page is currently being designed. Please check back later!",
+        "defaultTitle": "Page"
     },
     "nav": {
         "courses": {

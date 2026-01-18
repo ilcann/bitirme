@@ -2,14 +2,10 @@ import { Construction } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface UnderConstructionProps {
-  pageTitle?: string;
-  description?: string;
   className?: string;
 }
 
 export function UnderConstruction({ 
-  pageTitle, 
-  description,
   className 
 }: UnderConstructionProps) {
   const { t } = useTranslation();
@@ -18,14 +14,12 @@ export function UnderConstruction({
     <div className={`flex flex-col items-center justify-center min-h-[70vh] px-4 ${className || ''}`}>
       <div className="flex flex-col items-center gap-8 text-center max-w-2xl">
         {/* Page Title */}
-        {pageTitle && (
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
-              {pageTitle}
-            </h1>
-            <div className="h-1 w-20 bg-primary mx-auto rounded-full" />
-          </div>
-        )}
+        <div className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+            {t('common.under_construction.defaultTitle')}
+          </h1>
+          <div className="h-1 w-20 bg-primary mx-auto rounded-full" />
+        </div>
         
         {/* Construction Icon */}
         <div className="relative">
@@ -39,10 +33,10 @@ export function UnderConstruction({
         {/* Message */}
         <div className="space-y-3">
           <h2 className="text-2xl font-semibold text-foreground">
-            {t('under_construction.title')}
+            {t('common.under_construction.title')}
           </h2>
           <p className="text-muted-foreground text-lg">
-            {description || t('under_construction.description')}
+            {t('common.under_construction.description')}
           </p>
         </div>
 

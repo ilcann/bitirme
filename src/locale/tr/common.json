@@ -24,7 +24,8 @@
     },
     "under_construction": {
         "title": "Yapım Aşamasında",
-        "description": "Bu sayfa şu anda tasarlanıyor. Lütfen daha sonra tekrar kontrol edin!"
+        "description": "Bu sayfa şu anda tasarımlıyor. Lütfen daha sonra tekrar kontrol edin!",
+        "defaultTitle": "Sayfa"
     },
     "nav": {
         "courses": {
