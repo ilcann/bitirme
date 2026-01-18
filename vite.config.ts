@@ -15,4 +15,17 @@ export default defineConfig({
     },
   },
   base: '/ilcan21/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks - büyük kütüphaneleri ayır
+          'react-vendor': ['react', 'react-dom', 'react-router'],
+          'animation': ['framer-motion'],
+          'i18n': ['react-i18next', 'i18next'],
+        }
+      }
+    },
+    chunkSizeWarningLimit: 600,
+  }
 })
