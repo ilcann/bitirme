@@ -13,8 +13,7 @@ const AnnouncementsDetailPage = () => {
     const { lang } = useLanguage();
 
     const announcement = MockAnnouncements.find(a => a.id === announcementId);
-    console.log(announcement, announcementId);
-    // Use announcement title if available, otherwise fallback to generic
+
     useDocumentTitle(
         announcement ? announcement.title[lang] : t('detail.title'),
         announcement ? announcement.description[lang] : t('detail.description')

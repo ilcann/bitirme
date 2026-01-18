@@ -1,14 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { AnnouncementCard } from "@/components/common/announcement-card";
-import { MockAnnouncements } from "@/mock/announcements";
-import { MockCourses } from "@/mock/courses";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Calendar, Filter, Search, X } from "lucide-react";
-import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/providers/language-provider";
 import { useAudience } from "@/providers/audience-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
+import { useAnnouncementFilter } from "@/hooks/use-announcement-filter";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -24,82 +22,27 @@ const AnnouncementsPage = () => {
     const { t } = useTranslation();
     const { lang } = useLanguage();
     const { audience } = useAudience();
-    const [searchQuery, setSearchQuery] = useState("");
-    const [showOnlyNew, setShowOnlyNew] = useState(false);
-    const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
-    const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
     useDocumentTitle(
         t('announcements.list.title'),
         t('announcements.list.description')
     );
 
-    // Get unique courses from announcements, filtered by current audience
-    const availableCourses = useMemo(() => {
-        const courseIds = [...new Set(MockAnnouncements.map(a => a.courseId))];
-        return MockCourses.filter(c => courseIds.includes(c.id) && c.audience === audience);
-    }, [audience]);
-
-    // Filter logic
-    const filteredAnnouncements = useMemo(() => {
-        let filtered = [...MockAnnouncements];
-
-        // Search filter
-        if (searchQuery) {
-            filtered = filtered.filter(a => 
-                a.title[lang].toLowerCase().includes(searchQuery.toLowerCase()) ||
-                a.description[lang].toLowerCase().includes(searchQuery.toLowerCase()) ||
-                a.courseId.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
-
-        // New filter
-        if (showOnlyNew) {
-            filtered = filtered.filter(a => a.isNew);
-        }
-
-        // Course filter
-        if (selectedCourses.length > 0) {
-            filtered = filtered.filter(a => selectedCourses.includes(a.courseId));
-        }
-
-        // Audience filter (from provider)
-        filtered = filtered.filter(a => a.audience === audience);
-
-        // Date filter
-        if (dateFilter !== 'all') {
-            const today = new Date('2026-01-18');
-            filtered = filtered.filter(a => {
-                const announcementDate = new Date(a.date);
-                const diffDays = Math.floor((today.getTime() - announcementDate.getTime()) / (1000 * 60 * 60 * 24));
-                
-                if (dateFilter === 'today') return diffDays === 0;
-                if (dateFilter === 'week') return diffDays <= 7;
-                if (dateFilter === 'month') return diffDays <= 30;
-                return true;
-            });
-        }
-
-        return filtered;
-    }, [searchQuery, showOnlyNew, selectedCourses, audience, dateFilter, lang]);
-
-    const newCount = MockAnnouncements.filter(a => a.isNew && a.audience === audience).length;
-    const activeFilterCount = (showOnlyNew ? 1 : 0) + (selectedCourses.length > 0 ? 1 : 0) + (dateFilter !== 'all' ? 1 : 0);
-
-    const handleCourseToggle = (courseId: string) => {
-        setSelectedCourses(prev =>
-            prev.includes(courseId)
-                ? prev.filter(id => id !== courseId)
-                : [...prev, courseId]
-        );
-    };
-
-    const clearAllFilters = () => {
-        setSearchQuery("");
-        setShowOnlyNew(false);
-        setSelectedCourses([]);
-        setDateFilter('all');
-    };
+    const {
+        searchQuery,
+        setSearchQuery,
+        showOnlyNew,
+        setShowOnlyNew,
+        selectedCourses,
+        dateFilter,
+        setDateFilter,
+        availableCourses,
+        filteredAnnouncements,
+        newCount,
+        activeFilterCount,
+        handleCourseToggle,
+        clearAllFilters,
+    } = useAnnouncementFilter({ lang, audience });
 
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
