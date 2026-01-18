@@ -18,6 +18,13 @@ const FeaturedCourses = () => {
       .slice(0, 3);
   }, [audience]);
 
+  const wideCourses = React.useMemo(() => {
+    return MockCourses
+      .filter(course => course.audience === audience)
+      .sort((a, b) => b.students - a.students)
+      .slice(3, 5);
+  }, [audience]);
+
   return (
     <section className="space-y-6">
       <div className="flex items-end justify-between gap-4">
@@ -56,6 +63,24 @@ const FeaturedCourses = () => {
           />
         ))}
       </div>
+
+      {/* Wide Cards */}
+      {wideCourses.length > 0 && (
+        <div className="space-y-4">
+          {wideCourses.map((course) => (
+            <CourseCard
+              key={course.id}
+              id={course.id}
+              code={course.code}
+              titleKey={course.titleKey}
+              students={course.students}
+              color={course.color}
+              variant="wide"
+            />
+          ))}
+        </div>
+      )}
+
       <Button asChild variant="outline" className="w-full sm:hidden rounded-xl border-2">
         <Link to="/courses">
           {t("home.featured.viewAll")}

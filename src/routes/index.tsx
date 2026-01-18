@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import HomePage from "@/pages/public/home";
 import NotFoundedPage from "@/pages/errors/not-founded";
-import CoursesListPage from "@/pages/public/courses";
 import CourseOverviewPage from "@/pages/public/courses/course";
 import CourseInfoPage from "@/pages/public/courses/course/info";
 import AnnouncementsPage from "@/pages/public/announcements";
@@ -12,6 +11,7 @@ import GradesPage from "@/pages/protected/me/grades";
 import MyDashboardPage from "@/pages/protected/me/dashboard";
 import CourseMaterialsPage from "@/pages/public/courses/course/materials";
 import MainLayout from "@/pages/layout";
+import CoursesPage from "@/pages/public/courses";
 
 const router = createBrowserRouter(
   [
@@ -28,7 +28,7 @@ const router = createBrowserRouter(
           children: [
             {
               index: true,
-              element: <CoursesListPage />,
+              element: <CoursesPage />,
             },
             {
               path: ":courseId",

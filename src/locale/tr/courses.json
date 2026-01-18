@@ -1,7 +1,16 @@
 {
     "list": {
         "title": "Dersler",
-        "description": "Mevcut derslere göz atın ve keşfedin"
+        "description": "Mevcut derslere göz atın ve keşfedin",
+        "view": {
+            "compact": "Kompakt",
+            "wide": "Geniş"
+        },
+        "resultsFound": "ders bulundu",
+        "noResults": {
+            "title": "Ders bulunamadı",
+            "description": "Arama kriterlerinize uygun ders bulunamadı. Farklı bir arama terimi deneyin."
+        }
     },
     "overview": {
         "title": "Ders Özeti",
