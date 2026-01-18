@@ -1,5 +1,4 @@
 import type { Course } from "@/types/course";
-import { MockMaterials } from "./materials";
 
 const MockCourses: Course[] = [
     // Common Courses
@@ -9,8 +8,7 @@ const MockCourses: Course[] = [
         title: { tr: "Matematik I", en: "Mathematics I" }, 
         students: 1240, 
         color: "chart-1", 
-        audience: "common",
-        materials: MockMaterials.filter(m => m.courseId === "mat103e")
+        audience: "common"
     },
     { 
         id: "mat104e", 
@@ -18,8 +16,7 @@ const MockCourses: Course[] = [
         title: { tr: "Matematik II", en: "Mathematics II" }, 
         students: 1180, 
         color: "chart-2", 
-        audience: "common",
-        materials: MockMaterials.filter(m => m.courseId === "mat104e")
+        audience: "common"
     },
     
     // Department Courses
@@ -29,8 +26,7 @@ const MockCourses: Course[] = [
         title: { tr: "Olasılık ve İstatistik", en: "Probability and Statistics" }, 
         students: 85, 
         color: "chart-4", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat345e")
+        audience: "department"
     },
     { 
         id: "mat471e", 
@@ -38,8 +34,7 @@ const MockCourses: Course[] = [
         title: { tr: "Sayısal Analiz", en: "Numerical Analysis" }, 
         students: 62, 
         color: "chart-5", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat471e")
+        audience: "department"
     },
     { 
         id: "mate", 
@@ -47,8 +42,7 @@ const MockCourses: Course[] = [
         title: { tr: "Mühendislik Matematiği", en: "Engineering Mathematics" }, 
         students: 45, 
         color: "chart-1", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mate")
+        audience: "department"
     },
     { 
         id: "mat251e", 
@@ -56,8 +50,7 @@ const MockCourses: Course[] = [
         title: { tr: "Diferansiyel Denklemler", en: "Differential Equations" }, 
         students: 78, 
         color: "chart-2", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat251e")
+        audience: "department"
     },
     { 
         id: "mat252e", 
@@ -65,8 +58,7 @@ const MockCourses: Course[] = [
         title: { tr: "Lineer Cebir", en: "Linear Algebra" }, 
         students: 72, 
         color: "chart-3", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat252e")
+        audience: "department"
     },
     { 
         id: "mat361e", 
@@ -74,8 +66,7 @@ const MockCourses: Course[] = [
         title: { tr: "Kompleks Fonksiyonlar Teorisi", en: "Complex Functions Theory" }, 
         students: 56, 
         color: "chart-4", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat361e")
+        audience: "department"
     },
     { 
         id: "mat362e", 
@@ -83,8 +74,7 @@ const MockCourses: Course[] = [
         title: { tr: "Reel Analiz", en: "Real Analysis" }, 
         students: 54, 
         color: "chart-5", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat362e")
+        audience: "department"
     },
     { 
         id: "mat381e", 
@@ -92,8 +82,7 @@ const MockCourses: Course[] = [
         title: { tr: "Soyut Matematik I", en: "Abstract Mathematics I" }, 
         students: 48, 
         color: "chart-1", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat381e")
+        audience: "department"
     },
     { 
         id: "mat382e", 
@@ -101,8 +90,7 @@ const MockCourses: Course[] = [
         title: { tr: "Soyut Matematik II", en: "Abstract Mathematics II" }, 
         students: 42, 
         color: "chart-2", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat382e")
+        audience: "department"
     },
     { 
         id: "mat491e", 
@@ -110,8 +98,7 @@ const MockCourses: Course[] = [
         title: { tr: "Bitirme Projesi I", en: "Graduation Project I" }, 
         students: 35, 
         color: "chart-3", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat491e")
+        audience: "department"
     },
     { 
         id: "mat492e", 
@@ -119,8 +106,7 @@ const MockCourses: Course[] = [
         title: { tr: "Bitirme Projesi II", en: "Graduation Project II" }, 
         students: 38, 
         color: "chart-4", 
-        audience: "department",
-        materials: MockMaterials.filter(m => m.courseId === "mat492e")
+        audience: "department"
     },
 ];
 

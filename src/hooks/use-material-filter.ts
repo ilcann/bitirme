@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 
 type SortOption = "newest" | "oldest" | "title";
 
-export const useMaterialFilter = (materials: CourseMaterial[] | undefined) => {
+export const useMaterialFilter = (materials: CourseMaterial[]) => {
     const { i18n } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState<MaterialType | "all">("all");
     const [sortBy, setSortBy] = useState<SortOption>("newest");
     
     const filteredAndSortedMaterials = useMemo(() => {
-        if (!materials) return [];
+        if (!materials || materials.length === 0) return [];
 
         let filtered = materials;
         

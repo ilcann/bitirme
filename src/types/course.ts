@@ -1,5 +1,4 @@
 import type { AudienceKey } from "@/config/audiences";
-import type { CourseMaterial } from "./course-material";
 
 interface Course {
     id: string;
@@ -11,7 +10,6 @@ interface Course {
     students: number;
     color: string;
     audience: AudienceKey;
-    materials?: CourseMaterial[];
 }
 
 export type { Course };

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/types/course";
 import type { MaterialType } from "@/types/course-material";
+import { getMaterialsByCourseId } from "@/lib/get-materials";
 
 const CourseMaterialsPage = () => {
     const { t } = useTranslation('courses');
@@ -38,7 +39,7 @@ const CourseMaterialsPage = () => {
         sortBy,
         setSortBy,
         filteredAndSortedMaterials,
-    } = useMaterialFilter(course?.materials);
+    } = useMaterialFilter(getMaterialsByCourseId(course?.id || ""));
 
     return (
         <section className="container mx-auto py-4 px-4 space-y-6">
