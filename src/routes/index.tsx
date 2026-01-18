@@ -9,6 +9,7 @@ const CourseOverviewPage = lazy(() => import("@/pages/public/courses/course"));
 const CourseInfoPage = lazy(() => import("@/pages/public/courses/course/info"));
 const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/materials"));
 const AnnouncementsPage = lazy(() => import("@/pages/public/announcements"));
+const AnnouncementsDetailPage = lazy(() => import("@/pages/public/announcements/detail"));
 const HelpPage = lazy(() => import("@/pages/public/help"));
 const AttendancePage = lazy(() => import("@/pages/protected/me/attendance"));
 const GradesPage = lazy(() => import("@/pages/protected/me/grades"));
@@ -71,7 +72,16 @@ const router = createBrowserRouter(
         },
         {
           path: "announcements",
-          element: <SuspenseWrapper><AnnouncementsPage /></SuspenseWrapper>,
+          children: [
+            {
+              index: true,
+              element: <SuspenseWrapper><AnnouncementsPage /></SuspenseWrapper>,
+            },
+            {
+              path: ":announcementId",
+              element: <SuspenseWrapper><AnnouncementsDetailPage /></SuspenseWrapper>
+            }
+          ]
         },
         {
           path: "help",

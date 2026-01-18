@@ -6,5 +6,6 @@
   "unauthorized": {
     "title": "401 - Yetkisiz Erişim",
     "description": "Bu sayfaya erişim yetkiniz bulunmamaktadır."
-  }
+  },
+  "go_home": "Ana Sayfaya Git"
 }
