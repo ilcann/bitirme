@@ -66,9 +66,6 @@ export function FeaturedCourseCard({ id, code, titleKey, students, color }: Feat
       {/* Gradient background overlay */}
       <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`} />
       
-      {/* Color accent bar */}
-      <div className={`h-1.5 ${colors.bg}`} />
-      
       <CardContent className="relative p-5 space-y-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">

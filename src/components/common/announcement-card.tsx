@@ -23,7 +23,7 @@ export const AnnouncementCard = ({ id, courseId, titleKey, date, isNew }: Announ
                 <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
                     {isNew && (
-                    <Badge className="bg-chart-5 hover:bg-chart-5 text-white text-[10px] px-1.5 py-0">
+                    <Badge className="bg-chart-5 hover:bg-chart-5 text-primary-foreground text-[0.625rem] px-1.5 py-0">
                         {t("home.announcements.new")}
                     </Badge>
                     )}
