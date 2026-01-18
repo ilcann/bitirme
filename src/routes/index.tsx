@@ -5,7 +5,6 @@ import CourseOverviewPage from "@/pages/public/courses/course";
 import CourseInfoPage from "@/pages/public/courses/course/info";
 import AnnouncementsPage from "@/pages/public/announcements";
 import HelpPage from "@/pages/public/help";
-import HelpExamsPage from "@/pages/public/help/exams";
 import AttendancePage from "@/pages/protected/me/attendance";
 import GradesPage from "@/pages/protected/me/grades";
 import MyDashboardPage from "@/pages/protected/me/dashboard";
@@ -72,16 +71,7 @@ const router = createBrowserRouter(
         },
         {
           path: "help",
-          children: [
-            {
-              index: true,
-              element: <HelpPage />,
-            },
-            {
-              path: "exams",
-              element: <HelpExamsPage />,
-            }
-          ]
+          element: <HelpPage />,
         },
         {
           path: "*",

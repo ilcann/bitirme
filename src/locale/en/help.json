@@ -4,7 +4,46 @@
     "description": "Find answers to your questions and get assistance"
   },
   "exams": {
-    "title": "Exam Information",
-    "description": "Important information about exams and schedules"
+    "title": "Exams",
+    "description": "Exam system and rules"
+  },
+  "sections": {
+    "examGuide": {
+      "title": "Quick Exam Guide",
+      "description": "Duration: 120 minutes",
+      "rules": {
+        "rule1": "Exams will consist of 20 multiple choice questions. Each question is worth 5 points.",
+        "rule2": "Identity verification will be conducted by showing ID card, driver's license, or passport.",
+        "rule3": "Students arriving after the first 30 minutes will not be admitted to the exam.",
+        "rule4": "If a student is caught cheating, their raw score will be considered zero."
+      }
+    },
+    "makeupExamGuide": {
+      "title": "End of Semester Makeup Exams",
+      "description": "Makeup exam application and rules",
+      "warningTitle": "Important Notice",
+      "warningDescription": "Students who have applied to their faculties for makeup exams can check their status here. For these students, the grade from the makeup exam will be valid.",
+      "applicationConditionsTitle": "Application Conditions",
+      "applicationConditions": "If you have applied to your faculty and your decision is coming, take the exam.",
+      "scheduleTitle": "Makeup Exam Schedule",
+      "scheduleDuration": "Duration: 120 minutes",
+      "additionalInfo": "For those taking two makeup exams, the exam starts at 09:00 with a duration of 240 minutes."
+    },
+    "opticalForm": {
+      "title": "Optical Answer Sheet",
+      "description": "Optical form filling rules and examples"
+    },
+    "examAppeals": {
+      "title": "Objections to Exam Results",
+      "description": "Procedure for appealing exam results"
+    },
+    "quizGuide": {
+      "title": "Quiz Guide",
+      "description": "Information about quizzes and how to take them"
+    },
+    "makeupExams": {
+      "title": "Makeup Exams",
+      "description": "Details on makeup exam policies and procedures"
+    }
   }
 }

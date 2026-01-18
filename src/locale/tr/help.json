@@ -4,7 +4,46 @@
     "description": "Sorularınıza cevap bulun ve yardım alın"
   },
   "exams": {
-    "title": "Sınav Bilgileri",
-    "description": "Sınavlar ve programlar hakkında önemli bilgiler"
+    "title": "Sınavlar",
+    "description": "Sınav sistemi ve kurallar"
+  },
+  "sections": {
+    "examGuide": {
+      "title": "Kısa Sınav Rehberi",
+      "description": "Süre: 120 dakika",
+      "rules": {
+        "rule1": "Sınavlar 20 adet çoktan seçmeli sorudan oluşacaktır. Her soru 5 puan değerindedir.",
+        "rule2": "Sınava kimlik kartı, ehliyet veya pasaport göstermek suretiyle kimlik kontrolü yapılacaktır.",
+        "rule3": "Sınava ilk 30 dakikasından sonra gelen öğrenci sınava alınmayacaktır.",
+        "rule4": "Öğrencinin kopya çekme durumu tespit edilirse ham puan sıfır kabul edilecektir."
+      }
+    },
+    "makeupExamGuide": {
+      "title": "Yarıyıl Sonu Mazeret Sınavları",
+      "description": "Mazeret sınavı başvuru ve kuralları",
+      "warningTitle": "Önemli Uyarı",
+      "warningDescription": "Mazeret sınavı için kendi fakültelerine başvuruda bulunmuş öğrenciler, durumlarını buradan sorgulayabilirler. Bu öğrenciler için, sınav notu olarak mazeret sınavından alacakları not geçerli olacaktır.",
+      "applicationConditionsTitle": "Başvuru Koşulları",
+      "applicationConditions": "Fakültenize başvurduysa ve kararınız gelecekse, sınava giriniz.",
+      "scheduleTitle": "Mazeret Sınav Programı",
+      "scheduleDuration": "Süre: 120 dakika",
+      "additionalInfo": "İki mazeret sınavına girecekler için sınav başlangıcı 09:00, süresi 240 dakikadır."
+    },
+    "opticalForm": {
+      "title": "Optik Yanıt Kağıdı",
+      "description": "Optik form doldurma kuralları ve örnekler"
+    },
+    "examAppeals": {
+      "title": "Sınav Sonuçlarına İtiraz",
+      "description": "Sınav sonuçlarına itiraz etme prosedürü"
+    },
+    "quizGuide": {
+      "title": "Kısa Sınav Rehberi",
+      "description": "Kısa sınavlar hakkında bilgi ve nasıl katılınacağı"
+    },
+    "makeupExams": {
+      "title": "Mazeret Sınavları",
+      "description": "Mazeret sınavı politikaları ve prosedürleri hakkında detaylar"
+    }
   }
 }
