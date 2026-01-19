@@ -164,12 +164,12 @@ const CoursesPage = () => {
                 >
                   <CourseCard
                     id={course.id}
-                  code={course.code}
-                  title={course.title[lang]}
-                  students={course.students}
-                  color={course.color}
-                  variant={viewMode}
-                />
+                    code={course.code}
+                    title={course.title[lang]}
+                    students={course.students}
+                    color={course.color}
+                    variant={viewMode}
+                  />
                 </motion.div>
               ))}
             </motion.div>
