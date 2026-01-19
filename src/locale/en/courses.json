@@ -57,5 +57,15 @@
             "type": "Types"
         },
         "resultsCount": "materials"
+    },
+    "grades": {
+        "title": "My Grades",
+        "description": "View your grades and exam results",
+        "locked": "You must log in to view this content"
+    },
+    "attendance": {
+        "title": "Attendance",
+        "description": "Track your attendance status",
+        "locked": "You must log in to view this content"
     }
 }

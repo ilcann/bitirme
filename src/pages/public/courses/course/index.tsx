@@ -1,12 +1,13 @@
 import { Outlet, useParams, useNavigate, useLocation } from "react-router";
 import { MockCourses } from "@/mock/courses";
 import { useTranslation } from "react-i18next";
-import { BookOpen, Users } from "lucide-react";
+import { BookOpen, Users, Lock } from "lucide-react";
 import { useLanguage } from "@/providers/language-provider";
 import { getCurrentPath } from "@/lib/utils";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 
 const CoursePage = () => {
@@ -23,10 +24,12 @@ const CoursePage = () => {
     }
 
     const tabs = [
-        { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title') },
-        { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title') },
-        { path: `/courses/${courseId}/announcements`, value: 'announcements', label: t('announcements.list.title') },
-        { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title') },
+        { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title'), locked: false },
+        { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title'), locked: false },
+        { path: `/courses/${courseId}/announcements`, value: 'announcements', label: t('announcements.list.title'), locked: false },
+        { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
+        { path: `/courses/${courseId}/grades`, value: 'grades', label: t('courses.grades.title'), locked: true },
+        { path: `/courses/${courseId}/attendance`, value: 'attendance', label: t('courses.attendance.title'), locked: true },
     ];
 
     const getCurrentTab = () => {
@@ -80,11 +83,36 @@ const CoursePage = () => {
             >
                 <Tabs value={getCurrentTab()} onValueChange={handleTabChange} className="w-full">
                     <TabsList>
-                        {tabs.map((tab) => (
-                            <TabsTrigger key={tab.value} value={tab.value}>
-                                {tab.label}
-                            </TabsTrigger>
-                        ))}
+                        <TooltipProvider>
+                            {tabs.map((tab) => (
+                                tab.locked ? (
+                                    <Tooltip key={tab.value}>
+                                        <TooltipTrigger asChild>
+                                            <span>
+                                                <TabsTrigger 
+                                                    value={tab.value}
+                                                    disabled={tab.locked}
+                                                    className="opacity-60 cursor-not-allowed"
+                                                >
+                                                    {tab.label}
+                                                    <Lock className="h-3 w-3 ml-1.5" />
+                                                </TabsTrigger>
+                                            </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{t('courses.grades.locked')}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                ) : (
+                                    <TabsTrigger 
+                                        key={tab.value} 
+                                        value={tab.value}
+                                    >
+                                        {tab.label}
+                                    </TabsTrigger>
+                                )
+                            ))}
+                        </TooltipProvider>
                     </TabsList>
                     <TabsContent value={getCurrentTab()}>
                         <Outlet context={{ course }} />

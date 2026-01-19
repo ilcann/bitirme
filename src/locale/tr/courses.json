@@ -57,5 +57,15 @@
             "type": "Tipler"
         },
         "resultsCount": "materyal"
+    },
+    "grades": {
+        "title": "Notlarım",
+        "description": "Ders notlarınızı ve sınav sonuçlarınızı görüntüleyin",
+        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız"
+    },
+    "attendance": {
+        "title": "Devamsızlık",
+        "description": "Devamsızlık durumunuzu takip edin",
+        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız"
     }
 }
