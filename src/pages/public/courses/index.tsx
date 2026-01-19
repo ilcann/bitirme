@@ -9,6 +9,7 @@ import { useCourses } from "@/hooks/use-courses";
 import { useViewMode } from "@/hooks/use-view-mode";
 import { BookOpen, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { PageHeader } from "@/components/common/page-header";
 import { motion } from "framer-motion";
 
@@ -16,6 +17,8 @@ const CoursesPage = () => {
   const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
   
   useDocumentTitle(
     t('courses.list.title'),
@@ -37,7 +40,8 @@ const CoursesPage = () => {
     goToPreviousPage,
   } = useCourses({
     audience,
-    initialLimit: 9
+    initialLimit: 9,
+    initialSearch: initialQuery
   });
 
   const { viewMode, setViewMode } = useViewMode();

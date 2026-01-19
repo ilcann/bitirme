@@ -7,14 +7,15 @@ import type { AudienceKey } from "@/config/audiences";
 interface UseCoursesOptions {
     audience?: AudienceKey;
     initialLimit?: number;
+    initialSearch?: string;
 }
 
 /**
  * Hook for fetching courses with server-side pagination, filtering, and sorting
  * Uses TanStack Query for data fetching and caching
  */
-export const useCourses = ({ audience, initialLimit = 20 }: UseCoursesOptions) => {
-    const [searchQuery, setSearchQuery] = useState("");
+export const useCourses = ({ audience, initialLimit = 20, initialSearch = "" }: UseCoursesOptions) => {
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
     const [currentPage, setCurrentPage] = useState(0);
     const [limit] = useState(initialLimit);
     const [sortBy, setSortBy] = useState<CourseSortBy>("students");
