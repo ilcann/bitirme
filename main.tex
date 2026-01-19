@@ -1,0 +1,746 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[turkish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={const, let, var, function, return, if, else, for, while, switch, case, break,
+  import, from, export, default, async, await, try, catch, throw, new, class, extends, super},
+  keywordstyle=\color{blue!60!black}\bfseries,
+  ndkeywords={true,false,null,undefined},
+  ndkeywordstyle=\color{teal!60!black}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{green!45!black},
+  stringstyle=\color{red!55!black},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\geometry{margin=2.5cm}
+
+\title{İTÜ Matematik Bölümü Ders Yönetim Sisteminin\\Modern Web Teknolojileri ile Yeniden Tasarımı}
+\author{
+    \textbf{Recep İlcan}\\[0.5em]
+    090210303\\[1.5em]
+    İstanbul Teknik Üniversitesi\\
+    Fen Edebiyat Fakültesi\\
+    Matematik Mühendisliği Bölümü\\[1.5em]
+    \textbf{MAT 4901}\\
+    \textbf{Matematik Müh. Tasarımı I}\\
+    \textbf{2025-2026 Güz Dönemi}
+}
+\date{Ocak 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Bu çalışmada, İstanbul Teknik Üniversitesi Matematik Bölümü'nün mevcut ders yönetim sisteminin modern web teknolojileri kullanılarak yeniden tasarlanması ele alınmaktadır. Eski sistem PHP, HTML ve Bootstrap gibi teknolojiler üzerine kurulu monolitik bir yapıya sahipken, yeni sistem React 19, TypeScript, Vite ve TailwindCSS v4 gibi güncel teknolojiler kullanılarak component tabanlı bir Single Page Application (SPA) olarak geliştirilmiştir. Bu modernizasyon çalışması ile kullanıcı deneyimi önemli ölçüde iyileştirilmiş, sayfa navigasyonu mantıksal bir yapıya kavuşturulmuş ve sistem bakım kolaylığı açısından sürdürülebilir hale getirilmiştir.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{Giriş}
+%==============================================================================
+
+İstanbul Teknik Üniversitesi Matematik Bölümü, öğrencilerine ders materyalleri, duyurular, sınav bilgileri ve çeşitli akademik kaynakları sunmak amacıyla bir web sitesi işletmektedir. Mevcut sistem 2016 yılından bu yana \url{https://mathavuz.itu.edu.tr/} adresinde hizmet vermekte olup, PHP/HTML/Bootstrap teknolojileri üzerine inşa edilmiştir. Zamanla artan kullanıcı beklentileri, mobil cihaz kullanımının yaygınlaşması ve modern web standartlarının gelişmesi ile birlikte sistemin yeniden tasarlanması ihtiyacı ortaya çıkmıştır.
+
+Bu bitirme projesi kapsamında, mevcut sistemin tüm işlevselliği korunarak modern web teknolojileri ile yeniden yazılması hedeflenmiştir. Proje, kullanıcı deneyimini ön planda tutarak, erişilebilirlik, performans ve bakım kolaylığı ilkelerine uygun şekilde geliştirilmiştir.
+
+\subsection{Proje Bağlantıları}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Açıklama} & \textbf{URL} \\
+\midrule
+Eski Sistem (Mevcut) & \url{https://mathavuz.itu.edu.tr/} \\
+Yeni Sistem (Bu Proje) & \url{https://web.itu.edu.tr/ilcan21/} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%==============================================================================
+\section{Mevcut Sistemin Analizi ve Problemler}
+%==============================================================================
+
+\subsection{Mimari Problemler}
+
+Eski sistem monolitik bir yapıya sahip olup, tüm içerik tek bir sayfa üzerinde sunulmaktaydı. Bu durum aşağıdaki problemlere yol açmaktaydı:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sayfa Yüklenme Süresi:} Tüm içeriğin tek sayfada bulunması, sayfa yüklenme süresini olumsuz etkilemekteydi.
+    \item \textbf{Navigasyon Karmaşıklığı:} Kullanıcılar aradıkları bilgiye ulaşmak için uzun sayfa kaydırma işlemleri yapmak zorundaydı.
+    \item \textbf{URL Yapısı:} Anlamlı URL'ler bulunmadığından, belirli içeriklere doğrudan bağlantı vermek mümkün değildi.
+    \item \textbf{SEO Uyumsuzluğu:} Tek sayfa yapısı arama motoru optimizasyonunu olumsuz etkilemekteydi.
+\end{itemize}
+
+\subsection{Hedef Kitle Yönetimi Problemi}
+
+Eski sistemde iki farklı hedef kitle için iki ayrı site bulunmaktaydı:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{MAT Havuz Dersleri Sitesi:} MAT 103/E ve MAT 104/E gibi tüm mühendislik fakültesi öğrencilerine açık dersler için
+    \item \textbf{MAT Bölümü Sitesi:} Matematik bölümü öğrencilerine özel dersler için
+\end{enumerate}
+
+Bu ayrım ciddi kullanılabilirlik sorunlarına neden olmaktaydı:
+
+\begin{itemize}
+    \item \textbf{Giriş Zorunluluğu:} Kullanıcı giriş yapmadan iki site arasında geçiş yapamamaktaydı. Havuz sitesinden bölüm sitesine erişmek için önce kullanıcı girişi gerekmekteydi.
+    \item \textbf{Tutarsız Arayüz:} İki site arasında tasarım tutarsızlıkları mevcuttu. Örneğin, havuz sitesinin hero bölümünde bölüm sitesine geçiş bağlantısı bulunurken, bölüm sitesinde bu imkân yoktu.
+    \item \textbf{Çift Bakım Yükü:} İki ayrı sitenin bakımı, güncelleme süreçlerini karmaşıklaştırmaktaydı.
+\end{itemize}
+
+\subsection{İçerik Organizasyonu Problemleri}
+
+Eski sistemde içerikler kategorize edilmeden tek sayfada listeleniyordu:
+
+\begin{itemize}[leftmargin=*]
+    \item Duyurular, ders materyalleri, sınav arşivi, çalışma soruları, önemli bilgiler ve yardım dokümanları hepsi aynı sayfada yer alıyordu.
+    \item Belirli bir derse ait materyallere ulaşmak için tüm sayfanın taranması gerekiyordu.
+    \item Arama ve filtreleme özellikleri bulunmuyordu.
+\end{itemize}
+
+%==============================================================================
+\section{Çözüm Yaklaşımı ve Teknoloji Seçimi}
+%==============================================================================
+
+\subsection{Teknoloji Yığını}
+
+Yeni sistem için modern ve sürdürülebilir bir teknoloji yığını seçilmiştir:
+
+\begin{table}[H]
+\centering
+\caption{Kullanılan Teknolojiler ve Versiyonları}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Kategori} & \textbf{Teknoloji} & \textbf{Versiyon} \\
+\midrule
+Framework & React & 19.2.0 \\
+Dil & TypeScript & 5.9.3 \\
+Build Tool & Vite & 7.2.4 \\
+Styling & TailwindCSS & 4.1.18 \\
+UI Components & shadcn/ui + Radix UI & En güncel \\
+Routing & React Router & 7.12.0 \\
+State Management & TanStack Query & 5.90.19 \\
+Internationalization & i18next & 25.7.4 \\
+Animations & Framer Motion & 12.26.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{shadcn/ui Kullanımı}
+
+Projede UI component kütüphanesi olarak \textbf{shadcn/ui} tercih edilmiştir. Bu seçimin temel gerekçeleri:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Erişilebilirlik (Accessibility):} shadcn/ui, Radix UI primitives üzerine inşa edilmiştir. Radix UI, WCAG standartlarına uygun, klavye navigasyonu ve ekran okuyucu desteği sunan erişilebilir componentler sağlamaktadır.
+    
+    \item \textbf{Özelleştirilebilirlik:} Componentler doğrudan proje içine kopyalanarak kullanıldığından, tam kontrol sağlanmaktadır. Bu yaklaşım, kütüphane güncellemelerinden bağımsızlık ve ihtiyaca özel modifikasyon imkânı sunmaktadır.
+    
+    \item \textbf{TailwindCSS Entegrasyonu:} shadcn/ui, TailwindCSS ile native olarak çalışacak şekilde tasarlanmıştır. Bu sayede tutarlı bir styling deneyimi elde edilmektedir.
+    
+    \item \textbf{Hazır Componentler:} Button, Card, Input, Dropdown Menu, Tabs, Accordion, Navigation Menu gibi yaygın kullanılan componentler production-ready kalitede sunulmaktadır.
+\end{itemize}
+
+Projede kullanılan başlıca shadcn/ui componentleri:
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+components/ui/
+|-- accordion.tsx        # Yardim sayfasi SSS bolumu
+|-- alert.tsx            # Bilgilendirme mesajlari
+|-- badge.tsx            # Etiketler ve durumlar
+|-- button.tsx           # Tum butonlar
+|-- card.tsx             # Ders ve duyuru kartlari
+|-- dropdown-menu.tsx    # Filtre menuleri
+|-- input.tsx            # Arama kutulari
+|-- navigation-menu.tsx  # Ana navigasyon
+|-- tabs.tsx             # Ders detay sekmeleri
+|-- tooltip.tsx          # Ipucu bilgileri
+`-- sheet.tsx            # Mobil menu
+\end{lstlisting}
+
+%==============================================================================
+\section{Uygulanan Çözümler}
+%==============================================================================
+
+\subsection{Birleşik Hedef Kitle Yönetimi}
+
+Eski sistemdeki iki ayrı site problemi, tek bir uygulama içinde \textbf{Audience Provider} pattern'ı ile çözülmüştür.
+
+\subsubsection{Teknik Implementasyon}
+
+React Context API kullanılarak global bir audience state yönetimi oluşturulmuştur:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+// providers/audience-provider.tsx
+export function AudienceProvider({
+  children,
+  defaultAudience = 'department',
+  storageKey = 'app-audience'
+}) {
+  const [audience, setAudienceState] = useState<AudienceKey>(
+    () => localStorage.getItem(storageKey) || defaultAudience
+  );
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, audience);
+  }, [audience, storageKey]);
+
+  return (
+    <AudienceContext.Provider value={{ audience, setAudience }}>
+      {children}
+    </AudienceContext.Provider>
+  );
+}
+\end{lstlisting}
+
+\subsubsection{Kullanıcı Deneyimi İyileştirmeleri}
+
+\begin{itemize}
+    \item \textbf{Header'da Geçiş Butonu:} Kullanıcı girişi gerektirmeksizin, header bölümüne eklenen ``Audience Toggle'' butonu ile iki hedef kitle arasında anlık geçiş sağlanmaktadır.
+    
+    \item \textbf{LocalStorage Persistance:} Kullanıcının tercihi tarayıcıda saklanarak, sonraki ziyaretlerde otomatik olarak hatırlanmaktadır.
+    
+    \item \textbf{Hero Bölümü Sadeleştirmesi:} Eski sistemdeki tutarsız hero bölümü geçiş bağlantıları kaldırılmış, bunun yerine header'daki buton üzerinden bilgilendirici tooltip ile yönlendirme yapılmaktadır.
+    
+    \item \textbf{Dinamik İçerik Filtreleme:} Seçilen hedef kitleye göre dersler, duyurular ve materyaller otomatik olarak filtrelenmektedir.
+\end{itemize}
+
+\subsection{Modüler Sayfa Yapısı}
+
+Eski sistemdeki tek sayfa yapısı, mantıksal olarak gruplandırılmış ayrı sayfalara bölünmüştür:
+
+\begin{table}[H]
+\centering
+\caption{Sayfa Yapısı Karşılaştırması}
+\begin{tabular}{@{}p{5cm}p{6cm}@{}}
+\toprule
+\textbf{Eski Sistem} & \textbf{Yeni Sistem} \\
+\midrule
+Tüm dersler ana sayfada liste & /courses - Arama ve filtreleme destekli ders kataloğu \\
+\addlinespace
+Duyurular ana sayfada & /announcements - Ayrı sayfa, gelişmiş filtreleme \\
+\addlinespace
+Ders materyalleri ana sayfada & /courses/:id/materials - Derse özel materyal sayfası \\
+\addlinespace
+Sınav arşivi ana sayfada & /courses/:id/materials - Materyal tipi filtresi ile \\
+\addlinespace
+Önemli bilgiler ana sayfada & /help - Ayrı yardım sayfası \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Duyuru Sistemi Yeniden Tasarımı}
+
+Eski sistemde duyurular basit bir liste halinde ana sayfada gösterilmekteydi. Yeni sistemde kapsamlı bir duyuru yönetimi oluşturulmuştur:
+
+\subsubsection{Özellikler}
+
+\begin{itemize}
+    \item \textbf{Ayrı Sayfa (/announcements):} Duyurular artık kendi sayfasında, pagination ile listelenmektedir.
+    
+    \item \textbf{Gerçek Zamanlı Arama:} Kullanıcılar duyuru başlığı veya içeriğinde arama yapabilmektedir.
+    
+    \item \textbf{Gelişmiş Filtreleme:}
+    \begin{itemize}
+        \item Yeni/okunmamış duyuruları gösterme
+        \item Derse göre filtreleme (ders seçici dropdown)
+        \item Tarih aralığına göre filtreleme
+    \end{itemize}
+    
+    \item \textbf{Detay Sayfası (/announcements/:id):} Her duyurunun kendi detay sayfası bulunmaktadır.
+    
+    \item \textbf{Derse Özel Erişim:} Ders detay sayfasındaki ``Duyurular'' sekmesinden o derse ait duyurulara doğrudan erişim sağlanmaktadır.
+\end{itemize}
+
+\subsubsection{Custom Hook Kullanımı}
+
+Duyuru verilerinin yönetimi için özel bir hook geliştirilmiştir:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+const {
+    announcements,
+    total,
+    isLoading,
+    searchQuery,
+    showOnlyNew,
+    selectedCourses,
+    dateFilter,
+    activeFilterCount,
+    updateSearch,
+    toggleCourse,
+    goToNextPage,
+    clearAllFilters,
+} = useAnnouncements({ audience, initialLimit: 5 });
+\end{lstlisting}
+
+\subsection{Ders Detay Sayfası Tasarımı}
+
+Yeni sistemin en önemli iyileştirmelerinden biri, her ders için özel detay sayfalarının oluşturulmasıdır.
+
+\subsubsection{Tab Tabanlı Navigasyon}
+
+Ders detay sayfası (/courses/:courseId) dört ana sekmeden oluşmaktadır:
+
+\begin{enumerate}
+    \item \textbf{Genel Bakış (Overview):} Ders hakkında özet bilgiler
+    \item \textbf{Materyaller (Materials):} Ders notları, ödevler, sınavlar
+    \item \textbf{Duyurular (Announcements):} Derse özel duyurular
+    \item \textbf{Ders Bilgileri (Info):} Detaylı ders bilgileri
+\end{enumerate}
+
+\textit{Not:} Mevcut prototipte ``Genel Bakış'' ve ``Ders Bilgileri'' sekmeleri henüz içerik ile doldurulmamıştır. Bu sayfalar, backend API entegrasyonu sırasında gerçek ders verileri ile tamamlanacaktır.
+
+\subsubsection{URL Senkronizasyonu}
+
+Tab değişimleri URL'e yansıtılmaktadır. Bu sayede:
+\begin{itemize}
+    \item Kullanıcılar belirli sekmelere doğrudan bağlantı paylaşabilmektedir
+    \item Tarayıcı geri/ileri butonları beklendiği gibi çalışmaktadır
+    \item Sayfa yenilendiğinde kullanıcı aynı sekmede kalmaktadır
+\end{itemize}
+
+\subsubsection{Materyal Yönetimi}
+
+Ders materyalleri sayfası (/courses/:courseId/materials) aşağıdaki özelliklere sahiptir:
+
+\begin{itemize}
+    \item \textbf{Tip Filtreleme:} Ders notu, ödev, sınav, doküman, video, bağlantı kategorileri
+    \item \textbf{Sıralama Seçenekleri:} En yeni, en eski, başlığa göre
+    \item \textbf{Arama:} Materyal başlığında gerçek zamanlı arama
+    \item \textbf{Pagination:} Server-side sayfalama ile performans optimizasyonu
+\end{itemize}
+
+\subsection{Yardım Sayfası (/help)}
+
+Eski sistemde ana sayfanın ``Önemli Bilgiler'' bölümünde yer alan içerikler, ayrı bir yardım sayfasına taşınmıştır.
+
+\subsubsection{İçerik Yapısı}
+
+\begin{itemize}
+    \item \textbf{Hızlı Erişim Kartları:}
+    \begin{itemize}
+        \item Kısa Sınav Rehberi (PDF)
+        \item Optik Yanıt Kağıdı (PDF)
+        \item Mazeret Sınavları Bilgilendirmesi (PDF)
+        \item Sınav Sonuçlarına İtiraz (PDF)
+    \end{itemize}
+    
+    \item \textbf{Accordion Yapısında Detaylı Bilgiler:}
+    \begin{itemize}
+        \item Sınav kuralları ve düzenlemeleri
+        \item Not hesaplama yöntemleri
+        \item İletişim bilgileri
+    \end{itemize}
+\end{itemize}
+
+%==============================================================================
+\section{Teknik Mimari}
+%==============================================================================
+
+\subsection{Proje Klasör Yapısı}
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+src/
+|-- components/
+|   |-- common/            # Paylasilan componentler
+|   |   |-- course-card.tsx
+|   |   |-- announcement-card.tsx
+|   |   |-- material-card.tsx
+|   |   |-- page-header.tsx
+|   |   `-- app-header/
+|   `-- ui/                # shadcn/ui componentleri
+|-- hooks/                 # Custom React hooks
+|   |-- use-courses.ts
+|   |-- use-materials.ts
+|   |-- use-announcements.ts
+|   `-- use-document-title.ts
+|-- services/              # API servis katmani
+|   |-- courses.service.ts
+|   |-- materials.service.ts
+|   `-- announcements.service.ts
+|-- providers/             # Context providers
+|   |-- theme-provider.tsx
+|   |-- language-provider.tsx
+|   `-- audience-provider.tsx
+|-- locale/                # i18n ceviri dosyalari
+|   |-- tr/
+|   `-- en/
+|-- types/                 # TypeScript type definitions
+|-- mock/                  # Mock veri dosyalari
+|   |-- courses.ts
+|   |-- materials.ts
+|   `-- announcements.ts
+|-- pages/                 # Sayfa componentleri
+|   |-- public/
+|   |   |-- home/
+|   |   |-- courses/
+|   |   |-- announcements/
+|   |   `-- help/
+|   |-- protected/
+|   `-- errors/
+`-- routes/                # Routing konfigurasyonu
+\end{lstlisting}
+
+\subsection{Mock Data Yapısı ve Servis Katmanı}
+
+Bu projede gerçek bir backend API kullanılmamıştır. Bunun yerine, frontend geliştirme sürecini hızlandırmak ve uygulamanın işlevselliğini test etmek amacıyla \textbf{mock (sahte) veri} yapısı oluşturulmuştur. Servis methodları, gelecekte gerçek API entegrasyonuna geçişi kolaylaştıracak şekilde tasarlanmıştır.
+
+\subsubsection{Mock Veri Klasör Yapısı}
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+src/mock/
+|-- courses.ts        # Ders verileri (13 ders)
+|-- materials.ts      # Ders materyalleri (500+ materyal)
+`-- announcements.ts  # Duyurular (12 duyuru)
+\end{lstlisting}
+
+\subsubsection{Veri Modelleri}
+
+Her veri tipi için TypeScript interface'leri tanımlanmıştır:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+// types/course.ts
+interface Course {
+    id: string;
+    code: string;
+    title: { tr: string; en: string };
+    students: number;
+    color: string;
+    audience: AudienceKey; // "department" | "common"
+}
+
+// types/course-material.ts
+interface CourseMaterial {
+    id: string;
+    courseId: string;
+    title: { tr: string; en: string };
+    type: MaterialType; // "lecture"|"assignment"|"exam"|...
+    date: string;
+    size?: string;
+    url?: string;
+    description?: { tr: string; en: string };
+}
+
+// types/announcement.ts
+interface Announcement {
+    id: string;
+    title: { tr: string; en: string };
+    description: { tr: string; en: string };
+    date: string;
+    courseId: string;
+    audience: AudienceKey;
+    isNew: boolean;
+}
+\end{lstlisting}
+
+\subsubsection{Servis Katmanı Tasarımı}
+
+Servis fonksiyonları, gerçek bir API'den veri çeker gibi tasarlanmıştır. Bu sayede ileride backend entegrasyonu yapılırken yalnızca servis dosyalarının güncellenmesi yeterli olacaktır:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+// services/courses.service.ts
+export const getCourses = async (params: GetCoursesParams): 
+    Promise<GetCoursesResponse> => {
+    const { audience, offset, limit, search, sortBy } = params;
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    let courses = MockCourses;
+
+    // Filter by audience
+    if (audience) {
+        courses = courses.filter(c => c.audience === audience);
+    }
+
+    // Search in code and title
+    if (search?.trim()) {
+        const q = search.toLowerCase();
+        courses = courses.filter(c => 
+            c.code.toLowerCase().includes(q) ||
+            c.title.tr.toLowerCase().includes(q) ||
+            c.title.en.toLowerCase().includes(q)
+        );
+    }
+
+    // Pagination
+    const total = courses.length;
+    const paginatedCourses = courses.slice(offset, offset + limit);
+
+    return { data: paginatedCourses, total, hasMore: offset+limit < total };
+};
+\end{lstlisting}
+
+\subsubsection{Mock Veri Özellikleri}
+
+\begin{itemize}
+    \item \textbf{Gerçekçi Veri:} Mock veriler, İTÜ Matematik Bölümü'nün gerçek ders kodları ve içerikleri baz alınarak oluşturulmuştur (MAT 103/E, MAT 104/E, MAT 251/E vb.).
+    
+    \item \textbf{Çift Dil Desteği:} Tüm metin alanları hem Türkçe hem İngilizce olarak tanımlanmıştır.
+    
+    \item \textbf{Hedef Kitle Ayrımı:} Her veri kaydı \texttt{audience} alanı ile ``department'' veya ``common'' olarak etiketlenmiştir.
+    
+    \item \textbf{Simüle Edilmiş Gecikme:} API çağrıları 100ms yapay gecikme ile simüle edilmekte, bu sayede loading state'leri test edilebilmektedir.
+    
+    \item \textbf{Server-Side İşlemler:} Filtreleme, arama, sıralama ve sayfalama işlemleri servis katmanında yapılmakta, gerçek bir backend davranışı taklit edilmektedir.
+\end{itemize}
+
+\subsubsection{API Entegrasyonu İçin Hazırlık}
+
+Mevcut mimari, backend entegrasyonunu kolaylaştıracak şekilde tasarlanmıştır:
+
+\begin{enumerate}
+    \item \textbf{Servis Soyutlaması:} Componentler doğrudan mock veriye erişmez, servis fonksiyonları üzerinden veri alır.
+    
+    \item \textbf{Type Safety:} TypeScript interface'leri sayesinde API response yapısı önceden tanımlıdır.
+    
+    \item \textbf{TanStack Query Entegrasyonu:} Veri çekme işlemleri TanStack Query ile yapılmakta, cache ve refetch mekanizmaları hazırdır.
+    
+    \item \textbf{Tek Değişiklik Noktası:} Gerçek API'ye geçişte yalnızca servis dosyalarındaki \texttt{MockData} import'ları \texttt{fetch} çağrıları ile değiştirilecektir.
+\end{enumerate}
+
+\subsection{State Management Stratejisi}
+
+Projede üç katmanlı bir state yönetimi stratejisi uygulanmıştır:
+
+\begin{enumerate}
+    \item \textbf{Server State (TanStack Query):} API'den gelen veriler için. Caching, background refetch, pagination desteği sağlar.
+    
+    \item \textbf{Global Client State (Context API):} Tema, dil ve hedef kitle gibi uygulama genelinde paylaşılan durumlar için.
+    
+    \item \textbf{Local Component State (useState):} Form inputları, açık/kapalı durumları gibi component-specific durumlar için.
+\end{enumerate}
+
+\subsection{Routing Yapısı}
+
+React Router v7 ile nested routing implementasyonu:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+const router = createBrowserRouter([
+  {
+    path: "/:lang?",
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: "courses",
+        children: [
+          { index: true, element: <CoursesPage /> },
+          {
+            path: ":courseId",
+            element: <CoursePage />,
+            children: [
+              { index: true, element: <CourseOverviewPage /> },
+              { path: "materials", element: <CourseMaterialsPage /> },
+              { path: "announcements", element: <CourseAnnouncementsPage /> },
+              { path: "info", element: <CourseInfoPage /> }
+            ]
+          }
+        ]
+      },
+      { path: "announcements", element: <AnnouncementsPage /> },
+      { path: "help", element: <HelpPage /> },
+    ]
+  }
+]);
+\end{lstlisting}
+
+%==============================================================================
+\section{Performans Optimizasyonları}
+%==============================================================================
+
+\subsection{Code Splitting ve Lazy Loading}
+
+Tüm sayfa componentleri \texttt{React.lazy()} ile dinamik olarak import edilmektedir:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+const CoursesPage = lazy(() => import("@/pages/public/courses"));
+const HelpPage = lazy(() => import("@/pages/public/help"));
+\end{lstlisting}
+
+Bu yaklaşım ile initial bundle size minimize edilmekte ve sayfalar yalnızca ihtiyaç duyulduğunda yüklenmektedir. 
+
+Bu sayede uygulamanın ilk yüklenme süresi azaltılmış ve kullanıcı deneyimi iyileştirilmiştir. Sayfalar yalnızca ihtiyaç duyulduğunda yüklendiği için gereksiz JavaScript kodlarının indirilmesi engellenmiş, uygulama daha verimli ve ölçeklenebilir bir yapıya kavuşmuştur.
+
+\subsection{Query Caching}
+
+TanStack Query ile server state caching:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+const { data, isLoading } = useQuery({
+    queryKey: ["courses", queryParams],
+    queryFn: () => getCourses(queryParams),
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000, // 5 dakika cache
+});
+\end{lstlisting}
+
+TanStack Query, sunucudan alınan verilerin geçici olarak saklanmasını sağlayarak aynı verinin tekrar tekrar istenmesini engeller. Bu sayede uygulama daha hızlı çalışır ve kullanıcı sayfalar arasında geçiş yaparken daha akıcı bir deneyim yaşar.
+
+\subsection{Skeleton Loading States}
+
+Kullanıcı deneyimini iyileştirmek için veri yüklenirken skeleton componentler gösterilmektedir. Bu yaklaşım, içerik yüklenme süresinin algılanan uzunluğunu azaltmaktadır.
+
+%==============================================================================
+\section{Çoklu Dil Desteği}
+%==============================================================================
+
+Sistem, Türkçe ve İngilizce olmak üzere iki dili desteklemektedir. i18next kütüphanesi ile namespace-based çeviri yapısı kullanılmıştır:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+locale/
+|-- tr/
+|   |-- common.json        # Genel ceviriler
+|   |-- courses.json       # Ders sayfasi cevirileri
+|   |-- announcements.json
+|   |-- help.json
+|   `-- errors.json
+`-- en/
+    `-- (ayni yapi)
+\end{lstlisting}
+
+%==============================================================================
+\section{Tema Desteği}
+%==============================================================================
+
+Sistem üç tema modunu desteklemektedir:
+\begin{itemize}
+    \item \textbf{Light Mode:} Açık tema
+    \item \textbf{Dark Mode:} Koyu tema (varsayılan)
+    \item \textbf{System:} İşletim sistemi tercihine göre otomatik
+\end{itemize}
+
+Tema tercihi LocalStorage'da saklanarak kalıcı hale getirilmektedir.
+
+%==============================================================================
+\section{Sonuç ve Değerlendirme}
+%==============================================================================
+
+Bu bitirme projesi kapsamında, İTÜ Matematik Bölümü ders yönetim sistemi modern web teknolojileri kullanılarak baştan sona yeniden tasarlanmıştır. Geliştirilen yeni sistem \url{https://web.itu.edu.tr/ilcan21/} adresinde canlı olarak erişime sunulmuştur.
+
+Gerçekleştirilen başlıca iyileştirmeler:
+
+\begin{enumerate}
+    \item \textbf{Birleşik Platform:} İki ayrı site tek bir uygulamada birleştirilmiş, giriş gerektirmeksizin hedef kitle geçişi sağlanmıştır.
+    
+    \item \textbf{Modüler Yapı:} Tek sayfa yapısından, mantıksal olarak gruplandırılmış sayfa yapısına geçilmiştir.
+    
+    \item \textbf{Gelişmiş Arama ve Filtreleme:} Tüm sayfalara gerçek zamanlı arama ve çoklu filtreleme özellikleri eklenmiştir.
+    
+    \item \textbf{Ders Odaklı Navigasyon:} Her ders için özel detay sayfaları oluşturulmuş, materyaller ve duyurular derse göre organize edilmiştir.
+    
+    \item \textbf{Modern UX:} Dark mode, responsive tasarım, animasyonlar ve skeleton loading ile kullanıcı deneyimi iyileştirilmiştir.
+    
+    \item \textbf{Çoklu Dil Desteği:} Türkçe ve İngilizce dil seçenekleri eklenmiştir.
+    
+    \item \textbf{Bakım Kolaylığı:} Component-based mimari ve TypeScript ile kod kalitesi artırılmıştır.
+\end{enumerate}
+
+%==============================================================================
+\section{Gelecek Çalışmalar}
+%==============================================================================
+
+\begin{itemize}
+    \item Backend API entegrasyonu (mock data'dan gerçek API'ye geçiş)
+    \item \textbf{Ders Özeti ve Bilgileri Sayfaları:} Ders detay sayfasındaki ``Genel Bakış'' ve ``Ders Bilgileri'' sekmelerinin gerçek verilerle doldurulması (ders açıklaması, ön koşullar, öğretim üyeleri, AKTS bilgileri, haftalık ders planı vb.)
+    \item Kullanıcı kimlik doğrulama sistemi
+    \item Kişisel not takibi ve yoklama modülleri
+    
+\end{itemize}
+
+%==============================================================================
+\section{Kaynakça}
+%==============================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{react}
+React - A JavaScript library for building user interfaces.
+\url{https://react.dev}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{typescript}
+TypeScript - JavaScript with syntax for types.
+\url{https://www.typescriptlang.org}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{vite}
+Vite - Next Generation Frontend Tooling.
+\url{https://vite.dev}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{tailwindcss}
+Tailwind CSS - A utility-first CSS framework.
+\url{https://tailwindcss.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{shadcn}
+shadcn/ui - Beautifully designed components built with Radix UI and Tailwind CSS.
+\url{https://ui.shadcn.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{radixui}
+Radix UI - Unstyled, accessible components for building high‑quality design systems.
+\url{https://radix-ui.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{reactrouter}
+React Router - Declarative routing for React.
+\url{https://reactrouter.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{tanstack}
+TanStack Query - Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte.
+\url{https://tanstack.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{i18next}
+i18next - internationalization framework.
+\url{https://i18next.com}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{motion}
+Motion - Production-ready animation library for React.
+\url{https://motion.dev}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{lucide}
+Lucide - Beautiful \& consistent icon toolkit.
+\url{https://lucide.dev}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{magicui}
+Magic UI - React components to build beautiful landing pages.
+\url{https://magicui.design}
+(Erişim Tarihi: Ocak 2026)
+
+\bibitem{aceternity}
+Aceternity UI - Modern UI components for React.
+\url{https://aceternity.com}
+(Erişim Tarihi: Ocak 2026)
+
+\end{thebibliography}
+
+\end{document}

@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+# İTÜ Matematik Bölümü Ders Yönetim Sistemi
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> İstanbul Teknik Üniversitesi Matematik Bölümü'nün ders yönetim sisteminin modern web teknolojileri ile yeniden tasarımı.
 
-Currently, two official plugins are available:
+## 🔗 Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Ortam | URL |
+|-------|-----|
+| **Yeni Sistem** | [web.itu.edu.tr/ilcan21](https://web.itu.edu.tr/ilcan21/) |
+| **Eski Sistem** | [mathavuz.itu.edu.tr](https://mathavuz.itu.edu.tr/) |
 
-## React Compiler
+## ✨ Özellikler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🎯 **Birleşik Hedef Kitle** - Havuz ve bölüm dersleri tek platformda
+- 🌐 **Çoklu Dil Desteği** - Türkçe ve İngilizce
+- 🌙 **Karanlık Mod** - Sistem temasına uyumlu
+- 📱 **Responsive Tasarım** - Mobil uyumlu arayüz
+- ⚡ **SPA Mimarisi** - Hızlı sayfa geçişleri
+- ♿ **Erişilebilirlik** - WCAG uyumlu componentler
 
-## Expanding the ESLint configuration
+## 🛠️ Teknoloji Yığını
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Kategori | Teknoloji |
+|----------|-----------|
+| Framework | React 19 |
+| Dil | TypeScript |
+| Build Tool | Vite |
+| Styling | TailwindCSS v4 |
+| UI | shadcn/ui + Radix UI |
+| Routing | React Router 7 |
+| State | TanStack Query |
+| i18n | i18next |
+| Animasyon | Framer Motion |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Kurulum
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Bağımlılıkları yükle
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Geliştirme sunucusunu başlat
+npm run dev
+
+# Production build
+npm run build
+
+# Build önizleme
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📁 Proje Yapısı
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── components/     # UI componentleri
+│   ├── common/     # Ortak componentler
+│   └── ui/         # shadcn/ui componentleri
+├── config/         # Uygulama konfigürasyonu
+├── hooks/          # Custom React hooks
+├── lib/            # Yardımcı fonksiyonlar
+├── locale/         # Çeviri dosyaları (TR/EN)
+├── pages/          # Sayfa componentleri
+├── providers/      # Context providers
+├── routes/         # Routing yapılandırması
+├── services/       # API servisleri
+└── types/          # TypeScript tipleri
+```
+
+## 📝 Lisans
+
+Bu proje İTÜ Matematik Mühendisliği Bölümü bitirme projesi kapsamında geliştirilmiştir.
+
+---
+
+**MAT 4901** - Matematik Müh. Tasarımı I | 2025-2026 Güz Dönemi
