@@ -59,6 +59,16 @@ const AnnouncementsPage = () => {
 
     const newCount = announcements.filter(a => a.isNew).length;
 
+    const handleNextPage = () => {
+        goToNextPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handlePreviousPage = () => {
+        goToPreviousPage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
             <div className="space-y-8">
@@ -206,7 +216,7 @@ const AnnouncementsPage = () => {
                 ) : announcements.length > 0 ? (
                     <>
                         <motion.div
-                            key={`${searchQuery}-${showOnlyNew}-${selectedCourses.join('-')}-${dateFilter}`}
+                            key={`${searchQuery}-${showOnlyNew}-${selectedCourses.join('-')}-${dateFilter}-${currentPage}`}
                             className="space-y-4"
                             initial="hidden"
                             animate="visible"
@@ -246,7 +256,7 @@ const AnnouncementsPage = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={goToPreviousPage}
+                                    onClick={handlePreviousPage}
                                     disabled={!hasPreviousPage || isFetching}
                                 >
                                     <ChevronLeft className="h-4 w-4 mr-1" />
@@ -255,7 +265,7 @@ const AnnouncementsPage = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={goToNextPage}
+                                    onClick={handleNextPage}
                                     disabled={!hasNextPage || isFetching}
                                 >
                                     {t('common.pagination.next')}

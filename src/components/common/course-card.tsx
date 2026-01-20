@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { GradientButton } from "@/components/common/gradient-button";
 import { BookOpen, FileText, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 
 type CourseCardProps = {
@@ -25,7 +24,8 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       text: 'text-chart-1',
       border: 'border-chart-1/20',
       hoverBorder: 'hover:border-chart-1/40',
-      gradient: 'from-chart-1/5 to-transparent'
+      gradient: 'from-chart-1/5 to-transparent',
+      hoverText: 'group-hover:text-chart-1'
     },
     'chart-2': {
       bg: 'bg-chart-2',
@@ -33,7 +33,8 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       text: 'text-chart-2',
       border: 'border-chart-2/20',
       hoverBorder: 'hover:border-chart-2/40',
-      gradient: 'from-chart-2/5 to-transparent'
+      gradient: 'from-chart-2/5 to-transparent',
+      hoverText: 'group-hover:text-chart-2'
     },
     'chart-3': {
       bg: 'bg-chart-3',
@@ -41,7 +42,8 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       text: 'text-chart-3',
       border: 'border-chart-3/20',
       hoverBorder: 'hover:border-chart-3/40',
-      gradient: 'from-chart-3/5 to-transparent'
+      gradient: 'from-chart-3/5 to-transparent',
+      hoverText: 'group-hover:text-chart-3'
     },
     'chart-4': {
       bg: 'bg-chart-4',
@@ -49,7 +51,8 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       text: 'text-chart-4',
       border: 'border-chart-4/20',
       hoverBorder: 'hover:border-chart-4/40',
-      gradient: 'from-chart-4/5 to-transparent'
+      gradient: 'from-chart-4/5 to-transparent',
+      hoverText: 'group-hover:text-chart-4'
     },
     'chart-5': {
       bg: 'bg-chart-5',
@@ -57,7 +60,8 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       text: 'text-chart-5',
       border: 'border-chart-5/20',
       hoverBorder: 'hover:border-chart-5/40',
-      gradient: 'from-chart-5/5 to-transparent'
+      gradient: 'from-chart-5/5 to-transparent',
+      hoverText: 'group-hover:text-chart-5'
     }
   };
 
@@ -80,7 +84,10 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
                 <BookOpen className={`h-6 w-6 ${colors.text}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors duration-200 mb-2">
+                <h3 className={cn(
+                  "font-bold text-xl leading-tight transition-colors duration-200 mb-2",
+                  colors.hoverText
+                )}>
                   {code}
                 </h3>
                 <p className="text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3">
@@ -96,26 +103,24 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
 
             {/* Right: Actions */}
             <div className="flex sm:flex-col gap-2 sm:min-w-40">
-              <Button 
-                asChild 
-                size="default" 
-                className="flex-1 sm:w-full rounded-lg font-medium h-10"
+              <GradientButton
+                to={`/courses/${id}`}
+                color={color}
+                size="default"
+                className="flex-1 sm:w-full h-10 font-medium"
               >
-                <Link to={`/courses/${id}`}>
-                  {t("home.featured.open")}
-                </Link>
-              </Button>
-              <Button 
-                asChild 
-                size="default" 
-                variant="outline" 
-                className="flex-1 sm:w-full rounded-lg font-medium h-10"
+                {t("home.featured.open")}
+              </GradientButton>
+              <GradientButton
+                to={`/courses/${id}/materials`}
+                color={color}
+                size="default"
+                variant="ghost"
+                className="flex-1 sm:w-full h-10 font-medium"
               >
-                <Link to={`/courses/${id}/materials`}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  {t("home.featured.materials")}
-                </Link>
-              </Button>
+                <FileText className="mr-2 h-4 w-4" />
+                {t("home.featured.materials")}
+              </GradientButton>
             </div>
           </div>
         </CardContent>
@@ -139,7 +144,10 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
             <BookOpen className={`h-5 w-5 ${colors.text}`} />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-base leading-tight group-hover:text-primary transition-colors duration-200 mb-1.5">
+            <h3 className={cn(
+              "font-bold text-base leading-tight transition-colors duration-200 mb-1.5",
+              colors.hoverText
+            )}>
               {code}
             </h3>
             <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
@@ -157,26 +165,24 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-2">
-          <Button 
-            asChild 
-            size="sm" 
-            className="rounded-lg font-medium h-9"
+          <GradientButton
+            to={`/courses/${id}`}
+            color={color}
+            size="sm"
+            className="font-medium h-9"
           >
-            <Link to={`/courses/${id}`}>
-              {t("home.featured.open")}
-            </Link>
-          </Button>
-          <Button 
-            asChild 
-            size="sm" 
-            variant="outline" 
-            className="rounded-lg font-medium h-9"
+            {t("home.featured.open")}
+          </GradientButton>
+          <GradientButton
+            to={`/courses/${id}/materials`}
+            color={color}
+            size="sm"
+            variant="ghost"
+            className="font-medium h-9"
           >
-            <Link to={`/courses/${id}/materials`}>
-              <FileText className="mr-1.5 h-3.5 w-3.5" />
-              {t("home.featured.materials")}
-            </Link>
-          </Button>
+            <FileText className="mr-1.5 h-3.5 w-3.5" />
+            {t("home.featured.materials")}
+          </GradientButton>
         </div>
       </CardContent>
     </Card>

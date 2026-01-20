@@ -46,6 +46,16 @@ const CoursesPage = () => {
 
   const { viewMode, setViewMode } = useViewMode();
 
+  const handleNextPage = () => {
+    goToNextPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePreviousPage = () => {
+    goToPreviousPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 md:py-10">
       <div className="space-y-8">
@@ -137,7 +147,7 @@ const CoursesPage = () => {
         ) : courses.length > 0 ? (
           <>
             <motion.div
-              key={`${searchQuery}-${viewMode}`}
+              key={`${searchQuery}-${viewMode}-${currentPage}`}
               className={
                 viewMode === "compact"
                   ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
@@ -180,7 +190,7 @@ const CoursesPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={goToPreviousPage}
+                  onClick={handlePreviousPage}
                   disabled={!hasPreviousPage || isFetching}
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
@@ -189,7 +199,7 @@ const CoursesPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={goToNextPage}
+                  onClick={handleNextPage}
                   disabled={!hasNextPage || isFetching}
                 >
                   {t('common.pagination.next')}

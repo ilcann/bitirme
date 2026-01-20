@@ -1,8 +1,7 @@
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { GradientButton } from "@/components/common/gradient-button";
 import { ArrowRight, Bell, Calendar } from "lucide-react";
-import { Button } from "../ui/button";
-import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 
 interface AnnouncementCardProps {
@@ -24,13 +23,17 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
         bgLight: 'bg-chart-5/10',
         text: 'text-chart-5',
         hoverBorder: 'hover:border-chart-5/40',
-        gradient: 'from-chart-5/5 to-transparent'
+        gradient: 'from-chart-5/5 to-transparent',
+        color: 'chart-5',
+        hoverText: 'group-hover:text-chart-5'
     } : {
         accent: 'bg-chart-3',
         bgLight: 'bg-chart-3/10',
         text: 'text-chart-3',
         hoverBorder: 'hover:border-chart-3/40',
-        gradient: 'from-chart-3/5 to-transparent'
+        gradient: 'from-chart-3/5 to-transparent',
+        color: 'chart-3',
+        hoverText: 'group-hover:text-chart-3'
     };
 
     if (variant === 'wide') {
@@ -59,7 +62,7 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
                                         </Badge>
                                     )}
                                 </div>
-                                <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors duration-200 mb-2">
+                                <h3 className={`font-bold text-xl leading-tight transition-colors duration-200 mb-2 ${colors.hoverText}`}>
                                     {title}
                                 </h3>
                                 <p className="text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3">
@@ -74,15 +77,15 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
 
                         {/* Right: Action */}
                         <div className="flex sm:flex-col sm:min-w-40">
-                            <Button 
-                                asChild 
-                                className="w-full rounded-lg font-medium h-10"
+                            <GradientButton
+                                to={`/announcements/${id}`}
+                                color={colors.color}
+                                size="default"
+                                className="w-full font-medium h-10"
                             >
-                                <Link to={`/announcements/${id}`}>
-                                    {t("viewTheAnnouncement")}
-                                    <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
-                                </Link>
-                            </Button>
+                                {t("viewTheAnnouncement")}
+                                <ArrowRight className="h-4 w-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+                            </GradientButton>
                         </div>
                     </div>
                 </CardContent>
@@ -112,7 +115,7 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
                                 </Badge>
                             )}
                         </div>
-                        <h3 className="font-bold text-base leading-tight group-hover:text-primary transition-colors duration-200 line-clamp-2 mb-2">
+                        <h3 className={`font-bold text-base leading-tight transition-colors duration-200 line-clamp-2 mb-2 ${colors.hoverText}`}>
                             {title}
                         </h3>
                         <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
@@ -130,16 +133,15 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
                     </div>
 
                     {/* Action */}
-                    <Button 
-                        asChild 
-                        size="sm" 
+                    <GradientButton
+                        to={`/announcements/${id}`}
+                        color={colors.color}
+                        size="sm"
                         className="w-full justify-between px-3 group/btn h-9"
                     >
-                        <Link to={`/announcements/${id}`}>
-                            {t("viewTheAnnouncement")}
-                            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
-                        </Link>
-                    </Button>
+                        {t("viewTheAnnouncement")}
+                        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                    </GradientButton>
                 </div>
             </CardContent>
         </Card>

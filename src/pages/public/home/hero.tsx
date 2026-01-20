@@ -1,13 +1,12 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { GradientButton } from "@/components/common/gradient-button";
 import { Highlighter } from "@/components/ui/highlighter";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Bell, BookOpen, Megaphone, Scale, Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
-import { Button as CTAButton } from "@/components/ui/moving-border";
+import { useNavigate } from "react-router";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
 
 type HeroProps = {
@@ -108,36 +107,43 @@ const Hero = ({ audience }: HeroProps) => {
                     className="pl-12 h-12 text-base rounded-xl border-2 bg-background transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-                <CTAButton 
-                  type="submit" 
-                  containerClassName="w-full h-12"
-                  className="rounded-xl font-semibold cursor-pointer bg-primary/90 border-primary/30"
-                  borderRadius="0.75rem"
-                >
-                  {t("home.search.button")}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </CTAButton>
+                <div onClick={onSearch} className="cursor-pointer">
+                  <GradientButton
+                    to={`/courses${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ""}`}
+                    variant="primary"
+                    size="lg"
+                  >
+                    {t("home.search.button")}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </GradientButton>
+                </div>
               </form>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-1/10 hover:border-chart-1/50 hover:text-foreground transition-colors">
-                  <Link to="/courses">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    {t("home.actions.courses")}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-2/10 hover:border-chart-2/50 hover:text-foreground transition-colors">
-                  <Link to="/announcements">
-                    <Bell className="mr-2 h-4 w-4" />
-                    {t("home.actions.announcements")}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-xl h-12 border-2 hover:bg-chart-3/10 hover:border-chart-3/50 hover:text-foreground transition-colors">
-                  <Link to="/help">
-                    <Scale className="mr-2 h-4 w-4" />
-                    {t("home.actions.help")}
-                  </Link>
-                </Button>
+                <GradientButton 
+                  to="/courses"
+                  color={audience === "department" ? "chart-4" : "chart-1"}
+                  className="h-12"
+                >
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  {t("home.actions.courses")}
+                </GradientButton>
+                <GradientButton 
+                  to="/announcements"
+                  color={audience === "department" ? "chart-4" : "chart-1"}
+                  className="h-12"
+                >
+                  <Bell className="mr-2 h-4 w-4" />
+                  {t("home.actions.announcements")}
+                </GradientButton>
+                <GradientButton 
+                  to="/help"
+                  color={audience === "department" ? "chart-4" : "chart-1"}
+                  className="h-12"
+                >
+                  <Scale className="mr-2 h-4 w-4" />
+                  {t("home.actions.help")}
+                </GradientButton>
               </div>
             </div>
           </div>
