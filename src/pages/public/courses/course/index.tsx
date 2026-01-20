@@ -82,22 +82,20 @@ const CoursePage = () => {
                 transition={{ duration: 0.5, delay: 0.1 }}
             >
                 <Tabs value={getCurrentTab()} onValueChange={handleTabChange} className="w-full">
-                    <TabsList>
+                    <TabsList className="h-auto grid grid-cols-2 sm:grid-cols-3 lg:inline-flex lg:h-10 w-full lg:w-auto">
                         <TooltipProvider>
                             {tabs.map((tab) => (
                                 tab.locked ? (
                                     <Tooltip key={tab.value}>
                                         <TooltipTrigger asChild>
-                                            <span>
-                                                <TabsTrigger 
-                                                    value={tab.value}
-                                                    disabled={tab.locked}
-                                                    className="opacity-60 cursor-not-allowed"
-                                                >
-                                                    {tab.label}
-                                                    <Lock className="h-3 w-3 ml-1.5" />
-                                                </TabsTrigger>
-                                            </span>
+                                            <TabsTrigger 
+                                                value={tab.value}
+                                                disabled={tab.locked}
+                                                className="opacity-60 cursor-not-allowed w-full lg:w-auto"
+                                            >
+                                                {tab.label}
+                                                <Lock className="h-3 w-3 ml-1.5" />
+                                            </TabsTrigger>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>{t('courses.grades.locked')}</p>
@@ -107,6 +105,7 @@ const CoursePage = () => {
                                     <TabsTrigger 
                                         key={tab.value} 
                                         value={tab.value}
+                                        className="w-full lg:w-auto"
                                     >
                                         {tab.label}
                                     </TabsTrigger>
