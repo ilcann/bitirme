@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { CalendarDays, Clock3, FileText, MapPin, Users2 } from "lucide-react";
+import { CourseInfoEditModal } from "@/components/common/course-info-edit-modal";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCourseInfo } from "@/hooks/use-course-info";
+import { useAuth } from "@/providers/auth-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { useOutletContext } from "react-router";
 import type { Course } from "@/types/course";
@@ -12,7 +14,9 @@ import type { Course } from "@/types/course";
 const CourseInfoPage = () => {
     const { course } = useOutletContext<{ course: Course }>();
     const { lang } = useLanguage();
+    const { user } = useAuth();
     const isTurkish = lang === 'tr';
+    const canEdit = user?.role === 'ADMIN';
     const copy = useMemo(() => {
         if (isTurkish) {
             return {
@@ -165,9 +169,14 @@ const CourseInfoPage = () => {
                             <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                                 <FileText className="h-5 w-5" />
                             </div>
-                            <div className="space-y-1">
-                                <CardTitle className="text-xl">{copy.summaryTitle}</CardTitle>
-                                <CardDescription>{copy.pageDescription}</CardDescription>
+                            <div className="flex-1 space-y-1">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                    <div className="space-y-1">
+                                        <CardTitle className="text-xl">{copy.summaryTitle}</CardTitle>
+                                        <CardDescription>{copy.pageDescription}</CardDescription>
+                                    </div>
+                                    {canEdit ? <CourseInfoEditModal course={detailedCourse} /> : null}
+                                </div>
                             </div>
                         </div>
                     </CardHeader>

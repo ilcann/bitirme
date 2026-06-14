@@ -5,6 +5,13 @@ require_once __DIR__ . '/../../src/courses.php';
 header('Content-Type: application/json; charset=utf-8');
 
 try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $courseId = isset($_GET['courseId']) ? trim($_GET['courseId']) : '';
+
+        echo json_encode(updateCourseInfo($courseId), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        return;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         http_response_code(405);
 
@@ -26,7 +33,15 @@ try {
         'message' => $exception->getMessage(),
     ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (RuntimeException $exception) {
-    $statusCode = $exception->getMessage() === 'Course not found.' ? 404 : 500;
+    $statusCode = 500;
+
+    if ($exception->getMessage() === 'Course not found.') {
+        $statusCode = 404;
+    } elseif ($exception->getMessage() === 'Unauthorized.') {
+        $statusCode = 401;
+    } elseif ($exception->getMessage() === 'Forbidden.') {
+        $statusCode = 403;
+    }
 
     http_response_code($statusCode);
 

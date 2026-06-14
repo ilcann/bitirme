@@ -52,6 +52,51 @@ function splitCourseInfoLines($value)
     return $normalized;
 }
 
+function normalizeNullableCourseInfoText($value)
+{
+    $value = trim((string) $value);
+
+    return $value === '' ? null : $value;
+}
+
+function normalizeCourseInfoListValue($value)
+{
+    if (is_array($value)) {
+        $items = array();
+
+        foreach ($value as $item) {
+            $item = trim((string) $item);
+
+            if ($item === '') {
+                continue;
+            }
+
+            $items[] = $item;
+        }
+
+        return !empty($items) ? implode("\n", $items) : null;
+    }
+
+    $value = trim((string) $value);
+
+    return $value === '' ? null : $value;
+}
+
+function normalizeCourseInfoDateValue($value)
+{
+    $value = trim((string) $value);
+
+    if ($value === '') {
+        return null;
+    }
+
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+        throw new InvalidArgumentException('Date fields must use YYYY-MM-DD format.');
+    }
+
+    return $value;
+}
+
 function buildCourseInfo(array $course)
 {
     $hasInfoField = array_key_exists('summary_tr', $course)
@@ -915,6 +960,76 @@ function fetchCourseInfo($courseId)
         'success' => true,
         'message' => 'Course info loaded successfully.',
         'course' => $course,
+    );
+}
+
+function updateCourseInfo($courseId)
+{
+    $pdo = getCoursesPdo();
+    $admin = requireAuthenticatedUser($pdo, array('ADMIN'));
+    $body = readJsonRequestBody();
+
+    ensureCourseInfoSchema($pdo);
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $info = isset($body['info']) && is_array($body['info']) ? $body['info'] : array();
+    $summary = isset($info['summary']) && is_array($info['summary']) ? $info['summary'] : array();
+    $term = isset($info['term']) && is_array($info['term']) ? $info['term'] : array();
+    $schedule = isset($info['schedule']) && is_array($info['schedule']) ? $info['schedule'] : array();
+
+    $statement = $pdo->prepare('
+        UPDATE courses
+        SET
+            summary_tr = :summary_tr,
+            summary_en = :summary_en,
+            section_name = :section_name,
+            crn = :crn,
+            term_tr = :term_tr,
+            term_en = :term_en,
+            start_date = :start_date,
+            end_date = :end_date,
+            last_access_date = :last_access_date,
+            instructors = :instructors,
+            assistants = :assistants,
+            schedule_tr = :schedule_tr,
+            schedule_en = :schedule_en,
+            created_by = COALESCE(created_by, :updated_by)
+        WHERE id = :course_id
+        LIMIT 1
+    ');
+    $statement->execute(array(
+        ':summary_tr' => normalizeNullableCourseInfoText(isset($summary['tr']) ? $summary['tr'] : ''),
+        ':summary_en' => normalizeNullableCourseInfoText(isset($summary['en']) ? $summary['en'] : ''),
+        ':section_name' => normalizeNullableCourseInfoText(isset($info['sectionName']) ? $info['sectionName'] : ''),
+        ':crn' => normalizeNullableCourseInfoText(isset($info['crn']) ? $info['crn'] : ''),
+        ':term_tr' => normalizeNullableCourseInfoText(isset($term['tr']) ? $term['tr'] : ''),
+        ':term_en' => normalizeNullableCourseInfoText(isset($term['en']) ? $term['en'] : ''),
+        ':start_date' => normalizeCourseInfoDateValue(isset($info['startDate']) ? $info['startDate'] : ''),
+        ':end_date' => normalizeCourseInfoDateValue(isset($info['endDate']) ? $info['endDate'] : ''),
+        ':last_access_date' => normalizeCourseInfoDateValue(isset($info['lastAccessDate']) ? $info['lastAccessDate'] : ''),
+        ':instructors' => normalizeCourseInfoListValue(isset($info['instructors']) ? $info['instructors'] : ''),
+        ':assistants' => normalizeCourseInfoListValue(isset($info['assistants']) ? $info['assistants'] : ''),
+        ':schedule_tr' => normalizeCourseInfoListValue(isset($schedule['tr']) ? $schedule['tr'] : ''),
+        ':schedule_en' => normalizeCourseInfoListValue(isset($schedule['en']) ? $schedule['en'] : ''),
+        ':updated_by' => $admin['id'],
+        ':course_id' => $courseId,
+    ));
+
+    return array(
+        'success' => true,
+        'message' => 'Course info updated successfully.',
+        'course' => fetchCourseById($courseId),
     );
 }
 

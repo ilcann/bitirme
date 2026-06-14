@@ -140,6 +140,17 @@ export interface GetCourseInfoResponse {
     course: Course;
 }
 
+export interface UpdateCourseInfoRequest {
+    courseId: string;
+    info: NonNullable<Course['info']>;
+}
+
+export interface UpdateCourseInfoResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+}
+
 export interface CreateCourseRequest {
     code: string;
     titleTr: string;

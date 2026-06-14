@@ -13,6 +13,8 @@ import type {
     CourseStudentSortBy,
     DeleteCourseResponse,
     GetCourseInfoResponse,
+    UpdateCourseInfoRequest,
+    UpdateCourseInfoResponse,
     GetCoursesParams,
     GetCoursesResponse,
     GetCoursesCompactResponse,
@@ -90,6 +92,19 @@ export const getCourseInfo = async (courseId: string): Promise<Course | null> =>
     } catch {
         return null;
     }
+};
+
+export const updateCourseInfo = async (
+    request: UpdateCourseInfoRequest
+): Promise<UpdateCourseInfoResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', request.courseId);
+
+    return apiRequest<UpdateCourseInfoResponse>(`/public/courses/info.php?${query.toString()}`, {
+        method: 'POST',
+        body: JSON.stringify({ info: request.info }),
+    });
 };
 
 /**

@@ -36,6 +36,8 @@ export type {
     CourseSortBy,
     GetCourseResponse,
     GetCourseInfoResponse,
+    UpdateCourseInfoRequest,
+    UpdateCourseInfoResponse,
     GetCoursesParams,
     GetCoursesResponse,
     GetAvailableCourseStudentsParams,
