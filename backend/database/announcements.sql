@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 CREATE TABLE announcements (
     id VARCHAR(80) PRIMARY KEY,
     course_id VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,

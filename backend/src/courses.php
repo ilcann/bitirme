@@ -235,6 +235,192 @@ function fetchCourseStudents($courseId, $sortBy = 'name')
     );
 }
 
+function fetchAvailableStudents($courseId, $search = '')
+{
+    $pdo = getCoursesPdo();
+    requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+
+    $courseId = trim($courseId);
+    $search = trim($search);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $sql = '
+        SELECT
+            u.id,
+            u.email,
+            u.first_name,
+            u.last_name,
+            u.student_number
+        FROM users u
+        WHERE u.role = \'STUDENT\'
+          AND u.is_active = 1
+          AND NOT EXISTS (
+              SELECT 1
+              FROM course_enrollments e
+              WHERE e.course_id = :course_id
+                AND e.user_id = u.id
+          )';
+
+    $params = array(':course_id' => $courseId);
+
+    if ($search !== '') {
+        $sql .= ' AND (u.first_name LIKE :search OR u.last_name LIKE :search OR u.email LIKE :search OR u.student_number LIKE :search)';
+        $params[':search'] = '%' . $search . '%';
+    }
+
+    $sql .= ' ORDER BY u.first_name ASC, u.last_name ASC, u.student_number ASC';
+
+    $statement = $pdo->prepare($sql);
+    $statement->execute($params);
+
+    $students = array();
+
+    while ($row = $statement->fetch()) {
+        $students[] = array(
+            'id' => (int) $row['id'],
+            'email' => $row['email'],
+            'firstName' => $row['first_name'],
+            'lastName' => $row['last_name'],
+            'studentNumber' => $row['student_number'],
+        );
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Available students loaded successfully.',
+        'course' => $course,
+        'data' => $students,
+        'total' => count($students),
+    );
+}
+
+function enrollStudentsToCourse($courseId, array $studentIds)
+{
+    $pdo = getCoursesPdo();
+    $actor = requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $cleanStudentIds = array();
+
+    foreach ($studentIds as $studentId) {
+        $studentId = (int) $studentId;
+
+        if ($studentId > 0) {
+            $cleanStudentIds[$studentId] = $studentId;
+        }
+    }
+
+    $cleanStudentIds = array_values($cleanStudentIds);
+
+    if (empty($cleanStudentIds)) {
+        throw new InvalidArgumentException('At least one student must be selected.');
+    }
+
+    $placeholders = implode(',', array_fill(0, count($cleanStudentIds), '?'));
+
+    $statement = $pdo->prepare('SELECT id, first_name, last_name, student_number FROM users WHERE id IN (' . $placeholders . ') AND role = \'STUDENT\' AND is_active = 1');
+    $statement->execute($cleanStudentIds);
+
+    $validStudents = array();
+
+    while ($row = $statement->fetch()) {
+        $validStudents[(int) $row['id']] = array(
+            'id' => (int) $row['id'],
+            'firstName' => $row['first_name'],
+            'lastName' => $row['last_name'],
+            'studentNumber' => $row['student_number'],
+        );
+    }
+
+    if (empty($validStudents)) {
+        throw new InvalidArgumentException('No valid students were selected.');
+    }
+
+    $placeholders = implode(',', array_fill(0, count($cleanStudentIds), '?'));
+    $statement = $pdo->prepare('SELECT user_id FROM course_enrollments WHERE course_id = ? AND user_id IN (' . $placeholders . ')');
+    $statement->execute(array_merge(array($courseId), $cleanStudentIds));
+
+    $alreadyEnrolled = array();
+
+    while ($row = $statement->fetch()) {
+        $alreadyEnrolled[(int) $row['user_id']] = true;
+    }
+
+    $insertableStudentIds = array();
+
+    foreach ($validStudents as $studentId => $student) {
+        if (!isset($alreadyEnrolled[$studentId])) {
+            $insertableStudentIds[] = $studentId;
+        }
+    }
+
+    if (empty($insertableStudentIds)) {
+        return array(
+            'success' => true,
+            'message' => 'Selected students are already enrolled.',
+            'course' => $course,
+            'data' => array(),
+            'enrolledCount' => 0,
+        );
+    }
+
+    $pdo->beginTransaction();
+
+    try {
+        $insertStatement = $pdo->prepare('INSERT INTO course_enrollments (course_id, user_id, enrolled_by) VALUES (:course_id, :user_id, :enrolled_by)');
+
+        foreach ($insertableStudentIds as $studentId) {
+            $insertStatement->execute(array(
+                ':course_id' => $courseId,
+                ':user_id' => $studentId,
+                ':enrolled_by' => $actor['id'],
+            ));
+        }
+
+        $pdo->commit();
+    } catch (Exception $exception) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $exception;
+    }
+
+    $enrolledStudents = array();
+
+    foreach ($insertableStudentIds as $studentId) {
+        $enrolledStudents[] = $validStudents[$studentId];
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Students enrolled successfully.',
+        'course' => $course,
+        'data' => $enrolledStudents,
+        'enrolledCount' => count($enrolledStudents),
+    );
+}
+
 function fetchCompactCourses($audience = null)
 {
     $pdo = getCoursesPdo();

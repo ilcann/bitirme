@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 CREATE TABLE courses (
     id VARCHAR(50) PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,

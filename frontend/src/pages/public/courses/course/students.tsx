@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import CourseEnrollStudentsModal from "@/components/common/course-enroll-students-modal";
 import {
   Table,
   TableBody,
@@ -125,13 +126,13 @@ const CourseStudentsPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col gap-4 rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur sm:flex-row sm:items-end sm:justify-between"
+        className="flex flex-col gap-4 rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur lg:flex-row lg:items-end lg:justify-between"
       >
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">{courseStudentTitle}</h2>
           <p className="text-sm text-muted-foreground">{courseStudentDescription}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
             <Users className="mr-1.5 h-4 w-4" />
             {total} {courseStudentCount}
@@ -141,6 +142,7 @@ const CourseStudentsPage = () => {
               {activeSearchCountLabel}
             </Badge>
           ) : null}
+          <CourseEnrollStudentsModal courseId={course?.id} />
         </div>
       </motion.div>
 

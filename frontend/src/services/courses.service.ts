@@ -4,12 +4,16 @@ import type { AudienceKey } from "@/config/audiences";
 import type {
     CreateCourseRequest,
     CreateCourseResponse,
+    EnrollStudentsRequest,
+    EnrollStudentsResponse,
+    GetAvailableCourseStudentsParams,
     CourseStudentSortBy,
     DeleteCourseResponse,
     GetCoursesParams,
     GetCoursesResponse,
     GetCoursesCompactResponse,
-    GetCourseStudentsResponse
+    GetCourseStudentsResponse,
+    GetAvailableCourseStudentsResponse
 } from "./types";
 
 /**
@@ -112,4 +116,27 @@ export const getCourseStudents = async (
     query.set('sortBy', sortBy);
 
     return apiRequest<GetCourseStudentsResponse>(`/public/courses/students.php?${query.toString()}`);
+};
+
+export const getAvailableCourseStudents = async (
+    params: GetAvailableCourseStudentsParams
+): Promise<GetAvailableCourseStudentsResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', params.courseId);
+    query.set('offset', String(params.offset ?? 0));
+    query.set('limit', String(params.limit ?? 20));
+
+    if (params.search && params.search.trim()) {
+        query.set('search', params.search.trim());
+    }
+
+    return apiRequest<GetAvailableCourseStudentsResponse>(`/public/courses/available.php?${query.toString()}`);
+};
+
+export const enrollStudents = async (request: EnrollStudentsRequest): Promise<EnrollStudentsResponse> => {
+    return apiRequest<EnrollStudentsResponse>('/public/courses/enroll.php', {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
 };

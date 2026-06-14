@@ -59,6 +59,45 @@ export interface CourseStudent {
     enrolledAt: string;
 }
 
+export interface AvailableCourseStudent {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    studentNumber: string | null;
+}
+
+export interface GetAvailableCourseStudentsParams {
+    courseId: string;
+    offset?: number;
+    limit?: number;
+    search?: string;
+}
+
+export interface GetAvailableCourseStudentsResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    data: AvailableCourseStudent[];
+    total: number;
+    offset: number;
+    limit: number;
+    hasMore: boolean;
+}
+
+export interface EnrollStudentsRequest {
+    courseId: string;
+    studentIds: number[];
+}
+
+export interface EnrollStudentsResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    data: AvailableCourseStudent[];
+    enrolledCount: number;
+}
+
 export interface GetCourseStudentsResponse {
     success: boolean;
     message: string;
