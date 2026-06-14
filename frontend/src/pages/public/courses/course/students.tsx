@@ -45,8 +45,6 @@ const CourseStudentsPage = () => {
     sortedStudents,
     paginatedStudents,
     totalPages,
-    startIndex,
-    endIndex,
     toggleSort,
     normalizedSearchQuery,
   } = useCourseStudentsPagination(students);
@@ -96,11 +94,6 @@ const CourseStudentsPage = () => {
               {activeSearchCountLabel}
             </Badge>
           ) : null}
-          {totalPages > 0 && (
-            <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
-              {t('courses.students.pagination', { current: currentPage, total: totalPages })}
-            </Badge>
-          )}
           <CourseEnrollStudentsModal courseId={course?.id} />
         </div>
       </motion.div>
@@ -191,11 +184,8 @@ const CourseStudentsPage = () => {
               </Table>
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-between border-t pt-4">
-                  <span className="text-sm text-muted-foreground">
-                    {t('courses.students.showing', { start: startIndex + 1, end: endIndex, total: sortedStudents.length })}
-                  </span>
-                  <div className="flex gap-2">
+                <div className="flex items-center justify-center border-t pt-4">
+                  <div className="flex items-center gap-4">
                     <Button
                       variant="outline"
                       size="sm"
@@ -206,6 +196,9 @@ const CourseStudentsPage = () => {
                       <ChevronLeft className="h-4 w-4" />
                       {t('courses.students.previous')}
                     </Button>
+                    <span className="text-sm font-medium min-w-12 text-center">
+                      {currentPage}/{totalPages}
+                    </span>
                     <Button
                       variant="outline"
                       size="sm"
