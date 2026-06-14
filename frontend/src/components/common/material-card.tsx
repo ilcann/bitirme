@@ -112,7 +112,7 @@ export const MaterialCard = ({ material, canDelete = false, onDelete }: Material
                             </Button>
                         ) : material.url ? (
                             <Button size="sm" variant="outline" asChild>
-                                <a href={material.url} download>
+                                <a href={material.url} download={material.originalFileName || true}>
                                     <Download className="h-4 w-4 mr-2" />
                                     {t('courses.materials.download')}
                                 </a>

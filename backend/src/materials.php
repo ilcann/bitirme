@@ -40,6 +40,39 @@ function formatMaterialSize($sizeInBytes)
     return $formattedSize . ' ' . $units[$unitIndex];
 }
 
+function deriveMaterialTitleFromFileName($fileName)
+{
+    $baseName = pathinfo($fileName, PATHINFO_FILENAME);
+    $baseName = preg_replace('/[_-]+/', ' ', $baseName);
+    $baseName = preg_replace('/\s+/', ' ', $baseName);
+    $baseName = trim($baseName);
+
+    return $baseName !== '' ? $baseName : 'Material';
+}
+
+function buildStoredMaterialFileName($directoryPath, $originalFileName)
+{
+    $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+    $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
+    $safeBaseName = preg_replace('/[^\pL\pN._-]+/u', '_', $baseName);
+    $safeBaseName = trim($safeBaseName, '._-');
+
+    if ($safeBaseName === '') {
+        $safeBaseName = 'material';
+    }
+
+    $safeExtension = preg_replace('/[^A-Za-z0-9]+/', '', $extension);
+    $candidate = $safeBaseName . ($safeExtension !== '' ? '.' . $safeExtension : '');
+    $counter = 1;
+
+    while (file_exists($directoryPath . '/' . $candidate)) {
+        $candidate = $safeBaseName . '_' . $counter . ($safeExtension !== '' ? '.' . $safeExtension : '');
+        $counter++;
+    }
+
+    return $candidate;
+}
+
 function courseMaterialsColumnExists($pdo, $columnName)
 {
     $statement = $pdo->prepare("SHOW COLUMNS FROM course_materials LIKE :column_name");
@@ -318,7 +351,7 @@ function createMaterial()
     $type = isset($_POST['type']) ? trim($_POST['type']) : 'document';
     $externalUrl = isset($_POST['externalUrl']) ? trim($_POST['externalUrl']) : '';
 
-    if ($courseId === '' || $titleTr === '' || $titleEn === '') {
+    if ($courseId === '') {
         throw new InvalidArgumentException('Course and titles are required.');
     }
 
@@ -341,14 +374,21 @@ function createMaterial()
         $fileSize = isset($_FILES['file']['size']) ? (int) $_FILES['file']['size'] : null;
         $mimeType = isset($_FILES['file']['type']) ? trim($_FILES['file']['type']) : null;
 
-        $extension = pathinfo($originalFileName, PATHINFO_EXTENSION);
-        $fileName = uniqid('material_', true) . ($extension !== '' ? '.' . $extension : '');
-
         $storageDirectory = __DIR__ . '/../storage/materials';
 
         if (!is_dir($storageDirectory)) {
             mkdir($storageDirectory, 0775, true);
         }
+
+        if ($titleTr === '') {
+            $titleTr = deriveMaterialTitleFromFileName($originalFileName);
+        }
+
+        if ($titleEn === '') {
+            $titleEn = deriveMaterialTitleFromFileName($originalFileName);
+        }
+
+        $fileName = buildStoredMaterialFileName($storageDirectory, $originalFileName);
 
         $destinationPath = $storageDirectory . '/' . $fileName;
 
@@ -365,6 +405,10 @@ function createMaterial()
         $filePath = $externalUrl;
     } else {
         throw new InvalidArgumentException('A file or external URL is required.');
+    }
+
+    if ($courseId === '' || $titleTr === '' || $titleEn === '') {
+        throw new InvalidArgumentException('Course and titles are required.');
     }
 
     $insertStatement = $pdo->prepare('

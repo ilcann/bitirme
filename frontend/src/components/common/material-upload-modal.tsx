@@ -9,12 +9,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createMaterial } from '@/services/materials.service';
-import type { MaterialType } from '@/types/course-material';
+import type { GetMaterialsParams, GetMaterialsResponse } from '@/services/types';
+import type { CourseMaterial, MaterialType } from '@/types/course-material';
 
 type MaterialUploadModalProps = {
   courseId: string;
   triggerClassName?: string;
-  onSuccess?: () => void | Promise<void>;
+  onSuccess?: (material: CourseMaterial) => void | Promise<void>;
 };
 
 type MaterialUploadFormValues = {
@@ -65,7 +66,9 @@ export function MaterialUploadModal({ courseId, triggerClassName, onSuccess }: M
   const {
     register,
     handleSubmit,
+    getValues,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<MaterialUploadFormValues>({
     defaultValues: {
@@ -88,6 +91,24 @@ export function MaterialUploadModal({ courseId, triggerClassName, onSuccess }: M
     }
   };
 
+  const handleFileChange = (nextFile: File | null) => {
+    setFile(nextFile);
+
+    if (!nextFile) {
+      return;
+    }
+
+    const nextTitle = nextFile.name.replace(/\.[^.]+$/, '');
+
+    if (!getValues('titleTr').trim()) {
+      setValue('titleTr', nextTitle, { shouldDirty: true, shouldValidate: true });
+    }
+
+    if (!getValues('titleEn').trim()) {
+      setValue('titleEn', nextTitle, { shouldDirty: true, shouldValidate: true });
+    }
+  };
+
   const onSubmit = async (values: MaterialUploadFormValues) => {
     setSubmitError('');
 
@@ -97,7 +118,7 @@ export function MaterialUploadModal({ courseId, triggerClassName, onSuccess }: M
     }
 
     try {
-      await createMaterial({
+      const response = await createMaterial({
         courseId,
         titleTr: values.titleTr,
         titleEn: values.titleEn,
@@ -108,9 +129,42 @@ export function MaterialUploadModal({ courseId, triggerClassName, onSuccess }: M
         file,
       });
 
+      await onSuccess?.(response.material);
+
+      const materialQueries = queryClient.getQueryCache().findAll({ queryKey: ['materials', courseId] });
+
+      for (const query of materialQueries) {
+        const queryKey = query.queryKey;
+        const params = (queryKey[2] ?? null) as GetMaterialsParams | null;
+
+        queryClient.setQueryData<GetMaterialsResponse | undefined>(queryKey, (previous) => {
+          if (!previous) {
+            return previous;
+          }
+
+          const nextTotal = previous.total + 1;
+
+          if (!params || params.offset !== 0 || params.sortBy !== 'newest' || params.search || (params.types && params.types.length > 0)) {
+            return {
+              ...previous,
+              total: nextTotal,
+              hasMore: previous.offset + previous.limit < nextTotal,
+            };
+          }
+
+          const nextData = [response.material, ...previous.data.filter((item) => item.id !== response.material.id)].slice(0, previous.limit);
+
+          return {
+            ...previous,
+            data: nextData,
+            total: nextTotal,
+            hasMore: previous.offset + previous.limit < nextTotal,
+          };
+        });
+      }
+
       await queryClient.invalidateQueries({ queryKey: ['materials', courseId] });
       setOpen(false);
-      await onSuccess?.();
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : copy.error);
     }
@@ -171,7 +225,7 @@ export function MaterialUploadModal({ courseId, triggerClassName, onSuccess }: M
 
             <div className="grid gap-2">
               <Label htmlFor="material-file">{copy.fields.file}</Label>
-              <Input id="material-file" type="file" onChange={(event) => setFile(event.target.files?.[0] || null)} />
+              <Input id="material-file" type="file" onChange={(event) => handleFileChange(event.target.files?.[0] || null)} />
             </div>
           </div>
 

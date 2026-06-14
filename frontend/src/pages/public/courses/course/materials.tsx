@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useMaterials } from "@/hooks/use-materials";
@@ -30,7 +31,7 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/types/course";
-import type { MaterialType } from "@/types/course-material";
+import type { CourseMaterial, MaterialType } from "@/types/course-material";
 import { useAuth } from "@/providers/auth-provider";
 
 const CourseMaterialsPage = () => {
@@ -39,6 +40,7 @@ const CourseMaterialsPage = () => {
     const { user } = useAuth();
     const canManageMaterials = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
     const { deleteMaterial } = useMaterialsMutations(course?.id || '');
+    const [recentlyCreatedMaterials, setRecentlyCreatedMaterials] = useState<CourseMaterial[]>([]);
 
     useDocumentTitle(
         `${course?.code} - ${t('materials.title')}`,
@@ -48,6 +50,7 @@ const CourseMaterialsPage = () => {
     const {
         materials,
         total,
+        limit,
         currentPage,
         totalPages,
         hasNextPage,
@@ -63,6 +66,7 @@ const CourseMaterialsPage = () => {
         goToNextPage,
         goToPreviousPage,
         clearAllFilters,
+        resetPagination,
         refetch,
     } = useMaterials({ 
         courseId: course?.id || "",
@@ -91,6 +95,18 @@ const CourseMaterialsPage = () => {
 
     const materialTypes: MaterialType[] = ["lecture", "assignment", "exam", "document", "video", "link"];
     const activeFilterCount = selectedTypes.length + (sortBy !== 'newest' ? 1 : 0);
+    const shouldMergeRecentMaterials = sortBy === 'newest' && !searchQuery.trim() && selectedTypes.length === 0;
+    const visibleMaterials = useMemo(() => {
+        if (!recentlyCreatedMaterials.length || !shouldMergeRecentMaterials) {
+            return materials;
+        }
+
+        const mergedMaterials = [...recentlyCreatedMaterials, ...materials].filter(
+            (material, index, collection) => collection.findIndex((item) => item.id === material.id) === index,
+        );
+
+        return mergedMaterials.slice(0, limit);
+    }, [limit, materials, recentlyCreatedMaterials, shouldMergeRecentMaterials]);
 
     return (
         <section className="space-y-6">
@@ -98,7 +114,9 @@ const CourseMaterialsPage = () => {
                 <div className="flex justify-end">
                     <MaterialUploadModal
                         courseId={course.id}
-                        onSuccess={async () => {
+                        onSuccess={async (material) => {
+                            setRecentlyCreatedMaterials((previous) => [material, ...previous.filter((item) => item.id !== material.id)]);
+                            resetPagination();
                             await refetch();
                         }}
                     />
@@ -206,7 +224,7 @@ const CourseMaterialsPage = () => {
                         <MaterialCardSkeleton key={index} />
                     ))}
                 </div>
-            ) : materials.length === 0 ? (
+            ) : visibleMaterials.length === 0 ? (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                         <FileText className="h-12 w-12 text-muted-foreground mb-4" />
@@ -219,23 +237,15 @@ const CourseMaterialsPage = () => {
                     <motion.div
                         key={`${selectedTypes.join('-')}-${searchQuery}-${sortBy}`}
                         className="grid gap-4"
-                        initial="hidden"
-                        animate="visible"
-                        variants={{
-                            visible: {
-                                transition: {
-                                    staggerChildren: 0.06
-                                }
-                            }
-                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
                     >
-                        {materials.map((material) => (
+                        {visibleMaterials.map((material) => (
                             <motion.div
                                 key={material.id}
-                                variants={{
-                                    hidden: { opacity: 0, y: 15 },
-                                    visible: { opacity: 1, y: 0 }
-                                }}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
                                 <MaterialCard

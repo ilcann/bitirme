@@ -129,6 +129,7 @@ export const useMaterials = ({ courseId, initialLimit = 20 }: UseMaterialsOption
         goToNextPage,
         goToPreviousPage,
         goToPage,
+        resetPagination,
         setLimit,
         
         // Filter actions
