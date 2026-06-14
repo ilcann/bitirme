@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useOutletContext } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowUpDown, Search, Users } from "lucide-react";
+import { ArrowUpDown, Search, Users, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCourseStudents } from "@/hooks/use-course-students";
+import { useCourseStudentsPagination } from "@/hooks/use-course-students-pagination";
 import { useAuth } from "@/providers/auth-provider";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,20 +21,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { CourseStudentSortBy } from "@/services/types";
 import type { Course } from "@/types/course";
-
-type SortState = {
-  key: CourseStudentSortBy;
-  direction: "asc" | "desc";
-};
 
 const CourseStudentsPage = () => {
   const { t } = useTranslation('courses');
   const { user } = useAuth();
   const { course } = useOutletContext<{ course: Course }>();
-  const [sortState, setSortState] = useState<SortState>({ key: 'name', direction: 'asc' });
-  const [searchQuery, setSearchQuery] = useState('');
   const canViewStudents = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
 
   useDocumentTitle(
@@ -42,60 +34,22 @@ const CourseStudentsPage = () => {
     t('courses.students.description')
   );
 
-  const { students, total, isLoading, isFetching } = useCourseStudents(course?.id, sortState.key, canViewStudents);
-
-  const normalizedSearchQuery = useMemo(() => normalizeSearchValue(searchQuery), [searchQuery]);
-
-  const sortedStudents = useMemo(() => {
-    const items = students.filter((student) => {
-      if (!normalizedSearchQuery) {
-        return true;
-      }
-
-      const searchableValue = normalizeSearchValue([
-        student.studentNumber || '',
-        student.firstName,
-        student.lastName,
-        student.email,
-      ].join(' '));
-
-      return searchableValue.includes(normalizedSearchQuery);
-    });
-
-    items.sort((left, right) => {
-      if (sortState.key === 'studentNumber') {
-        const leftNumber = left.studentNumber || '';
-        const rightNumber = right.studentNumber || '';
-        return leftNumber.localeCompare(rightNumber, 'tr', { numeric: true, sensitivity: 'base' });
-      }
-
-      const leftName = `${left.firstName} ${left.lastName}`;
-      const rightName = `${right.firstName} ${right.lastName}`;
-      return leftName.localeCompare(rightName, 'tr', { sensitivity: 'base' });
-    });
-
-    if (sortState.direction === 'desc') {
-      items.reverse();
-    }
-
-    return items;
-  }, [students, sortState, normalizedSearchQuery]);
-
-  const toggleSort = (key: CourseStudentSortBy) => {
-    setSortState((current) => {
-      if (current.key === key) {
-        return {
-          key,
-          direction: current.direction === 'asc' ? 'desc' : 'asc',
-        };
-      }
-
-      return {
-        key,
-        direction: 'asc',
-      };
-    });
-  };
+  const { students, total, isLoading, isFetching } = useCourseStudents(course?.id, 'name', canViewStudents);
+  
+  const {
+    sortState,
+    searchQuery,
+    setSearchQuery,
+    currentPage,
+    setCurrentPage,
+    sortedStudents,
+    paginatedStudents,
+    totalPages,
+    startIndex,
+    endIndex,
+    toggleSort,
+    normalizedSearchQuery,
+  } = useCourseStudentsPagination(students);
 
   const sortLabel = sortState.direction === 'asc'
     ? t('courses.students.sort.asc')
@@ -142,6 +96,11 @@ const CourseStudentsPage = () => {
               {activeSearchCountLabel}
             </Badge>
           ) : null}
+          {totalPages > 0 && (
+            <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
+              {t('courses.students.pagination', { current: currentPage, total: totalPages })}
+            </Badge>
+          )}
           <CourseEnrollStudentsModal courseId={course?.id} />
         </div>
       </motion.div>
@@ -201,47 +160,71 @@ const CourseStudentsPage = () => {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-30">
-                    {courseStudentNumberLabel}
-                  </TableHead>
-                  <TableHead>
-                    {courseStudentNameLabel}
-                  </TableHead>
-                  <TableHead>{courseStudentEmailLabel}</TableHead>
-                  <TableHead className="w-40">{courseStudentEnrolledAtLabel}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedStudents.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell className="font-medium">
-                      {student.studentNumber || '-'}
-                    </TableCell>
-                    <TableCell>
-                      {student.firstName} {student.lastName}
-                    </TableCell>
-                    <TableCell>{student.email}</TableCell>
-                    <TableCell>{student.enrolledAt}</TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-30">
+                      {courseStudentNumberLabel}
+                    </TableHead>
+                    <TableHead>
+                      {courseStudentNameLabel}
+                    </TableHead>
+                    <TableHead>{courseStudentEmailLabel}</TableHead>
+                    <TableHead className="w-40">{courseStudentEnrolledAtLabel}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {paginatedStudents.map((student) => (
+                    <TableRow key={student.id}>
+                      <TableCell className="font-medium">
+                        {student.studentNumber || '-'}
+                      </TableCell>
+                      <TableCell>
+                        {student.firstName} {student.lastName}
+                      </TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell>{student.enrolledAt}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between border-t pt-4">
+                  <span className="text-sm text-muted-foreground">
+                    {t('courses.students.showing', { start: startIndex + 1, end: endIndex, total: sortedStudents.length })}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="rounded-lg"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      {t('courses.students.previous')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="rounded-lg"
+                    >
+                      {t('courses.students.next')}
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
     </section>
   );
 };
-
-function normalizeSearchValue(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase('tr-Tr')
-    .trim();
-}
 
 export default CourseStudentsPage;

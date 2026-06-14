@@ -67,7 +67,11 @@
             "description": "No students have been enrolled in this course yet.",
             "searchTitle": "No results found",
             "searchDescription": "No students match your search term."
-        }
+        },
+        "pagination": "Page {{current}} of {{total}}",
+        "showing": "Showing {{start}} to {{end}} of {{total}} students",
+        "previous": "Previous",
+        "next": "Next"
     },
     "materials": {
         "title": "Course Materials",

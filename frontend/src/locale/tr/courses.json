@@ -67,7 +67,11 @@
             "description": "Bu derse henüz öğrenci eklenmemiş.",
             "searchTitle": "Sonuç bulunamadı",
             "searchDescription": "Arama teriminize uyan öğrenci yok."
-        }
+        },
+        "pagination": "{{current}}. sayfa / {{total}}",
+        "showing": "{{start}} ile {{end}} arası gösteriliyor (toplam {{total}} öğrenci)",
+        "previous": "Önceki",
+        "next": "Sonraki"
     },
     "materials": {
         "title": "Ders Materyalleri",
