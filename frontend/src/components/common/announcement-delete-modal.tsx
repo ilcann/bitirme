@@ -58,9 +58,9 @@ export function AnnouncementDeleteModal({ announcementId, announcementTitle, cou
       <DialogTrigger asChild>
         <Button
           type="button"
-          variant="destructive"
+          variant="ghost"
           size="icon"
-          className="opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
+          className="opacity-0 text-destructive hover:bg-destructive hover:text-white shadow-lg transition-all duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
           aria-label={copy.triggerLabel}
         >
           <Trash2 className="h-4 w-4" />

@@ -143,6 +143,11 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
     )}>
       {/* Gradient background overlay */}
       <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+      {canDelete ? (
+        <div className="absolute right-3 top-3 z-10">
+          <CourseDeleteModal courseId={id} courseCode={code} courseTitle={title} />
+        </div>
+      ) : null}
       
       <CardContent className="relative p-5">
         {/* Header */}
@@ -172,11 +177,6 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-2">
-          {canDelete ? (
-            <div className="col-span-2 flex justify-end">
-              <CourseDeleteModal courseId={id} courseCode={code} courseTitle={title} />
-            </div>
-          ) : null}
           <GradientButton
             to={`/courses/${id}`}
             color={color}

@@ -104,6 +104,11 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
         <Card className={`group relative rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${colors.hoverBorder} overflow-hidden`}>
             {/* Gradient background overlay */}
             <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+            {canDelete ? (
+                <div className="absolute right-3 top-3 z-10">
+                    <AnnouncementDeleteModal announcementId={id} announcementTitle={title} courseId={courseId} />
+                </div>
+            ) : null}
             
             <CardContent className="relative p-5">
                 {/* Header */}
@@ -133,12 +138,6 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
 
                 {/* Footer */}
                 <div className="space-y-3 pt-3 border-t">
-                    {canDelete ? (
-                        <div className="flex justify-end">
-                            <AnnouncementDeleteModal announcementId={id} announcementTitle={title} courseId={courseId} />
-                        </div>
-                    ) : null}
-
                     {/* Date */}
                     <div className="flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5 text-muted-foreground" />

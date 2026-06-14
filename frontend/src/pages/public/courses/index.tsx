@@ -47,7 +47,8 @@ const CoursesPage = () => {
     initialSearch: initialQuery
   });
 
-  const { viewMode, setViewMode } = useViewMode();
+  const { viewMode, setViewMode } = useViewMode("compact");
+  const isMobile = window.innerWidth < 768; // sm breakpoint
 
   const handleNextPage = () => {
     goToNextPage();
@@ -103,7 +104,7 @@ const CoursesPage = () => {
               className="pl-10 h-11 rounded-xl border-2"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="hidden md:flex gap-2">
             <Button
               variant={viewMode === "compact" ? "default" : "outline"}
               onClick={() => setViewMode("compact")}
@@ -148,9 +149,9 @@ const CoursesPage = () => {
         {/* Loading State */}
         {isLoading ? (
           <div className={
-            viewMode === "compact"
-              ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-              : "space-y-4"
+            (!isMobile && viewMode === "wide")
+              ? "space-y-4"
+              : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
           }>
             {Array.from({ length: 9 }).map((_, index) => (
               <CourseCardSkeleton key={index} variant={viewMode} />
@@ -161,9 +162,9 @@ const CoursesPage = () => {
             <motion.div
               key={`${searchQuery}-${viewMode}-${currentPage}`}
               className={
-                viewMode === "compact"
-                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                  : "space-y-4"
+                (!isMobile && viewMode === "wide")
+                  ? "space-y-4"
+                  : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
               }
               initial="hidden"
               animate="visible"
@@ -190,7 +191,7 @@ const CoursesPage = () => {
                     title={course.title[lang]}
                     students={course.students}
                     color={course.color}
-                    variant={viewMode}
+                    variant={!isMobile && viewMode === "wide" ? "wide" : "compact"}
                     canDelete={user?.role === 'ADMIN'}
                   />
                 </motion.div>
