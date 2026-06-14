@@ -1,4 +1,5 @@
 const DEFAULT_API_BASE_URL = '/ilcan21/api';
+export const AUTH_TOKEN_STORAGE_KEY = 'bitirme-auth-token';
 
 export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, '');
 
@@ -27,6 +28,18 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
   if (init.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
+  }
+
+  if (!headers.has('Authorization')) {
+    try {
+      const storedToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+
+      if (storedToken) {
+        headers.set('Authorization', `Bearer ${storedToken}`);
+      }
+    } catch {
+      // Ignore storage access failures in non-browser environments.
+    }
   }
 
   const response = await fetch(buildApiUrl(path), {

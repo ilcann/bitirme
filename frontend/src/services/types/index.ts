@@ -30,7 +30,10 @@ export type {
 // Auth
 export type {
     AuthRole,
+    AuthSession,
     AuthUser,
+    AuthUserResponse,
     LoginRequest,
-    LoginResponse
+    LoginResponse,
+    LogoutResponse
 } from "./auth.types";

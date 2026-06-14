@@ -1,15 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { login as loginRequest } from '@/services/auth.service';
-import type { AuthUser, LoginRequest } from '@/services/types/auth.types';
+import { getCurrentUser, login as loginRequest, logout as logoutRequest } from '@/services/auth.service';
+import type { AuthSession, AuthUser, LoginRequest } from '@/services/types/auth.types';
+import { AUTH_TOKEN_STORAGE_KEY } from '@/services/api';
 
 type AuthState = {
   user: AuthUser | null;
+  session: AuthSession | null;
   isAuthenticated: boolean;
   isLoginOpen: boolean;
   openLogin: () => void;
   closeLogin: () => void;
   login: (credentials: LoginRequest) => Promise<AuthUser>;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 const AUTH_STORAGE_KEY = 'bitirme-auth-user';
@@ -30,8 +32,26 @@ function readStoredUser() {
   }
 }
 
+function readStoredSession() {
+  try {
+    const storedToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+
+    if (!storedToken) {
+      return null;
+    }
+
+    return {
+      token: storedToken,
+      expiresAt: localStorage.getItem(`${AUTH_TOKEN_STORAGE_KEY}-expiresAt`) || '',
+    } as AuthSession;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
+  const [session, setSession] = useState<AuthSession | null>(() => readStoredSession());
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
@@ -43,8 +63,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(AUTH_STORAGE_KEY);
   }, [user]);
 
+  useEffect(() => {
+    if (session) {
+      localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, session.token);
+      localStorage.setItem(`${AUTH_TOKEN_STORAGE_KEY}-expiresAt`, session.expiresAt);
+      return;
+    }
+
+    localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+    localStorage.removeItem(`${AUTH_TOKEN_STORAGE_KEY}-expiresAt`);
+  }, [session]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const bootstrap = async () => {
+      if (!session?.token) {
+        return;
+      }
+
+      try {
+        const response = await getCurrentUser();
+
+        if (isMounted) {
+          setUser(response.user);
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null);
+          setSession(null);
+        }
+      }
+    };
+
+    bootstrap();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const value = useMemo<AuthState>(() => ({
     user,
+    session,
     isAuthenticated: Boolean(user),
     isLoginOpen,
     openLogin: () => setIsLoginOpen(true),
@@ -53,15 +114,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await loginRequest(credentials);
 
       setUser(response.user);
+      setSession(response.session);
       setIsLoginOpen(false);
 
       return response.user;
     },
-    logout: () => {
+    logout: async () => {
+      try {
+        await logoutRequest();
+      } catch {
+        // Clear local auth state even if the server-side revoke fails.
+      }
+
       setUser(null);
+      setSession(null);
       setIsLoginOpen(false);
     },
-  }), [isLoginOpen, user]);
+  }), [isLoginOpen, session, user]);
 
   return (
     <AuthContext.Provider value={value}>
