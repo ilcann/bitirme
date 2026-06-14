@@ -1,0 +1,31 @@
+services:
+  # PHP 5.4 ve Apache Sunucusu
+  web:
+    build:
+      context: .
+      dockerfile: php54.Dockerfile
+    container_name: php_server
+    ports:
+      - "8080:80"
+    volumes:
+      - ./deployment:/var/www/html/ilcan21
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+
+  # Veritabanı (MySQL)
+  db:
+    image: mysql:5.6  # PHP 5.4 ile uyumlu olması için eski/kararlı bir MySQL
+    container_name: mysql_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: bitirme_db
+      MYSQL_USER: bitirme_user
+      MYSQL_PASSWORD: bitirme_pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
