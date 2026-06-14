@@ -15,7 +15,13 @@ type CourseCreateModalProps = {
   triggerClassName?: string;
 };
 
-const colorOptions = ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'] as const;
+const colorOptions = [
+  { value: 'chart-1', label: 'Blue', bgClass: 'bg-chart-1' },
+  { value: 'chart-2', label: 'Orange', bgClass: 'bg-chart-2' },
+  { value: 'chart-3', label: 'Green', bgClass: 'bg-chart-3' },
+  { value: 'chart-4', label: 'Red', bgClass: 'bg-chart-4' },
+  { value: 'chart-5', label: 'Purple', bgClass: 'bg-chart-5' },
+] as const;
 
 export function CourseCreateModal({ triggerClassName }: CourseCreateModalProps) {
   const { t } = useTranslation('courses');
@@ -55,6 +61,8 @@ export function CourseCreateModal({ triggerClassName }: CourseCreateModalProps) 
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateCourseRequest>({
     defaultValues: {
@@ -65,6 +73,8 @@ export function CourseCreateModal({ triggerClassName }: CourseCreateModalProps) 
       color: 'chart-1',
     },
   });
+
+  const selectedColor = watch('color');
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -159,16 +169,26 @@ export function CourseCreateModal({ triggerClassName }: CourseCreateModalProps) 
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="course-color">{copy.fields.color}</Label>
-              <select
-                id="course-color"
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                {...register('color', { required: copy.validation.required })}
-              >
+              <Label>{copy.fields.color}</Label>
+              <div className="flex gap-2">
                 {colorOptions.map((color) => (
-                  <option key={color} value={color}>{color}</option>
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setValue('color', color.value)}
+                    className={`h-10 flex-1 rounded-md transition-all ${
+                      selectedColor === color.value
+                        ? `${color.bgClass} ring-2 ring-offset-2 ring-foreground`
+                        : `${color.bgClass} opacity-60 hover:opacity-80`
+                    }`}
+                    aria-label={color.label}
+                  />
                 ))}
-              </select>
+              </div>
+              <input
+                type="hidden"
+                {...register('color', { required: copy.validation.required })}
+              />
             </div>
           </div>
 
