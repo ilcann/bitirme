@@ -118,8 +118,44 @@
     },
     "attendance": {
         "title": "Attendance",
-        "description": "Track your attendance status",
-        "locked": "You must log in to view this content"
+        "description": "Track and mark weekly attendance status",
+        "locked": "You must log in to view this content",
+        "loginRequiredTitle": "Login required",
+        "loginRequiredDescription": "Please sign in to view attendance records.",
+        "loginRequiredAction": "Log in",
+        "loading": "Loading attendance...",
+        "saving": "Saving...",
+        "weekCount": "weeks",
+        "weekLabel": "Week {{week}}",
+        "editMode": "Edit mode",
+        "readOnlyMode": "Read-only view",
+        "sortingHint": "Sort by:",
+        "search": {
+            "placeholder": "Search by name, email, or student number",
+            "help": "Search works across name, email, and student number.",
+            "results": "{{count}} results"
+        },
+        "table": {
+            "studentNumber": "Student No",
+            "name": "Full Name",
+            "progress": "Absence"
+        },
+        "summary": {
+            "presentRate": "Attendance rate",
+            "marked": "{{count}}/{{total}} weeks marked",
+            "absent": "{{count}} weeks absent"
+        },
+        "emptyTitle": "No records found",
+        "emptyDescription": "There are no attendance records for this course yet.",
+        "emptySearchTitle": "No results found",
+        "emptySearchDescription": "No students match your search term.",
+        "errorTitle": "Failed to load attendance",
+        "errorDescription": "Please try again.",
+        "retry": "Try again",
+        "actions": {
+            "markPresent": "Mark present",
+            "markAbsent": "Mark absent"
+        }
     },
     "createModal": {
         "trigger": "Add course",

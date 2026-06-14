@@ -39,7 +39,7 @@ const CoursePage = () => {
         ] : []),
         { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
         { path: `/courses/${courseId}/grades`, value: 'grades', label: t('courses.grades.title'), locked: true },
-        { path: `/courses/${courseId}/attendance`, value: 'attendance', label: t('courses.attendance.title'), locked: true },
+        { path: `/courses/${courseId}/attendance`, value: 'attendance', label: t('courses.attendance.title'), locked: false },
     ];
 
     const getCurrentTab = () => {

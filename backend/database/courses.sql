@@ -27,6 +27,24 @@ CREATE TABLE course_enrollments (
     CONSTRAINT fk_course_enrollments_enrolled_by FOREIGN KEY (enrolled_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+CREATE TABLE course_attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    week_number TINYINT UNSIGNED NOT NULL,
+    is_present TINYINT(1) NULL DEFAULT NULL,
+    marked_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_course_user_week (course_id, user_id, week_number),
+    INDEX idx_course_attendance_course_id (course_id),
+    INDEX idx_course_attendance_user_id (user_id),
+    INDEX idx_course_attendance_week_number (week_number),
+    CONSTRAINT fk_course_attendance_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_course_attendance_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_course_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
 INSERT INTO courses (id, code, title_tr, title_en, color, audience) VALUES
 ('mat103e', 'MAT 103/E', 'Matematik I', 'Mathematics I', 'chart-1', 'common'),
 ('mat104e', 'MAT 104/E', 'Matematik II', 'Mathematics II', 'chart-1', 'common'),

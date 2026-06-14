@@ -19,6 +19,9 @@ export type {
     CreateCourseRequest,
     CreateCourseResponse,
     CourseStudent,
+    CourseAttendanceStudent,
+    CourseAttendanceWeek,
+    CourseAttendanceWeekStatus,
     AvailableCourseStudent,
     CourseStudentSortBy,
     EnrollStudentsRequest,
@@ -32,7 +35,10 @@ export type {
     GetAvailableCourseStudentsResponse,
     GetCourseStudentsResponse,
     GetCoursesCompactParams,
-    GetCoursesCompactResponse
+    GetCoursesCompactResponse,
+    GetCourseAttendanceResponse,
+    UpdateCourseAttendanceRequest,
+    UpdateCourseAttendanceResponse
 } from "./courses.types";
 
 // Materials

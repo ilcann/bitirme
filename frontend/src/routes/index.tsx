@@ -12,10 +12,11 @@ const CourseInfoPage = lazy(() => import("@/pages/public/courses/course/info"));
 const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/materials"));
 const CourseAnnouncementsPage = lazy(() => import("@/pages/public/courses/course/announcements"));
 const CourseStudentsPage = lazy(() => import("@/pages/public/courses/course/students"));
+const CourseAttendancePage = lazy(() => import("@/pages/public/courses/course/attendance"));
 const AnnouncementsPage = lazy(() => import("@/pages/public/announcements"));
 const AnnouncementsDetailPage = lazy(() => import("@/pages/public/announcements/detail"));
 const HelpPage = lazy(() => import("@/pages/public/help"));
-const AttendancePage = lazy(() => import("@/pages/protected/me/attendance"));
+const MyAttendancePage = lazy(() => import("@/pages/protected/me/attendance"));
 const GradesPage = lazy(() => import("@/pages/protected/me/grades"));
 const MyDashboardPage = lazy(() => import("@/pages/protected/me/dashboard"));
 
@@ -58,6 +59,10 @@ const router = createBrowserRouter(
                   element: <CourseStudentsPage />,
                 },
                 {
+                  path: "attendance",
+                  element: <CourseAttendancePage />,
+                },
+                {
                   path: "info",
                   element: <CourseInfoPage />
                 }
@@ -78,7 +83,7 @@ const router = createBrowserRouter(
             },
             {
               path: "attendance",
-              element: <SuspenseWrapper><AttendancePage /></SuspenseWrapper>,
+              element: <SuspenseWrapper><MyAttendancePage /></SuspenseWrapper>,
             }
           ]
         },

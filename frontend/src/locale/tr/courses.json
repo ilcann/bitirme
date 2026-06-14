@@ -118,8 +118,44 @@
     },
     "attendance": {
         "title": "Devamsızlık",
-        "description": "Devamsızlık durumunuzu takip edin",
-        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız"
+        "description": "Haftalık devam durumunu takip edin ve işaretleyin",
+        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız",
+        "loginRequiredTitle": "Giriş gerekli",
+        "loginRequiredDescription": "Devamsızlık kayıtlarını görmek için lütfen giriş yapın.",
+        "loginRequiredAction": "Giriş yap",
+        "loading": "Devamsızlık yükleniyor...",
+        "saving": "Kaydediliyor...",
+        "weekCount": "hafta",
+        "weekLabel": "{{week}}. Hafta",
+        "editMode": "Düzenleme modu",
+        "readOnlyMode": "Salt okunur görünüm",
+        "sortingHint": "Sıralama:",
+        "search": {
+            "placeholder": "Ad, soyad, e-posta veya öğrenci no ile ara",
+            "help": "Arama isim, e-posta ve öğrenci numarası üzerinde çalışır.",
+            "results": "{{count}} sonuç"
+        },
+        "table": {
+            "studentNumber": "Öğrenci No",
+            "name": "Ad Soyad",
+            "progress": "Devamsızlık"
+        },
+        "summary": {
+            "presentRate": "Devam oranı",
+            "marked": "{{count}}/{{total}} hafta işaretlendi",
+            "absent": "{{count}} hafta devamsız"
+        },
+        "emptyTitle": "Kayıt bulunamadı",
+        "emptyDescription": "Bu ders için henüz devamsızlık kaydı yok.",
+        "emptySearchTitle": "Sonuç bulunamadı",
+        "emptySearchDescription": "Arama terimine uygun öğrenci bulunamadı.",
+        "errorTitle": "Devamsızlık yüklenemedi",
+        "errorDescription": "Lütfen tekrar deneyin.",
+        "retry": "Yeniden dene",
+        "actions": {
+            "markPresent": "Var olarak işaretle",
+            "markAbsent": "Yok olarak işaretle"
+        }
     },
     "createModal": {
         "trigger": "Yeni ders ekle",

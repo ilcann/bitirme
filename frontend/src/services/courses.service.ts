@@ -13,7 +13,10 @@ import type {
     GetCoursesResponse,
     GetCoursesCompactResponse,
     GetCourseStudentsResponse,
-    GetAvailableCourseStudentsResponse
+    GetAvailableCourseStudentsResponse,
+    GetCourseAttendanceResponse,
+    UpdateCourseAttendanceRequest,
+    UpdateCourseAttendanceResponse
 } from "./types";
 
 /**
@@ -116,6 +119,31 @@ export const getCourseStudents = async (
     query.set('sortBy', sortBy);
 
     return apiRequest<GetCourseStudentsResponse>(`/public/courses/students.php?${query.toString()}`);
+};
+
+export const getCourseAttendance = async (courseId: string): Promise<GetCourseAttendanceResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', courseId);
+
+    return apiRequest<GetCourseAttendanceResponse>(`/public/courses/attendance.php?${query.toString()}`);
+};
+
+export const updateCourseAttendance = async (
+    request: UpdateCourseAttendanceRequest
+): Promise<UpdateCourseAttendanceResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', request.courseId);
+
+    return apiRequest<UpdateCourseAttendanceResponse>(`/public/courses/attendance.php?${query.toString()}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            studentId: request.studentId,
+            weekNumber: request.weekNumber,
+            isPresent: request.isPresent,
+        }),
+    });
 };
 
 export const getAvailableCourseStudents = async (

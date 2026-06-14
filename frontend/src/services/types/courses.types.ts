@@ -9,6 +9,29 @@ export type CourseSortBy = "students" | "code" | "title";
 
 export type CourseStudentSortBy = "name" | "studentNumber";
 
+export type CourseAttendanceWeekStatus = boolean | null;
+
+export interface CourseAttendanceWeek {
+    weekNumber: number;
+    isPresent: CourseAttendanceWeekStatus;
+    updatedAt: string | null;
+}
+
+export interface CourseAttendanceStudent {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    studentNumber: string | null;
+    enrolledAt: string;
+    weeks: CourseAttendanceWeek[];
+    presentCount: number;
+    absentCount: number;
+    markedCount: number;
+    presentRate: number;
+    absentRate: number;
+}
+
 export interface GetCoursesParams {
     audience?: AudienceKey;
     offset?: number;
@@ -104,6 +127,30 @@ export interface GetCourseStudentsResponse {
     course: Course;
     data: CourseStudent[];
     total: number;
+}
+
+export interface GetCourseAttendanceResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    weekCount: number;
+    data: CourseAttendanceStudent[];
+    total: number;
+}
+
+export interface UpdateCourseAttendanceRequest {
+    courseId: string;
+    studentId: number;
+    weekNumber: number;
+    isPresent: boolean;
+}
+
+export interface UpdateCourseAttendanceResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    student: CourseAttendanceStudent;
+    weekNumber: number;
 }
 
 export interface GetCoursesCompactParams {

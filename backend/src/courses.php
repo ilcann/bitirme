@@ -3,6 +3,10 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 
+if (!defined('COURSE_ATTENDANCE_WEEK_COUNT')) {
+    define('COURSE_ATTENDANCE_WEEK_COUNT', 14);
+}
+
 function normalizeCourse(array $course)
 {
     return array(
@@ -232,6 +236,291 @@ function fetchCourseStudents($courseId, $sortBy = 'name')
         'course' => $course,
         'data' => $students,
         'total' => count($students),
+    );
+}
+
+function buildAttendanceWeekItems()
+{
+    $weeks = array();
+
+    for ($week = 1; $week <= COURSE_ATTENDANCE_WEEK_COUNT; $week++) {
+        $weeks[] = array(
+            'weekNumber' => $week,
+            'isPresent' => null,
+            'updatedAt' => null,
+        );
+    }
+
+    return $weeks;
+}
+
+function summarizeAttendanceWeeks(array $weeks)
+{
+    $presentCount = 0;
+    $absentCount = 0;
+
+    foreach ($weeks as $week) {
+        if (!isset($week['isPresent']) || $week['isPresent'] === null) {
+            continue;
+        }
+
+        if ($week['isPresent']) {
+            $presentCount++;
+        } else {
+            $absentCount++;
+        }
+    }
+
+    $markedCount = $presentCount + $absentCount;
+    $presentRate = 0;
+    $absentRate = 0;
+
+    if ($markedCount > 0) {
+        $presentRate = round(($presentCount / $markedCount) * 100, 1);
+        $absentRate = round(($absentCount / $markedCount) * 100, 1);
+    }
+
+    return array(
+        'presentCount' => $presentCount,
+        'absentCount' => $absentCount,
+        'markedCount' => $markedCount,
+        'presentRate' => $presentRate,
+        'absentRate' => $absentRate,
+    );
+}
+
+function normalizeAttendanceStudent(array $student)
+{
+    $summary = summarizeAttendanceWeeks($student['weeks']);
+
+    return array(
+        'id' => (int) $student['id'],
+        'email' => $student['email'],
+        'firstName' => $student['firstName'],
+        'lastName' => $student['lastName'],
+        'studentNumber' => $student['studentNumber'],
+        'enrolledAt' => $student['enrolledAt'],
+        'weeks' => array_values($student['weeks']),
+        'presentCount' => $summary['presentCount'],
+        'absentCount' => $summary['absentCount'],
+        'markedCount' => $summary['markedCount'],
+        'presentRate' => $summary['presentRate'],
+        'absentRate' => $summary['absentRate'],
+    );
+}
+
+function fetchCourseAttendance($courseId)
+{
+    $pdo = getCoursesPdo();
+    $viewer = requireAuthenticatedUser($pdo);
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $sql = '
+        SELECT
+            u.id,
+            u.email,
+            u.first_name,
+            u.last_name,
+            u.student_number,
+            e.created_at AS enrolled_at,
+            a.week_number,
+            a.is_present,
+            a.updated_at
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        LEFT JOIN course_attendance a ON a.course_id = e.course_id AND a.user_id = e.user_id
+        WHERE e.course_id = :course_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1';
+
+    $params = array(':course_id' => $courseId);
+
+    if ($viewer['role'] === 'STUDENT') {
+        $sql .= ' AND u.id = :viewer_id';
+        $params[':viewer_id'] = $viewer['id'];
+    }
+
+    $sql .= ' ORDER BY u.first_name ASC, u.last_name ASC, u.student_number ASC, a.week_number ASC';
+
+    $statement = $pdo->prepare($sql);
+    $statement->execute($params);
+
+    $students = array();
+
+    while ($row = $statement->fetch()) {
+        $studentId = (int) $row['id'];
+
+        if (!isset($students[$studentId])) {
+            $students[$studentId] = array(
+                'id' => $studentId,
+                'email' => $row['email'],
+                'firstName' => $row['first_name'],
+                'lastName' => $row['last_name'],
+                'studentNumber' => $row['student_number'],
+                'enrolledAt' => $row['enrolled_at'],
+                'weeks' => buildAttendanceWeekItems(),
+            );
+        }
+
+        if (!isset($row['week_number']) || $row['week_number'] === null) {
+            continue;
+        }
+
+        $weekIndex = (int) $row['week_number'];
+
+        if ($weekIndex < 1 || $weekIndex > COURSE_ATTENDANCE_WEEK_COUNT) {
+            continue;
+        }
+
+        $isPresent = null;
+
+        if ($row['is_present'] !== null) {
+            $isPresent = (int) $row['is_present'] === 1;
+        }
+
+        $students[$studentId]['weeks'][$weekIndex - 1]['isPresent'] = $isPresent;
+        $students[$studentId]['weeks'][$weekIndex - 1]['updatedAt'] = $row['updated_at'];
+    }
+
+    $attendanceRows = array();
+
+    foreach ($students as $student) {
+        $attendanceRows[] = normalizeAttendanceStudent($student);
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Course attendance loaded successfully.',
+        'course' => $course,
+        'weekCount' => COURSE_ATTENDANCE_WEEK_COUNT,
+        'data' => $attendanceRows,
+        'total' => count($attendanceRows),
+    );
+}
+
+function updateCourseAttendance($courseId, $studentId, $weekNumber, $isPresent)
+{
+    $pdo = getCoursesPdo();
+    $actor = requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+
+    $courseId = trim($courseId);
+    $studentId = (int) $studentId;
+    $weekNumber = (int) $weekNumber;
+    $isPresent = (bool) $isPresent;
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    if ($studentId <= 0) {
+        throw new InvalidArgumentException('Student id is required.');
+    }
+
+    if ($weekNumber < 1 || $weekNumber > COURSE_ATTENDANCE_WEEK_COUNT) {
+        throw new InvalidArgumentException('Week number must be between 1 and ' . COURSE_ATTENDANCE_WEEK_COUNT . '.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $statement = $pdo->prepare('
+        SELECT
+            u.id,
+            u.email,
+            u.first_name,
+            u.last_name,
+            u.student_number,
+            e.created_at AS enrolled_at
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        WHERE e.course_id = :course_id
+          AND e.user_id = :student_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1
+        LIMIT 1
+    ');
+    $statement->execute(array(
+        ':course_id' => $courseId,
+        ':student_id' => $studentId,
+    ));
+
+    $studentRow = $statement->fetch();
+
+    if (!$studentRow) {
+        throw new RuntimeException('Student is not enrolled in this course.');
+    }
+
+    $statement = $pdo->prepare('
+        INSERT INTO course_attendance (course_id, user_id, week_number, is_present, marked_by)
+        VALUES (:course_id, :user_id, :week_number, :is_present, :marked_by)
+        ON DUPLICATE KEY UPDATE
+            is_present = VALUES(is_present),
+            marked_by = VALUES(marked_by),
+            updated_at = CURRENT_TIMESTAMP
+    ');
+    $statement->execute(array(
+        ':course_id' => $courseId,
+        ':user_id' => $studentId,
+        ':week_number' => $weekNumber,
+        ':is_present' => $isPresent ? 1 : 0,
+        ':marked_by' => $actor['id'],
+    ));
+
+    $attendanceStatement = $pdo->prepare('
+        SELECT week_number, is_present, updated_at
+        FROM course_attendance
+        WHERE course_id = :course_id
+          AND user_id = :user_id
+        ORDER BY week_number ASC
+    ');
+    $attendanceStatement->execute(array(
+        ':course_id' => $courseId,
+        ':user_id' => $studentId,
+    ));
+
+    $weeks = buildAttendanceWeekItems();
+
+    while ($attendanceRow = $attendanceStatement->fetch()) {
+        $attendanceWeek = (int) $attendanceRow['week_number'];
+
+        if ($attendanceWeek < 1 || $attendanceWeek > COURSE_ATTENDANCE_WEEK_COUNT) {
+            continue;
+        }
+
+        $weeks[$attendanceWeek - 1]['isPresent'] = (int) $attendanceRow['is_present'] === 1;
+        $weeks[$attendanceWeek - 1]['updatedAt'] = $attendanceRow['updated_at'];
+    }
+
+    $student = normalizeAttendanceStudent(array(
+        'id' => $studentRow['id'],
+        'email' => $studentRow['email'],
+        'firstName' => $studentRow['first_name'],
+        'lastName' => $studentRow['last_name'],
+        'studentNumber' => $studentRow['student_number'],
+        'enrolledAt' => $studentRow['enrolled_at'],
+        'weeks' => $weeks,
+    ));
+
+    return array(
+        'success' => true,
+        'message' => 'Course attendance updated successfully.',
+        'course' => $course,
+        'student' => $student,
+        'weekNumber' => $weekNumber,
     );
 }
 
