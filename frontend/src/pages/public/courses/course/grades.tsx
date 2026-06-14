@@ -2,13 +2,14 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2, LogIn, Search, Save, Settings2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileDown, Loader2, LogIn, Search, Save, Settings2, X } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 import NotFoundedPage from '@/pages/errors/not-founded';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useCourseGrades } from '@/hooks/use-course-grades';
 import { useCourseGradesPagination } from '@/hooks/use-course-grades-pagination';
+import { exportTablePdf } from '@/lib/export-pdf';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -296,6 +297,52 @@ const CourseGradesPage = () => {
     });
   };
 
+  const handleExportGradesPdf = () => {
+    if (!canEditGrades || !course || sortedStudents.length === 0 || gradeColumns.length === 0) {
+      return;
+    }
+
+    const head = [
+      t('courses.students.table.studentNumber'),
+      t('courses.students.table.name'),
+      'Email',
+      ...gradeColumns.map((column) => `${column.label} ${column.itemNumber}`),
+      t('courses.grades.average', { defaultValue: 'Ortalama' }),
+    ];
+
+    const body = sortedStudents.map((student) => [
+      student.studentNumber || '-',
+      getStudentLabel(student),
+      student.email,
+      ...gradeColumns.map((column) => {
+        const score = student.grades.find(
+          (grade) => grade.itemType === column.type && grade.itemNumber === column.itemNumber,
+        )?.score;
+
+        return formatScore(score);
+      }),
+      formatScore(student.averageScore),
+    ]);
+
+    if (classAverages) {
+      body.push([
+        '-',
+        t('courses.grades.classAverage', { defaultValue: 'Sinif Ortalamasi' }),
+        '-',
+        ...gradeColumns.map((column) => formatScore(classAverageByItem[`${column.type}:${column.itemNumber}`] ?? null)),
+        formatScore(classAverages.overall),
+      ]);
+    }
+
+    void exportTablePdf({
+      title: `${course.code} - ${gradesTitle}`,
+      fileName: `${course.code.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-grades.pdf`,
+      head,
+      body,
+      orientation: 'landscape',
+    });
+  };
+
   if (!user) {
     return (
       <section className="space-y-6">
@@ -344,6 +391,17 @@ const CourseGradesPage = () => {
             <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
               {total} {t('courses.students.count')}
             </Badge>
+          ) : null}
+          {canEditGrades ? (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={handleExportGradesPdf}
+              disabled={isLoading || sortedStudents.length === 0 || gradeColumns.length === 0}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              {t('courses.grades.exportPdf', { defaultValue: 'PDF disa aktar' })}
+            </Button>
           ) : null}
           {canEditDistribution ? (
             <Button

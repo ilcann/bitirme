@@ -2,13 +2,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router';
 import { motion } from 'framer-motion';
-import { ArrowUpDown, Check, ChevronLeft, ChevronRight, Loader2, LogIn, Search, Users, X } from 'lucide-react';
+import { ArrowUpDown, Check, ChevronLeft, ChevronRight, FileDown, Loader2, LogIn, Search, Users, X } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 import NotFoundedPage from '@/pages/errors/not-founded';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useCourseAttendance } from '@/hooks/use-course-attendance';
 import { useCourseAttendancePagination } from '@/hooks/use-course-attendance-pagination';
+import { exportTablePdf } from '@/lib/export-pdf';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -233,6 +234,45 @@ const CourseAttendancePage = () => {
     });
   };
 
+  const handleExportAttendancePdf = () => {
+    if (!canEdit || !course || filteredStudents.length === 0) {
+      return;
+    }
+
+    const head = [
+      t('courses.attendance.table.studentNumber'),
+      t('courses.attendance.table.name'),
+      'Email',
+      t('courses.attendance.summary.presentRate'),
+      t('courses.attendance.table.absent', { defaultValue: 'Devamsizlik' }),
+      ...weekNumbers.map((weekNumber) => t('courses.attendance.weekLabel', { week: weekNumber })),
+    ];
+
+    const body = filteredStudents.map((student) => [
+      student.studentNumber || '-',
+      `${student.firstName} ${student.lastName}`,
+      student.email,
+      `${student.presentRate.toFixed(1)}%`,
+      String(student.absentCount),
+      ...weekNumbers.map((weekNumber) => {
+        const week = student.weeks[weekNumber - 1];
+        if (!week) {
+          return '-';
+        }
+
+        return week.isPresent === true ? 'Var' : week.isPresent === false ? 'Yok' : '-';
+      }),
+    ]);
+
+    void exportTablePdf({
+      title: `${course.code} - ${t('courses.attendance.title')}`,
+      fileName: `${course.code.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-attendance.pdf`,
+      head,
+      body,
+      orientation: 'landscape',
+    });
+  };
+
   if (!user) {
     return (
       <section className="space-y-6">
@@ -323,6 +363,17 @@ const CourseAttendancePage = () => {
           <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
             {weekNumbers.length} {t('courses.attendance.weekCount')}
           </Badge>
+          {canEdit ? (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={handleExportAttendancePdf}
+              disabled={filteredStudents.length === 0 || isLoading}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              {t('courses.attendance.exportPdf', { defaultValue: 'PDF disa aktar' })}
+            </Button>
+          ) : null}
           {canEdit ? (
             <Badge className="rounded-full px-3 py-1 text-sm font-medium">
               {t('courses.attendance.editMode')}
