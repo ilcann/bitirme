@@ -46,6 +46,25 @@
             "clearAll": "Clear selection",
             "cancel": "Cancel"
         },
+        "unenrollModal": {
+            "trigger": "Remove Student",
+            "title": "Remove students from course",
+            "description": "Select one or more enrolled students from the list to remove them from this course.",
+            "searchLabel": "Search students",
+            "searchPlaceholder": "Search by name, email, or student number",
+            "totalLabel": "enrolled students found",
+            "selectedLabel": "students selected",
+            "submit": "Remove Selected",
+            "submitting": "Removing...",
+            "success": "Students removed from the course.",
+            "error": "Failed to remove students from the course.",
+            "noResults": "No results found.",
+            "noStudents": "No students available to remove.",
+            "selectionRequired": "You must select at least one student.",
+            "selectAll": "Select all",
+            "clearAll": "Clear selection",
+            "cancel": "Cancel"
+        },
         "search": {
             "placeholder": "Search by name, email, or student number",
             "help": "Search works across name, email, and student number.",

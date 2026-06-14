@@ -6,7 +6,10 @@ import type {
     CreateCourseResponse,
     EnrollStudentsRequest,
     EnrollStudentsResponse,
+    UnenrollStudentsRequest,
+    UnenrollStudentsResponse,
     GetAvailableCourseStudentsParams,
+    GetEnrolledCourseStudentsParams,
     CourseStudentSortBy,
     DeleteCourseResponse,
     GetCoursesParams,
@@ -206,8 +209,31 @@ export const getAvailableCourseStudents = async (
     return apiRequest<GetAvailableCourseStudentsResponse>(`/public/courses/available.php?${query.toString()}`);
 };
 
+export const getEnrolledCourseStudents = async (
+    params: GetEnrolledCourseStudentsParams
+): Promise<GetAvailableCourseStudentsResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', params.courseId);
+    query.set('offset', String(params.offset ?? 0));
+    query.set('limit', String(params.limit ?? 20));
+
+    if (params.search && params.search.trim()) {
+        query.set('search', params.search.trim());
+    }
+
+    return apiRequest<GetAvailableCourseStudentsResponse>(`/public/courses/enrolled.php?${query.toString()}`);
+};
+
 export const enrollStudents = async (request: EnrollStudentsRequest): Promise<EnrollStudentsResponse> => {
     return apiRequest<EnrollStudentsResponse>('/public/courses/enroll.php', {
+        method: 'POST',
+        body: JSON.stringify(request),
+    });
+};
+
+export const unenrollStudents = async (request: UnenrollStudentsRequest): Promise<UnenrollStudentsResponse> => {
+    return apiRequest<UnenrollStudentsResponse>('/public/courses/unenroll.php', {
         method: 'POST',
         body: JSON.stringify(request),
     });

@@ -179,6 +179,13 @@ export interface GetAvailableCourseStudentsParams {
     search?: string;
 }
 
+export interface GetEnrolledCourseStudentsParams {
+    courseId: string;
+    offset?: number;
+    limit?: number;
+    search?: string;
+}
+
 export interface GetAvailableCourseStudentsResponse {
     success: boolean;
     message: string;
@@ -201,6 +208,19 @@ export interface EnrollStudentsResponse {
     course: Course;
     data: AvailableCourseStudent[];
     enrolledCount: number;
+}
+
+export interface UnenrollStudentsRequest {
+    courseId: string;
+    studentIds: number[];
+}
+
+export interface UnenrollStudentsResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    data: number[];
+    unenrolledCount: number;
 }
 
 export interface GetCourseStudentsResponse {

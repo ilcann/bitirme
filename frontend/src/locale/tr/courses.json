@@ -46,6 +46,25 @@
             "clearAll": "Seçimi temizle",
             "cancel": "İptal"
         },
+        "unenrollModal": {
+            "trigger": "Öğrenci Sil",
+            "title": "Dersten öğrenci sil",
+            "description": "Bu derse kayıtlı öğrencilerden bir veya daha fazlasını seçerek kaldırın.",
+            "searchLabel": "Öğrenci ara",
+            "searchPlaceholder": "Ad, soyad, e-posta veya öğrenci no ile ara",
+            "totalLabel": "kayıtlı öğrenci bulundu",
+            "selectedLabel": "öğrenci seçildi",
+            "submit": "Seçilenleri Sil",
+            "submitting": "Siliniyor...",
+            "success": "Öğrenciler dersten silindi.",
+            "error": "Öğrenciler dersten silinemedi.",
+            "noResults": "Sonuç bulunamadı.",
+            "noStudents": "Silinebilecek öğrenci yok.",
+            "selectionRequired": "En az bir öğrenci seçmelisiniz.",
+            "selectAll": "Tümünü seç",
+            "clearAll": "Seçimi temizle",
+            "cancel": "İptal"
+        },
         "search": {
             "placeholder": "Ad, soyad, e-posta veya öğrenci no ile ara",
             "help": "Arama isim, e-posta ve öğrenci numarası üzerinde çalışır.",

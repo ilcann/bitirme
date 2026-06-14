@@ -1437,3 +1437,91 @@ function deleteCourse($courseId)
         'course' => $course,
     );
 }
+
+function unenrollStudentsFromCourse($courseId, array $studentIds)
+{
+    $pdo = getCoursesPdo();
+    requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $cleanStudentIds = array();
+
+    foreach ($studentIds as $studentId) {
+        $studentId = (int) $studentId;
+
+        if ($studentId > 0) {
+            $cleanStudentIds[$studentId] = $studentId;
+        }
+    }
+
+    $cleanStudentIds = array_values($cleanStudentIds);
+
+    if (empty($cleanStudentIds)) {
+        throw new InvalidArgumentException('At least one student must be selected.');
+    }
+
+    $placeholders = implode(',', array_fill(0, count($cleanStudentIds), '?'));
+
+    $statement = $pdo->prepare('SELECT user_id FROM course_enrollments WHERE course_id = ? AND user_id IN (' . $placeholders . ')');
+    $statement->execute(array_merge(array($courseId), $cleanStudentIds));
+
+    $enrolledStudentIds = array();
+
+    while ($row = $statement->fetch()) {
+        $enrolledStudentIds[] = (int) $row['user_id'];
+    }
+
+    if (empty($enrolledStudentIds)) {
+        return array(
+            'success' => true,
+            'message' => 'Selected students are not enrolled in this course.',
+            'course' => $course,
+            'data' => array(),
+            'unenrolledCount' => 0,
+        );
+    }
+
+    $deletePlaceholders = implode(',', array_fill(0, count($enrolledStudentIds), '?'));
+
+    $pdo->beginTransaction();
+
+    try {
+        $params = array_merge(array($courseId), $enrolledStudentIds);
+
+        $attendanceDelete = $pdo->prepare('DELETE FROM course_attendance WHERE course_id = ? AND user_id IN (' . $deletePlaceholders . ')');
+        $attendanceDelete->execute($params);
+
+        $gradeDelete = $pdo->prepare('DELETE FROM course_grade_scores WHERE course_id = ? AND user_id IN (' . $deletePlaceholders . ')');
+        $gradeDelete->execute($params);
+
+        $enrollmentDelete = $pdo->prepare('DELETE FROM course_enrollments WHERE course_id = ? AND user_id IN (' . $deletePlaceholders . ')');
+        $enrollmentDelete->execute($params);
+
+        $pdo->commit();
+    } catch (Exception $exception) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $exception;
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Students removed from course successfully.',
+        'course' => $course,
+        'data' => $enrolledStudentIds,
+        'unenrolledCount' => count($enrolledStudentIds),
+    );
+}

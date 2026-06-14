@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import CourseEnrollStudentsModal from "@/components/common/course-enroll-students-modal";
+import CourseUnenrollStudentsModal from "@/components/common/course-unenroll-students-modal";
 import {
   Table,
   TableBody,
@@ -95,6 +96,7 @@ const CourseStudentsPage = () => {
             </Badge>
           ) : null}
           <CourseEnrollStudentsModal courseId={course?.id} />
+          <CourseUnenrollStudentsModal courseId={course?.id} />
         </div>
       </motion.div>
 
