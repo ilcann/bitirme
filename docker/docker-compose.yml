@@ -8,7 +8,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./deployment:/var/www/html/ilcan21
+      - ../backend:/var/www/html/ilcan21/api
     environment:
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
