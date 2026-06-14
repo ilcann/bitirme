@@ -79,10 +79,11 @@ const CourseGradesPage = () => {
   const { t } = useTranslation('courses');
   const { user, openLogin } = useAuth();
   const { course } = useOutletContext<{ course: Course }>();
-  const gradesTitle = 'Notlar';
+  const isStudent = user?.role === 'STUDENT';
+  const gradesTitle = isStudent ? 'Notlarım' : 'Notlar';
   const canEditGrades = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
   const canEditDistribution = user?.role === 'ADMIN';
-  const canViewGrades = Boolean(user) && canEditGrades;
+  const canViewGrades = Boolean(user) && (canEditGrades || isStudent);
 
   useDocumentTitle(
     `${course?.code} - ${gradesTitle}`,
@@ -93,13 +94,14 @@ const CourseGradesPage = () => {
     grades,
     total,
     distribution,
+    classAverages,
     isLoading,
     isFetching,
     isUpdatingGrade,
     isUpdatingDistribution,
     updateGrade,
     updateDistribution,
-  } = useCourseGrades(course?.id, Boolean(user) && canEditGrades);
+  } = useCourseGrades(course?.id, Boolean(user));
 
   const {
     searchQuery,
@@ -108,7 +110,6 @@ const CourseGradesPage = () => {
     setCurrentPage,
     pageSize,
     filteredStudents,
-    totalPages,
     normalizedSearchQuery,
     sortState,
     setSortState,
@@ -191,10 +192,31 @@ const CourseGradesPage = () => {
     return items;
   }, [filteredStudents, gradeSort]);
 
+  const visibleSortedStudents = useMemo(() => {
+    if (isStudent && user?.id) {
+      return sortedStudents.filter((student) => student.id === user.id);
+    }
+
+    return sortedStudents;
+  }, [isStudent, sortedStudents, user]);
+
+  const effectiveTotalPages = Math.max(1, Math.ceil(visibleSortedStudents.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, effectiveTotalPages);
+
   const paginatedStudents = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedStudents.slice(startIndex, startIndex + pageSize);
-  }, [currentPage, pageSize, sortedStudents]);
+    const startIndex = (safeCurrentPage - 1) * pageSize;
+    return visibleSortedStudents.slice(startIndex, startIndex + pageSize);
+  }, [pageSize, safeCurrentPage, visibleSortedStudents]);
+
+  const classAverageByItem = useMemo(() => {
+    const map: Record<string, number | null> = {};
+
+    classAverages?.items?.forEach((item) => {
+      map[`${item.itemType}:${item.itemNumber}`] = item.averageScore;
+    });
+
+    return map;
+  }, [classAverages]);
 
   const distributionWeightTotal = useMemo(() => {
     if (!distributionDraft) {
@@ -314,12 +336,14 @@ const CourseGradesPage = () => {
       >
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">{gradesTitle}</h2>
-          <p className="text-sm text-muted-foreground">{t('courses.grades.description')}</p>
+          {!isStudent ? <p className="text-sm text-muted-foreground">{t('courses.grades.description')}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
-            {total} {t('courses.students.count')}
-          </Badge>
+          {!isStudent ? (
+            <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
+              {total} {t('courses.students.count')}
+            </Badge>
+          ) : null}
           {canEditDistribution ? (
             <Button
               variant="outline"
@@ -337,47 +361,57 @@ const CourseGradesPage = () => {
       <Card>
         <CardContent className="space-y-5 p-5 sm:p-6">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="relative w-full lg:max-w-xl">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder={t('courses.students.search.placeholder')}
-                className="h-11 rounded-xl border-2 pl-10"
-              />
-            </div>
-            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <span>{t('courses.students.search.help')}</span>
-              {isFetching && !isLoading ? <span>• {t('courses.students.loading')}</span> : null}
-            </div>
+            {isStudent ? (
+              <div className="flex items-center justify-end text-sm text-muted-foreground">
+                {isFetching && !isLoading ? <span>{t('courses.students.loading')}</span> : null}
+              </div>
+            ) : (
+              <>
+                <div className="relative w-full lg:max-w-xl">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder={t('courses.students.search.placeholder')}
+                    className="h-11 rounded-xl border-2 pl-10"
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                  <span>{t('courses.students.search.help')}</span>
+                  {isFetching && !isLoading ? <span>• {t('courses.students.loading')}</span> : null}
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {t('courses.students.sortingHint', { sortLabel: sortState.direction === 'asc' ? t('courses.students.sort.asc') : t('courses.students.sort.desc') })}
-            </span>
-            <Button
-              variant={sortState.key === 'name' ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-full"
-              onClick={() => setSortState((current) => ({ key: 'name', direction: current.key === 'name' && current.direction === 'asc' ? 'desc' : 'asc' }))}
-            >
-              {t('courses.students.table.name')}
-            </Button>
-            <Button
-              variant={sortState.key === 'studentNumber' ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-full"
-              onClick={() => setSortState((current) => ({ key: 'studentNumber', direction: current.key === 'studentNumber' && current.direction === 'asc' ? 'desc' : 'asc' }))}
-            >
-              {t('courses.students.table.studentNumber')}
-            </Button>
-            {normalizedSearchQuery ? (
-              <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
-                {t('courses.students.search.results', { count: activeSearchCount })}
-              </Badge>
-            ) : null}
-          </div>
+          {!isStudent ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {t('courses.students.sortingHint', { sortLabel: sortState.direction === 'asc' ? t('courses.students.sort.asc') : t('courses.students.sort.desc') })}
+              </span>
+              <Button
+                variant={sortState.key === 'name' ? 'default' : 'outline'}
+                size="sm"
+                className="rounded-full"
+                onClick={() => setSortState((current) => ({ key: 'name', direction: current.key === 'name' && current.direction === 'asc' ? 'desc' : 'asc' }))}
+              >
+                {t('courses.students.table.name')}
+              </Button>
+              <Button
+                variant={sortState.key === 'studentNumber' ? 'default' : 'outline'}
+                size="sm"
+                className="rounded-full"
+                onClick={() => setSortState((current) => ({ key: 'studentNumber', direction: current.key === 'studentNumber' && current.direction === 'asc' ? 'desc' : 'asc' }))}
+              >
+                {t('courses.students.table.studentNumber')}
+              </Button>
+              {normalizedSearchQuery ? (
+                <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
+                  {t('courses.students.search.results', { count: activeSearchCount })}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
 
           {isLoading ? (
             <div className="py-12 text-center text-muted-foreground">
@@ -498,29 +532,56 @@ const CourseGradesPage = () => {
                         </TableRow>
                       );
                     })}
+                    {classAverages ? (
+                      <TableRow className="bg-muted/20">
+                        <TableCell colSpan={2} className="font-semibold">
+                          {t('courses.grades.classAverage', { defaultValue: 'Sınıf Ortalaması' })}
+                        </TableCell>
+                        {gradeColumns.map((column, index) => {
+                          const isGroupEnd = index === gradeColumns.length - 1 || gradeColumns[index + 1]?.type !== column.type;
+                          const value = classAverageByItem[`${column.type}:${column.itemNumber}`] ?? null;
+
+                          return (
+                            <TableCell
+                              key={`class-average-${column.type}-${column.itemNumber}`}
+                              className={`p-1 align-middle text-center ${isGroupEnd ? 'border-r-2 border-border/80' : ''}`}
+                            >
+                              <Badge variant="outline" className={`rounded-full px-2 py-0.5 text-[11px] ${getAverageTone(value)}`}>
+                                {formatScore(value)}
+                              </Badge>
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell>
+                          <Badge variant="outline" className={`rounded-full px-3 py-1 ${getAverageTone(classAverages.overall)}`}>
+                            {formatScore(classAverages.overall)}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ) : null}
                   </TableBody>
                 </Table>
               </div>
 
-              {totalPages > 1 && (
+              {effectiveTotalPages > 1 && (
                 <div className="flex items-center justify-center border-t pt-4">
                   <div className="flex items-center gap-4">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                      disabled={currentPage === 1}
+                      disabled={safeCurrentPage === 1}
                       className="rounded-lg"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       {t('courses.students.previous')}
                     </Button>
-                    <span className="min-w-12 text-center text-sm font-medium">{currentPage}/{totalPages}</span>
+                    <span className="min-w-12 text-center text-sm font-medium">{safeCurrentPage}/{effectiveTotalPages}</span>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((page) => Math.min(effectiveTotalPages, page + 1))}
+                      disabled={safeCurrentPage === effectiveTotalPages}
                       className="rounded-lg"
                     >
                       {t('courses.students.next')}

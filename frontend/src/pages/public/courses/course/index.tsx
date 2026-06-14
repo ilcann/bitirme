@@ -31,8 +31,8 @@ const CoursePage = () => {
     }
 
     const canManageGrades = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
-    const canAccessGradesTab = !user || canManageGrades;
-    const gradesTabLabel = 'Notlar';
+    const canAccessGradesTab = !user || canManageGrades || user?.role === 'STUDENT';
+    const gradesTabLabel = user?.role === 'STUDENT' ? 'Notlarım' : 'Notlar';
 
     const tabs = [
         { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title'), locked: false },

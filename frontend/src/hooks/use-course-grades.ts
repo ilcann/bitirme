@@ -35,6 +35,7 @@ export const useCourseGrades = (courseId?: string, enabled = true) => {
         grades: data?.data ?? [],
         total: data?.total ?? 0,
         distribution: data?.distribution ?? null,
+        classAverages: data?.classAverages ?? null,
         course: data?.course ?? null,
         isLoading,
         isFetching,

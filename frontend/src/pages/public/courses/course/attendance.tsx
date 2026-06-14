@@ -116,17 +116,13 @@ function WeekStatusPill({ status }: { status: CourseAttendanceWeekStatus }) {
 
 function StudentAttendanceCard({
   student,
-  weekCount,
   weekLabel,
-  absentRateLabel,
-  markedLabel,
+  presentRateLabel,
   absentLabel,
 }: {
   student: CourseAttendanceStudent;
-  weekCount: number;
   weekLabel: string;
-  absentRateLabel: string;
-  markedLabel: string;
+  presentRateLabel: string;
   absentLabel: string;
 }) {
   return (
@@ -142,19 +138,18 @@ function StudentAttendanceCard({
             </p>
           </div>
           <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
-            {student.absentRate.toFixed(1)}% {absentRateLabel}
+            {student.presentRate.toFixed(1)}% {presentRateLabel}
           </Badge>
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{markedLabel.replace('__COUNT__', String(student.markedCount)).replace('__TOTAL__', String(weekCount))}</span>
+          <div className="flex justify-end text-sm text-muted-foreground">
             <span>{absentLabel.replace('__COUNT__', String(student.absentCount))}</span>
           </div>
           <div className="h-3 overflow-hidden rounded-full bg-muted">
             <div
-              className={`h-full rounded-full transition-all ${getWeekRateColor(student.absentRate)}`}
-              style={{ width: `${Math.min(100, Math.max(0, student.absentRate))}%` }}
+              className={`h-full rounded-full transition-all ${getWeekRateColor(student.presentRate)}`}
+              style={{ width: `${Math.min(100, Math.max(0, student.presentRate))}%` }}
             />
           </div>
         </div>
@@ -217,8 +212,9 @@ const CourseAttendancePage = () => {
 
   const attendanceWeekLabel = t('courses.attendance.weekLabel', { week: '{{week}}' });
   const attendancePresentRateLabel = t('courses.attendance.summary.presentRate');
-  const attendanceMarkedLabel = t('courses.attendance.summary.marked', { count: '__COUNT__', total: '__TOTAL__' } as any) as string;
-  const attendanceAbsentLabel = t('courses.attendance.summary.absent', { count: '__COUNT__' } as any) as string;
+  const attendanceAbsentLabel = t('courses.attendance.summary.absent', {
+    count: '__COUNT__',
+  } as Record<string, string>) as string;
   const attendanceSortNameLabel = t('courses.students.table.name');
   const attendanceSortStudentNumberLabel = t('courses.students.table.studentNumber');
   const attendanceSortAscendingLabel = t('courses.students.sort.asc');
@@ -269,7 +265,10 @@ const CourseAttendancePage = () => {
   }
 
   const studentRows = filteredStudents;
-  const hasRows = attendance.length > 0;
+  const ownAttendance = user.role === 'STUDENT'
+    ? attendance.find((student) => student.id === user.id) ?? null
+    : (attendance[0] ?? null);
+  const hasRows = ownAttendance !== null;
 
   if (isLoading) {
     return (
@@ -312,13 +311,15 @@ const CourseAttendancePage = () => {
       >
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">{t('courses.attendance.title')}</h2>
-          <p className="text-sm text-muted-foreground">{t('courses.attendance.description')}</p>
+          {canEdit ? <p className="text-sm text-muted-foreground">{t('courses.attendance.description')}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
-            <Users className="mr-1.5 h-4 w-4" />
-            {total} {t('courses.students.count')}
-          </Badge>
+          {canEdit ? (
+            <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm font-medium">
+              <Users className="mr-1.5 h-4 w-4" />
+              {total} {t('courses.students.count')}
+            </Badge>
+          ) : null}
           <Badge variant="outline" className="rounded-full px-3 py-1 text-sm font-medium">
             {weekNumbers.length} {t('courses.attendance.weekCount')}
           </Badge>
@@ -326,22 +327,16 @@ const CourseAttendancePage = () => {
             <Badge className="rounded-full px-3 py-1 text-sm font-medium">
               {t('courses.attendance.editMode')}
             </Badge>
-          ) : (
-            <Badge className="rounded-full px-3 py-1 text-sm font-medium" variant="secondary">
-              {t('courses.attendance.readOnlyMode')}
-            </Badge>
-          )}
+          ) : null}
         </div>
       </motion.div>
 
       {!canEdit ? (
         hasRows ? (
           <StudentAttendanceCard
-            student={attendance[0]}
-            weekCount={weekNumbers.length}
+            student={ownAttendance as CourseAttendanceStudent}
             weekLabel={attendanceWeekLabel}
-            absentRateLabel={attendancePresentRateLabel}
-            markedLabel={attendanceMarkedLabel}
+            presentRateLabel={attendancePresentRateLabel}
             absentLabel={attendanceAbsentLabel}
           />
         ) : (

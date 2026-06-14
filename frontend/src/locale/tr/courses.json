@@ -122,6 +122,7 @@
     "attendance": {
         "title": "Devamsızlık",
         "description": "Haftalık devam durumunu takip edin ve işaretleyin",
+        "studentDescription": "Kendi devam durumunuzu görüntüleyin",
         "locked": "Bu içeriği görüntülemek için giriş yapmalısınız",
         "loginRequiredTitle": "Giriş gerekli",
         "loginRequiredDescription": "Devamsızlık kayıtlarını görmek için lütfen giriş yapın.",

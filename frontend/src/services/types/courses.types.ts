@@ -44,11 +44,23 @@ export interface CourseGradeStudent {
     averageScore: number | null;
 }
 
+export interface CourseGradeClassAverageItem {
+    itemType: CourseGradeItemType;
+    itemNumber: number;
+    averageScore: number | null;
+}
+
+export interface CourseGradeClassAverages {
+    overall: number | null;
+    items: CourseGradeClassAverageItem[];
+}
+
 export interface GetCourseGradesResponse {
     success: boolean;
     message: string;
     course: Course;
     distribution: CourseGradeDistribution;
+    classAverages: CourseGradeClassAverages;
     data: CourseGradeStudent[];
     total: number;
 }

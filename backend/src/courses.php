@@ -278,10 +278,112 @@ function fetchCourseGradeDistributionRow($pdo, $courseId)
     return $defaults;
 }
 
+function fetchCourseGradeClassAverages($pdo, $courseId, array $distribution)
+{
+    $slots = buildCourseGradeSlots($distribution);
+    $itemAverages = array();
+
+    foreach ($slots as $slot) {
+        $itemAverages[$slot['itemType'] . ':' . $slot['itemNumber']] = null;
+    }
+
+    $itemStatement = $pdo->prepare('
+        SELECT
+            g.item_type,
+            g.item_number,
+            AVG(g.score) AS avg_score
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        INNER JOIN course_grade_scores g ON g.course_id = e.course_id AND g.user_id = e.user_id
+        WHERE e.course_id = :course_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1
+          AND g.score IS NOT NULL
+        GROUP BY g.item_type, g.item_number
+    ');
+    $itemStatement->execute(array(':course_id' => $courseId));
+
+    while ($row = $itemStatement->fetch()) {
+        $averageKey = $row['item_type'] . ':' . (int) $row['item_number'];
+
+        if (!array_key_exists($averageKey, $itemAverages)) {
+            continue;
+        }
+
+        $itemAverages[$averageKey] = $row['avg_score'] !== null ? round((float) $row['avg_score'], 1) : null;
+    }
+
+    $typeAverages = array();
+
+    foreach (getCourseGradeTypes() as $type) {
+        $typeAverages[$type['key']] = null;
+    }
+
+    $typeStatement = $pdo->prepare('
+        SELECT
+            g.item_type,
+            AVG(g.score) AS avg_score
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        INNER JOIN course_grade_scores g ON g.course_id = e.course_id AND g.user_id = e.user_id
+        WHERE e.course_id = :course_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1
+          AND g.score IS NOT NULL
+        GROUP BY g.item_type
+    ');
+    $typeStatement->execute(array(':course_id' => $courseId));
+
+    while ($row = $typeStatement->fetch()) {
+        $itemType = $row['item_type'];
+
+        if (!array_key_exists($itemType, $typeAverages)) {
+            continue;
+        }
+
+        $typeAverages[$itemType] = $row['avg_score'] !== null ? (float) $row['avg_score'] : null;
+    }
+
+    $weightedSum = 0;
+    $appliedWeightSum = 0;
+
+    foreach (getCourseGradeTypes() as $type) {
+        $typeKey = $type['key'];
+        $countField = $typeKey . 'Count';
+        $weightField = $typeKey . 'Weight';
+        $slotCount = isset($distribution[$countField]) ? (int) $distribution[$countField] : 0;
+        $weight = isset($distribution[$weightField]) ? (float) $distribution[$weightField] : 0;
+        $typeAverage = $typeAverages[$typeKey];
+
+        if ($slotCount <= 0 || $weight <= 0 || $typeAverage === null) {
+            continue;
+        }
+
+        $weightedSum += $typeAverage * $weight;
+        $appliedWeightSum += $weight;
+    }
+
+    $items = array();
+
+    foreach ($slots as $slot) {
+        $averageKey = $slot['itemType'] . ':' . $slot['itemNumber'];
+        $items[] = array(
+            'itemType' => $slot['itemType'],
+            'itemNumber' => $slot['itemNumber'],
+            'averageScore' => $itemAverages[$averageKey],
+        );
+    }
+
+    return array(
+        'overall' => $appliedWeightSum > 0 ? round($weightedSum / $appliedWeightSum, 1) : null,
+        'items' => $items,
+    );
+}
+
 function fetchCourseGrades($courseId)
 {
     $pdo = getCoursesPdo();
-    requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+    $viewer = requireAuthenticatedUser($pdo);
     ensureCourseGradeSchema($pdo);
 
     $courseId = trim($courseId);
@@ -298,7 +400,7 @@ function fetchCourseGrades($courseId)
 
     $distribution = fetchCourseGradeDistributionRow($pdo, $courseId);
 
-    $statement = $pdo->prepare('
+    $sql = '
         SELECT
             u.id,
             u.email,
@@ -315,10 +417,19 @@ function fetchCourseGrades($courseId)
         LEFT JOIN course_grade_scores g ON g.course_id = e.course_id AND g.user_id = e.user_id
         WHERE e.course_id = :course_id
           AND u.role = \'STUDENT\'
-          AND u.is_active = 1
-        ORDER BY u.first_name ASC, u.last_name ASC, u.student_number ASC, g.item_type ASC, g.item_number ASC
-    ');
-    $statement->execute(array(':course_id' => $courseId));
+                    AND u.is_active = 1';
+
+        $params = array(':course_id' => $courseId);
+
+        if (strtoupper((string) $viewer['role']) === 'STUDENT') {
+                $sql .= ' AND u.id = :viewer_id';
+                $params[':viewer_id'] = $viewer['id'];
+        }
+
+        $sql .= ' ORDER BY u.first_name ASC, u.last_name ASC, u.student_number ASC, g.item_type ASC, g.item_number ASC';
+
+        $statement = $pdo->prepare($sql);
+        $statement->execute($params);
 
     $students = array();
 
@@ -355,11 +466,14 @@ function fetchCourseGrades($courseId)
         $rows[] = normalizeCourseGradeStudent($student, $distribution);
     }
 
+    $classAverages = fetchCourseGradeClassAverages($pdo, $courseId, $distribution);
+
     return array(
         'success' => true,
         'message' => 'Course grades loaded successfully.',
         'course' => $course,
         'distribution' => $distribution,
+        'classAverages' => $classAverages,
         'data' => $rows,
         'total' => count($rows),
     );
@@ -838,7 +952,7 @@ function fetchCourseAttendance($courseId)
 
     $params = array(':course_id' => $courseId);
 
-    if ($viewer['role'] === 'STUDENT') {
+    if (strtoupper((string) $viewer['role']) === 'STUDENT') {
         $sql .= ' AND u.id = :viewer_id';
         $params[':viewer_id'] = $viewer['id'];
     }
