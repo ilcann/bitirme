@@ -117,6 +117,9 @@
         },
         "download": "Download",
         "open": "Open",
+        "delete": "Delete",
+        "unavailable": "Unavailable",
+        "deleteConfirm": "Delete this material?",
         "pagination": {
             "previous": "Previous",
             "next": "Next",
@@ -128,7 +131,36 @@
         "filters": {
             "type": "Types"
         },
-        "resultsCount": "materials"
+        "resultsCount": "materials",
+        "uploadModal": {
+            "trigger": "Upload material",
+            "title": "Upload course material",
+            "description": "Add a new file or link for this course.",
+            "fields": {
+                "titleTr": "Turkish title",
+                "titleEn": "English title",
+                "descriptionTr": "Turkish description",
+                "descriptionEn": "English description",
+                "type": "Material type",
+                "file": "File",
+                "externalUrl": "External URL"
+            },
+            "placeholders": {
+                "titleTr": "e.g. Week 1 lecture notes",
+                "titleEn": "e.g. Week 1 lecture notes",
+                "descriptionTr": "Optional Turkish description",
+                "descriptionEn": "Optional English description",
+                "externalUrl": "https://example.com/resource"
+            },
+            "validation": {
+                "required": "This field is required.",
+                "fileOrUrl": "Select a file or enter an external URL."
+            },
+            "submit": "Upload",
+            "submitting": "Uploading...",
+            "success": "Material uploaded successfully.",
+            "error": "Failed to upload material."
+        }
     },
     "grades": {
         "title": "My Grades",

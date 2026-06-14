@@ -11,13 +11,16 @@ import {
     Link as LinkIcon,
     Download,
     ExternalLink,
-    Calendar
+    Calendar,
+    Trash2
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { CourseMaterial, MaterialType } from "@/types/course-material";
 
 interface MaterialCardProps {
     material: CourseMaterial;
+    canDelete?: boolean;
+    onDelete?: (materialId: number | string) => void;
 }
 
 const getMaterialIcon = (type: MaterialType) => {
@@ -59,7 +62,7 @@ const getMaterialColor = (type: MaterialType): string => {
     }
 };
 
-export const MaterialCard = ({ material }: MaterialCardProps) => {
+export const MaterialCard = ({ material, canDelete = false, onDelete }: MaterialCardProps) => {
     const { t, i18n } = useTranslation('courses');
 
     return (
@@ -93,7 +96,13 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
                             )}
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        {canDelete && onDelete ? (
+                            <Button size="sm" variant="ghost" onClick={() => onDelete(material.id)}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('courses.materials.delete')}
+                            </Button>
+                        ) : null}
                         {material.type === "link" || material.type === "video" ? (
                             <Button size="sm" variant="outline" asChild>
                                 <a href={material.url} target="_blank" rel="noopener noreferrer">
@@ -101,14 +110,19 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
                                     {t('courses.materials.open')}
                                 </a>
                             </Button>
-                        ) : (
+                        ) : material.url ? (
                             <Button size="sm" variant="outline" asChild>
                                 <a href={material.url} download>
                                     <Download className="h-4 w-4 mr-2" />
                                     {t('courses.materials.download')}
                                 </a>
                             </Button>
-                        )}
+                        ) : null}
+                        {!material.url ? (
+                            <Button size="sm" variant="outline" disabled>
+                                {t('courses.materials.unavailable')}
+                            </Button>
+                        ) : null}
                     </div>
                 </div>
             </CardHeader>

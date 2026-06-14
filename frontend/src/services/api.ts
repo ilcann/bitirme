@@ -25,8 +25,9 @@ async function parseJsonResponse(response: Response): Promise<ApiResponse> {
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
+  const isFormDataBody = typeof FormData !== 'undefined' && init.body instanceof FormData;
 
-  if (init.body && !headers.has('Content-Type')) {
+  if (init.body && !isFormDataBody && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 

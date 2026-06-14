@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { getCourseGrades, updateCourseGrade, updateCourseGradeDistribution } from '@/services/courses.service';
 import type {
-    CourseGradeDistribution,
     UpdateCourseGradeDistributionRequest,
     UpdateCourseGradeRequest,
 } from '@/services/types';

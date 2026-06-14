@@ -21,7 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { Course, CourseGradeDistribution, CourseGradeItemType, CourseGradeStudent } from '@/services/types';
+import type { Course } from '@/types/course';
+import type { CourseGradeDistribution, CourseGradeItemType, CourseGradeStudent } from '@/services/types';
 
 const COURSE_GRADE_TYPES: Array<{ type: CourseGradeItemType; label: string }> = [
   { type: 'midterm', label: 'Ara Sınav' },

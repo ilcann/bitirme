@@ -57,7 +57,9 @@ export type {
 export type {
     MaterialSortBy,
     GetMaterialsParams,
-    GetMaterialsResponse
+    GetMaterialsResponse,
+    CreateMaterialRequest,
+    MaterialMutationResponse
 } from "./materials.types";
 
 // Auth

@@ -37,8 +37,9 @@ export const useMaterials = ({ courseId, initialLimit = 20 }: UseMaterialsOption
         refetch,
         isFetching,
     } = useQuery({
-        queryKey: ["materials", queryParams],
+        queryKey: ["materials", courseId, queryParams],
         queryFn: () => getMaterials(queryParams),
+        enabled: Boolean(courseId),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 

@@ -22,3 +22,20 @@ export interface GetMaterialsResponse {
     limit: number;
     hasMore: boolean;
 }
+
+export interface CreateMaterialRequest {
+    courseId: string;
+    titleTr: string;
+    titleEn: string;
+    descriptionTr?: string;
+    descriptionEn?: string;
+    type: MaterialType;
+    externalUrl?: string;
+    file?: File | null;
+}
+
+export interface MaterialMutationResponse {
+    success: boolean;
+    message: string;
+    material: CourseMaterial;
+}

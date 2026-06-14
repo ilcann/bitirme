@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useMaterials } from "@/hooks/use-materials";
+import { useMaterialsMutations } from "@/hooks/use-materials-mutations";
 import { useOutletContext } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { MaterialCard } from "@/components/common/material-card";
 import { MaterialCardSkeleton } from "@/components/common/material-card-skeleton";
+import { MaterialUploadModal } from "@/components/common/material-upload-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -29,10 +31,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/types/course";
 import type { MaterialType } from "@/types/course-material";
+import { useAuth } from "@/providers/auth-provider";
 
 const CourseMaterialsPage = () => {
     const { t } = useTranslation('courses');
     const { course } = useOutletContext<{ course: Course }>();
+    const { user } = useAuth();
+    const canManageMaterials = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
+    const { deleteMaterial } = useMaterialsMutations(course?.id || '');
 
     useDocumentTitle(
         `${course?.code} - ${t('materials.title')}`,
@@ -57,16 +63,48 @@ const CourseMaterialsPage = () => {
         goToNextPage,
         goToPreviousPage,
         clearAllFilters,
+        refetch,
     } = useMaterials({ 
         courseId: course?.id || "",
         initialLimit: 5
     });
+
+    const handleDeleteMaterial = async (materialId: number | string) => {
+        if (!course?.id) {
+            return;
+        }
+
+        const confirmed = window.confirm(t('courses.materials.deleteConfirm'));
+
+        if (!confirmed) {
+            return;
+        }
+
+        const numericMaterialId = typeof materialId === 'string' ? Number(materialId) : materialId;
+
+        if (Number.isNaN(numericMaterialId)) {
+            return;
+        }
+
+        await deleteMaterial(numericMaterialId);
+    };
 
     const materialTypes: MaterialType[] = ["lecture", "assignment", "exam", "document", "video", "link"];
     const activeFilterCount = selectedTypes.length + (sortBy !== 'newest' ? 1 : 0);
 
     return (
         <section className="space-y-6">
+            {canManageMaterials ? (
+                <div className="flex justify-end">
+                    <MaterialUploadModal
+                        courseId={course.id}
+                        onSuccess={async () => {
+                            await refetch();
+                        }}
+                    />
+                </div>
+            ) : null}
+
             {/* Search & Filters */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -200,7 +238,11 @@ const CourseMaterialsPage = () => {
                                 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
-                                <MaterialCard material={material} />
+                                <MaterialCard
+                                    material={material}
+                                    canDelete={canManageMaterials}
+                                    onDelete={handleDeleteMaterial}
+                                />
                             </motion.div>
                         ))}
                     </motion.div>

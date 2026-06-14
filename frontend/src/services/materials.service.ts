@@ -1,22 +1,11 @@
-import { MockMaterials } from "@/mock/materials";
+import { apiRequest } from "./api";
 import type {
+    CreateMaterialRequest,
     GetMaterialsParams,
-    GetMaterialsResponse
+    GetMaterialsResponse,
+    MaterialMutationResponse
 } from "./types";
 
-/**
- * Materials Service
- * Handles all course materials-related API operations
- * Currently uses mock data, ready for API integration
- */
-
-/**
- * Get materials for a course with pagination, filtering, and sorting
- * Ready for TanStack Query pagination
- * 
- * @param params - Query parameters
- * @returns Paginated materials response
- */
 export const getMaterials = async (params: GetMaterialsParams): Promise<GetMaterialsResponse> => {
     const {
         courseId,
@@ -27,56 +16,65 @@ export const getMaterials = async (params: GetMaterialsParams): Promise<GetMater
         sortBy = "newest"
     } = params;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const query = new URLSearchParams();
 
-    let materials = MockMaterials.filter(material => material.courseId === courseId);
+    query.set('courseId', courseId);
+    query.set('offset', String(offset));
+    query.set('limit', String(limit));
+    query.set('sortBy', sortBy);
 
-    // Filter by types
-    if (types && types.length > 0) {
-        materials = materials.filter(material => types.includes(material.type));
-    }
-
-    // Filter by search query
     if (search && search.trim()) {
-        const searchQuery = search.toLowerCase();
-        materials = materials.filter(material => 
-            material.title.tr.toLowerCase().includes(searchQuery) ||
-            material.title.en.toLowerCase().includes(searchQuery) ||
-            (material.description?.tr.toLowerCase().includes(searchQuery)) ||
-            (material.description?.en.toLowerCase().includes(searchQuery))
-        );
+        query.set('search', search.trim());
     }
 
-    // Sort materials
-    const sorted = [...materials].sort((a, b) => {
-        switch (sortBy) {
-            case "newest":
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-            case "oldest":
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            case "title":
-                // Sort by current language (default to English)
-                return a.title.en.localeCompare(b.title.en);
-            default:
-                return 0;
-        }
+    if (types && types.length > 0) {
+        query.set('types', types.join(','));
+    }
+
+    const response = await apiRequest<{ data: GetMaterialsResponse }>(`/public/courses/materials.php?${query.toString()}`);
+
+    return response.data;
+};
+
+export const createMaterial = async (request: CreateMaterialRequest): Promise<MaterialMutationResponse> => {
+    const formData = new FormData();
+
+    formData.append('courseId', request.courseId);
+    formData.append('titleTr', request.titleTr);
+    formData.append('titleEn', request.titleEn);
+    formData.append('type', request.type);
+
+    if (request.descriptionTr) {
+        formData.append('descriptionTr', request.descriptionTr);
+    }
+
+    if (request.descriptionEn) {
+        formData.append('descriptionEn', request.descriptionEn);
+    }
+
+    if (request.externalUrl) {
+        formData.append('externalUrl', request.externalUrl);
+    }
+
+    if (request.file) {
+        formData.append('file', request.file);
+    }
+
+    const response = await apiRequest<MaterialMutationResponse>('/public/courses/materials.php', {
+        method: 'POST',
+        body: formData,
     });
 
-    // Get total count
-    const total = sorted.length;
+    return response;
+};
 
-    // Apply pagination
-    const paginatedData = sorted.slice(offset, offset + limit);
+export const deleteMaterial = async (courseId: string, materialId: number): Promise<MaterialMutationResponse> => {
+    const query = new URLSearchParams();
 
-    // Check if there are more items
-    const hasMore = offset + limit < total;
+    query.set('courseId', courseId);
+    query.set('id', String(materialId));
 
-    return {
-        data: paginatedData,
-        total,
-        offset,
-        limit,
-        hasMore
-    };
+    return apiRequest<MaterialMutationResponse>(`/public/courses/materials.php?${query.toString()}`, {
+        method: 'DELETE',
+    });
 };

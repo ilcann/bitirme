@@ -117,6 +117,9 @@
         },
         "download": "İndir",
         "open": "Aç",
+        "delete": "Sil",
+        "unavailable": "Kullanılamıyor",
+        "deleteConfirm": "Bu materyali silmek istiyor musunuz?",
         "pagination": {
             "previous": "Önceki",
             "next": "Sonraki",
@@ -128,7 +131,36 @@
         "filters": {
             "type": "Tipler"
         },
-        "resultsCount": "materyal"
+        "resultsCount": "materyal",
+        "uploadModal": {
+            "trigger": "Materyal yükle",
+            "title": "Ders materyali yükle",
+            "description": "Bu ders için yeni bir dosya veya bağlantı ekleyin.",
+            "fields": {
+                "titleTr": "Türkçe başlık",
+                "titleEn": "İngilizce başlık",
+                "descriptionTr": "Türkçe açıklama",
+                "descriptionEn": "İngilizce açıklama",
+                "type": "Materyal tipi",
+                "file": "Dosya",
+                "externalUrl": "Harici bağlantı"
+            },
+            "placeholders": {
+                "titleTr": "Örn. Hafta 1 ders notları",
+                "titleEn": "Örn. Hafta 1 ders notları",
+                "descriptionTr": "İsteğe bağlı Türkçe açıklama",
+                "descriptionEn": "İsteğe bağlı İngilizce açıklama",
+                "externalUrl": "https://ornek.com/kaynak"
+            },
+            "validation": {
+                "required": "Bu alan zorunludur.",
+                "fileOrUrl": "Bir dosya seçin veya harici bir bağlantı girin."
+            },
+            "submit": "Yükle",
+            "submitting": "Yükleniyor...",
+            "success": "Materyal başarıyla yüklendi.",
+            "error": "Materyal yüklenemedi."
+        }
     },
     "grades": {
         "title": "Notlarım",
