@@ -11,6 +11,76 @@ export type CourseStudentSortBy = "name" | "studentNumber";
 
 export type CourseAttendanceWeekStatus = boolean | null;
 
+export type CourseGradeItemType = 'midterm' | 'final' | 'project' | 'homework' | 'quiz';
+
+export interface CourseGradeDistribution {
+    midtermCount: number;
+    finalCount: number;
+    projectCount: number;
+    homeworkCount: number;
+    quizCount: number;
+    midtermWeight: number;
+    finalWeight: number;
+    projectWeight: number;
+    homeworkWeight: number;
+    quizWeight: number;
+}
+
+export interface CourseGradeItem {
+    itemType: CourseGradeItemType;
+    itemNumber: number;
+    score: number | null;
+    updatedAt: string | null;
+}
+
+export interface CourseGradeStudent {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    studentNumber: string | null;
+    enrolledAt: string;
+    grades: CourseGradeItem[];
+    averageScore: number | null;
+}
+
+export interface GetCourseGradesResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    distribution: CourseGradeDistribution;
+    data: CourseGradeStudent[];
+    total: number;
+}
+
+export interface UpdateCourseGradeDistributionRequest {
+    courseId: string;
+    distribution: CourseGradeDistribution;
+}
+
+export interface UpdateCourseGradeDistributionResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    distribution: CourseGradeDistribution;
+}
+
+export interface UpdateCourseGradeRequest {
+    courseId: string;
+    studentId: number;
+    itemType: CourseGradeItemType;
+    itemNumber: number;
+    score: number | null;
+}
+
+export interface UpdateCourseGradeResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    itemType: CourseGradeItemType;
+    itemNumber: number;
+}
+
 export interface CourseAttendanceWeek {
     weekNumber: number;
     isPresent: CourseAttendanceWeekStatus;

@@ -114,7 +114,10 @@
     "grades": {
         "title": "My Grades",
         "description": "View your grades and exam results",
-        "locked": "You must log in to view this content"
+        "locked": "You must log in to view this content",
+        "loginRequiredTitle": "Login required",
+        "loginRequiredDescription": "Please sign in to view grades.",
+        "loginRequiredAction": "Log in"
     },
     "attendance": {
         "title": "Attendance",

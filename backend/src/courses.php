@@ -22,6 +22,498 @@ function normalizeCourse(array $course)
     );
 }
 
+function getCourseGradeTypes()
+{
+    return array(
+        array('key' => 'midterm', 'label' => 'Midterm', 'defaultCount' => 2, 'defaultWeight' => 40),
+        array('key' => 'final', 'label' => 'Final', 'defaultCount' => 1, 'defaultWeight' => 30),
+        array('key' => 'project', 'label' => 'Project', 'defaultCount' => 2, 'defaultWeight' => 10),
+        array('key' => 'homework', 'label' => 'Homework', 'defaultCount' => 14, 'defaultWeight' => 10),
+        array('key' => 'quiz', 'label' => 'Quiz', 'defaultCount' => 14, 'defaultWeight' => 10),
+    );
+}
+
+function getDefaultCourseGradeDistribution()
+{
+    $distribution = array();
+
+    foreach (getCourseGradeTypes() as $type) {
+        $distribution[$type['key'] . 'Count'] = $type['defaultCount'];
+        $distribution[$type['key'] . 'Weight'] = $type['defaultWeight'];
+    }
+
+    return $distribution;
+}
+
+function ensureCourseGradeSchema($pdo)
+{
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS course_grade_distributions (
+            course_id VARCHAR(50) PRIMARY KEY,
+            midterm_count TINYINT UNSIGNED NOT NULL DEFAULT 2,
+            final_count TINYINT UNSIGNED NOT NULL DEFAULT 1,
+            project_count TINYINT UNSIGNED NOT NULL DEFAULT 2,
+            homework_count TINYINT UNSIGNED NOT NULL DEFAULT 14,
+            quiz_count TINYINT UNSIGNED NOT NULL DEFAULT 14,
+            midterm_weight TINYINT UNSIGNED NOT NULL DEFAULT 40,
+            final_weight TINYINT UNSIGNED NOT NULL DEFAULT 30,
+            project_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+            homework_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+            quiz_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+            updated_by INT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci
+    ');
+
+    $weightColumns = array(
+        'midterm_weight' => 'TINYINT UNSIGNED NOT NULL DEFAULT 40',
+        'final_weight' => 'TINYINT UNSIGNED NOT NULL DEFAULT 30',
+        'project_weight' => 'TINYINT UNSIGNED NOT NULL DEFAULT 10',
+        'homework_weight' => 'TINYINT UNSIGNED NOT NULL DEFAULT 10',
+        'quiz_weight' => 'TINYINT UNSIGNED NOT NULL DEFAULT 10',
+    );
+
+    foreach ($weightColumns as $columnName => $columnDefinition) {
+        $columnResult = $pdo->query("SHOW COLUMNS FROM course_grade_distributions LIKE '{$columnName}'");
+
+        if (!$columnResult || !$columnResult->fetch()) {
+            $pdo->exec("ALTER TABLE course_grade_distributions ADD COLUMN {$columnName} {$columnDefinition}");
+        }
+    }
+
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS course_grade_scores (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            course_id VARCHAR(50) NOT NULL,
+            user_id INT NOT NULL,
+            item_type ENUM(\'midterm\', \'final\', \'project\', \'homework\', \'quiz\') NOT NULL,
+            item_number TINYINT UNSIGNED NOT NULL,
+            score DECIMAL(5,2) NULL DEFAULT NULL,
+            updated_by INT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_course_user_item (course_id, user_id, item_type, item_number),
+            INDEX idx_course_grade_scores_course_id (course_id),
+            INDEX idx_course_grade_scores_user_id (user_id),
+            INDEX idx_course_grade_scores_item_type (item_type)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci
+    ');
+}
+
+function normalizeCourseGradeDistribution(array $distribution)
+{
+    $normalized = array();
+
+    foreach (getCourseGradeTypes() as $type) {
+        $fieldName = $type['key'] . 'Count';
+        $count = isset($distribution[$fieldName]) ? (int) $distribution[$fieldName] : $type['defaultCount'];
+        $weightFieldName = $type['key'] . 'Weight';
+        $weight = isset($distribution[$weightFieldName]) ? (int) $distribution[$weightFieldName] : $type['defaultWeight'];
+
+        if ($count < 0) {
+            $count = 0;
+        }
+
+        if ($weight < 0) {
+            $weight = 0;
+        }
+
+        if ($weight > 100) {
+            $weight = 100;
+        }
+
+        if ($count === 0) {
+            $weight = 0;
+        }
+
+        $normalized[$fieldName] = $count;
+        $normalized[$weightFieldName] = $weight;
+    }
+
+    return $normalized;
+}
+
+function buildCourseGradeSlots(array $distribution)
+{
+    $slots = array();
+
+    foreach (getCourseGradeTypes() as $type) {
+        $fieldName = $type['key'] . 'Count';
+        $count = isset($distribution[$fieldName]) ? (int) $distribution[$fieldName] : 0;
+
+        for ($index = 1; $index <= $count; $index++) {
+            $slots[] = array(
+                'itemType' => $type['key'],
+                'itemNumber' => $index,
+            );
+        }
+    }
+
+    return $slots;
+}
+
+function normalizeCourseGradeStudent(array $student, array $distribution)
+{
+    $slots = buildCourseGradeSlots($distribution);
+    $grades = array();
+    $groupScoreStats = array();
+
+    foreach (getCourseGradeTypes() as $type) {
+        $groupScoreStats[$type['key']] = array(
+            'sum' => 0,
+            'count' => 0,
+        );
+    }
+
+    foreach ($slots as $slot) {
+        $grades[$slot['itemType'] . ':' . $slot['itemNumber']] = array(
+            'itemType' => $slot['itemType'],
+            'itemNumber' => $slot['itemNumber'],
+            'score' => null,
+            'updatedAt' => null,
+        );
+    }
+
+    if (isset($student['grades']) && is_array($student['grades'])) {
+        foreach ($student['grades'] as $grade) {
+            if (!isset($grade['itemType']) || !isset($grade['itemNumber'])) {
+                continue;
+            }
+
+            $gradeKey = $grade['itemType'] . ':' . (int) $grade['itemNumber'];
+
+            if (!isset($grades[$gradeKey])) {
+                continue;
+            }
+
+            $score = isset($grade['score']) && $grade['score'] !== null ? (float) $grade['score'] : null;
+            $grades[$gradeKey]['score'] = $score;
+            $grades[$gradeKey]['updatedAt'] = isset($grade['updatedAt']) ? $grade['updatedAt'] : null;
+
+            if ($score !== null) {
+                $groupScoreStats[$grade['itemType']]['sum'] += $score;
+                $groupScoreStats[$grade['itemType']]['count']++;
+            }
+        }
+    }
+
+    $weightedSum = 0;
+    $appliedWeightSum = 0;
+
+    foreach (getCourseGradeTypes() as $type) {
+        $key = $type['key'];
+        $countField = $key . 'Count';
+        $weightField = $key . 'Weight';
+        $slotCount = isset($distribution[$countField]) ? (int) $distribution[$countField] : 0;
+        $weight = isset($distribution[$weightField]) ? (float) $distribution[$weightField] : 0;
+
+        if ($slotCount <= 0 || $weight <= 0) {
+            continue;
+        }
+
+        $groupCount = $groupScoreStats[$key]['count'];
+
+        if ($groupCount <= 0) {
+            continue;
+        }
+
+        $groupAverage = $groupScoreStats[$key]['sum'] / $groupCount;
+        $weightedSum += $groupAverage * $weight;
+        $appliedWeightSum += $weight;
+    }
+
+    return array(
+        'id' => (int) $student['id'],
+        'email' => $student['email'],
+        'firstName' => $student['firstName'],
+        'lastName' => $student['lastName'],
+        'studentNumber' => $student['studentNumber'],
+        'enrolledAt' => $student['enrolledAt'],
+        'grades' => array_values($grades),
+        'averageScore' => $appliedWeightSum > 0 ? round($weightedSum / $appliedWeightSum, 1) : null,
+    );
+}
+
+function fetchCourseGradeDistributionRow($pdo, $courseId)
+{
+    ensureCourseGradeSchema($pdo);
+
+    $statement = $pdo->prepare('SELECT midterm_count, final_count, project_count, homework_count, quiz_count, midterm_weight, final_weight, project_weight, homework_weight, quiz_weight FROM course_grade_distributions WHERE course_id = :course_id LIMIT 1');
+    $statement->execute(array(':course_id' => $courseId));
+
+    $row = $statement->fetch();
+
+    if ($row) {
+        return normalizeCourseGradeDistribution(array(
+            'midtermCount' => $row['midterm_count'],
+            'finalCount' => $row['final_count'],
+            'projectCount' => $row['project_count'],
+            'homeworkCount' => $row['homework_count'],
+            'quizCount' => $row['quiz_count'],
+            'midtermWeight' => $row['midterm_weight'],
+            'finalWeight' => $row['final_weight'],
+            'projectWeight' => $row['project_weight'],
+            'homeworkWeight' => $row['homework_weight'],
+            'quizWeight' => $row['quiz_weight'],
+        ));
+    }
+
+    $defaults = getDefaultCourseGradeDistribution();
+    $insertStatement = $pdo->prepare('INSERT INTO course_grade_distributions (course_id, midterm_count, final_count, project_count, homework_count, quiz_count, midterm_weight, final_weight, project_weight, homework_weight, quiz_weight) VALUES (:course_id, :midterm_count, :final_count, :project_count, :homework_count, :quiz_count, :midterm_weight, :final_weight, :project_weight, :homework_weight, :quiz_weight)');
+    $insertStatement->execute(array(
+        ':course_id' => $courseId,
+        ':midterm_count' => $defaults['midtermCount'],
+        ':final_count' => $defaults['finalCount'],
+        ':project_count' => $defaults['projectCount'],
+        ':homework_count' => $defaults['homeworkCount'],
+        ':quiz_count' => $defaults['quizCount'],
+        ':midterm_weight' => $defaults['midtermWeight'],
+        ':final_weight' => $defaults['finalWeight'],
+        ':project_weight' => $defaults['projectWeight'],
+        ':homework_weight' => $defaults['homeworkWeight'],
+        ':quiz_weight' => $defaults['quizWeight'],
+    ));
+
+    return $defaults;
+}
+
+function fetchCourseGrades($courseId)
+{
+    $pdo = getCoursesPdo();
+    requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+    ensureCourseGradeSchema($pdo);
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $distribution = fetchCourseGradeDistributionRow($pdo, $courseId);
+
+    $statement = $pdo->prepare('
+        SELECT
+            u.id,
+            u.email,
+            u.first_name,
+            u.last_name,
+            u.student_number,
+            e.created_at AS enrolled_at,
+            g.item_type,
+            g.item_number,
+            g.score,
+            g.updated_at
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        LEFT JOIN course_grade_scores g ON g.course_id = e.course_id AND g.user_id = e.user_id
+        WHERE e.course_id = :course_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1
+        ORDER BY u.first_name ASC, u.last_name ASC, u.student_number ASC, g.item_type ASC, g.item_number ASC
+    ');
+    $statement->execute(array(':course_id' => $courseId));
+
+    $students = array();
+
+    while ($row = $statement->fetch()) {
+        $studentId = (int) $row['id'];
+
+        if (!isset($students[$studentId])) {
+            $students[$studentId] = array(
+                'id' => $studentId,
+                'email' => $row['email'],
+                'firstName' => $row['first_name'],
+                'lastName' => $row['last_name'],
+                'studentNumber' => $row['student_number'],
+                'enrolledAt' => $row['enrolled_at'],
+                'grades' => array(),
+            );
+        }
+
+        if ($row['item_type'] === null || $row['item_number'] === null) {
+            continue;
+        }
+
+        $students[$studentId]['grades'][] = array(
+            'itemType' => $row['item_type'],
+            'itemNumber' => (int) $row['item_number'],
+            'score' => $row['score'] !== null ? (float) $row['score'] : null,
+            'updatedAt' => $row['updated_at'],
+        );
+    }
+
+    $rows = array();
+
+    foreach ($students as $student) {
+        $rows[] = normalizeCourseGradeStudent($student, $distribution);
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Course grades loaded successfully.',
+        'course' => $course,
+        'distribution' => $distribution,
+        'data' => $rows,
+        'total' => count($rows),
+    );
+}
+
+function updateCourseGradeDistribution($courseId, array $distribution)
+{
+    $pdo = getCoursesPdo();
+    $actor = requireAuthenticatedUser($pdo, array('ADMIN'));
+    ensureCourseGradeSchema($pdo);
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $normalizedDistribution = normalizeCourseGradeDistribution($distribution);
+    $totalItems = 0;
+    $totalWeight = 0;
+
+    foreach (getCourseGradeTypes() as $type) {
+        $countField = $type['key'] . 'Count';
+        $weightField = $type['key'] . 'Weight';
+        $countValue = (int) $normalizedDistribution[$countField];
+
+        $totalItems += $countValue;
+
+        if ($countValue > 0) {
+            $totalWeight += (int) $normalizedDistribution[$weightField];
+        }
+    }
+
+    if ($totalItems <= 0) {
+        throw new InvalidArgumentException('At least one grade item must be configured.');
+    }
+
+    if ($totalWeight !== 100) {
+        throw new InvalidArgumentException('Grade weights must total 100%.');
+    }
+
+    $statement = $pdo->prepare('INSERT INTO course_grade_distributions (course_id, midterm_count, final_count, project_count, homework_count, quiz_count, midterm_weight, final_weight, project_weight, homework_weight, quiz_weight, updated_by) VALUES (:course_id, :midterm_count, :final_count, :project_count, :homework_count, :quiz_count, :midterm_weight, :final_weight, :project_weight, :homework_weight, :quiz_weight, :updated_by) ON DUPLICATE KEY UPDATE midterm_count = VALUES(midterm_count), final_count = VALUES(final_count), project_count = VALUES(project_count), homework_count = VALUES(homework_count), quiz_count = VALUES(quiz_count), midterm_weight = VALUES(midterm_weight), final_weight = VALUES(final_weight), project_weight = VALUES(project_weight), homework_weight = VALUES(homework_weight), quiz_weight = VALUES(quiz_weight), updated_by = VALUES(updated_by), updated_at = CURRENT_TIMESTAMP');
+    $statement->execute(array(
+        ':course_id' => $courseId,
+        ':midterm_count' => $normalizedDistribution['midtermCount'],
+        ':final_count' => $normalizedDistribution['finalCount'],
+        ':project_count' => $normalizedDistribution['projectCount'],
+        ':homework_count' => $normalizedDistribution['homeworkCount'],
+        ':quiz_count' => $normalizedDistribution['quizCount'],
+        ':midterm_weight' => $normalizedDistribution['midtermWeight'],
+        ':final_weight' => $normalizedDistribution['finalWeight'],
+        ':project_weight' => $normalizedDistribution['projectWeight'],
+        ':homework_weight' => $normalizedDistribution['homeworkWeight'],
+        ':quiz_weight' => $normalizedDistribution['quizWeight'],
+        ':updated_by' => $actor['id'],
+    ));
+
+    return array(
+        'success' => true,
+        'message' => 'Course grade distribution updated successfully.',
+        'course' => $course,
+        'distribution' => $normalizedDistribution,
+    );
+}
+
+function updateCourseGrade($courseId, $studentId, $itemType, $itemNumber, $score)
+{
+    $pdo = getCoursesPdo();
+    $actor = requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+    ensureCourseGradeSchema($pdo);
+
+    $courseId = trim($courseId);
+    $studentId = (int) $studentId;
+    $itemType = trim($itemType);
+    $itemNumber = (int) $itemNumber;
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    if ($studentId <= 0) {
+        throw new InvalidArgumentException('Student id is required.');
+    }
+
+    if ($itemType === '') {
+        throw new InvalidArgumentException('Grade type is required.');
+    }
+
+    if ($itemNumber <= 0) {
+        throw new InvalidArgumentException('Grade item number is required.');
+    }
+
+    $distribution = fetchCourseGradeDistributionRow($pdo, $courseId);
+    $distributionField = $itemType . 'Count';
+
+    if (!isset($distribution[$distributionField])) {
+        throw new InvalidArgumentException('Invalid grade type.');
+    }
+
+    if ($itemNumber > (int) $distribution[$distributionField]) {
+        throw new InvalidArgumentException('Grade item is outside the configured distribution.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $studentStatement = $pdo->prepare('SELECT u.id FROM course_enrollments e INNER JOIN users u ON u.id = e.user_id WHERE e.course_id = :course_id AND e.user_id = :student_id AND u.role = \'STUDENT\' AND u.is_active = 1 LIMIT 1');
+    $studentStatement->execute(array(
+        ':course_id' => $courseId,
+        ':student_id' => $studentId,
+    ));
+
+    if (!$studentStatement->fetch()) {
+        throw new RuntimeException('Student is not enrolled in this course.');
+    }
+
+    $normalizedScore = null;
+
+    if ($score !== null && $score !== '') {
+        $normalizedScore = (float) $score;
+
+        if ($normalizedScore < 0 || $normalizedScore > 100) {
+            throw new InvalidArgumentException('Grade score must be between 0 and 100.');
+        }
+    }
+
+    $statement = $pdo->prepare('INSERT INTO course_grade_scores (course_id, user_id, item_type, item_number, score, updated_by) VALUES (:course_id, :user_id, :item_type, :item_number, :score, :updated_by) ON DUPLICATE KEY UPDATE score = VALUES(score), updated_by = VALUES(updated_by), updated_at = CURRENT_TIMESTAMP');
+    $statement->execute(array(
+        ':course_id' => $courseId,
+        ':user_id' => $studentId,
+        ':item_type' => $itemType,
+        ':item_number' => $itemNumber,
+        ':score' => $normalizedScore,
+        ':updated_by' => $actor['id'],
+    ));
+
+    return array(
+        'success' => true,
+        'message' => 'Course grade updated successfully.',
+        'course' => $course,
+        'itemType' => $itemType,
+        'itemNumber' => $itemNumber,
+    );
+}
+
 function generateCourseId($code)
 {
     $normalized = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '', $code));

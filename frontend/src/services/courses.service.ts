@@ -13,8 +13,13 @@ import type {
     GetCoursesResponse,
     GetCoursesCompactResponse,
     GetCourseStudentsResponse,
+    GetCourseGradesResponse,
     GetAvailableCourseStudentsResponse,
     GetCourseAttendanceResponse,
+    UpdateCourseGradeDistributionRequest,
+    UpdateCourseGradeDistributionResponse,
+    UpdateCourseGradeRequest,
+    UpdateCourseGradeResponse,
     UpdateCourseAttendanceRequest,
     UpdateCourseAttendanceResponse
 } from "./types";
@@ -127,6 +132,45 @@ export const getCourseAttendance = async (courseId: string): Promise<GetCourseAt
     query.set('courseId', courseId);
 
     return apiRequest<GetCourseAttendanceResponse>(`/public/courses/attendance.php?${query.toString()}`);
+};
+
+export const getCourseGrades = async (courseId: string): Promise<GetCourseGradesResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', courseId);
+
+    return apiRequest<GetCourseGradesResponse>(`/public/courses/grades.php?${query.toString()}`);
+};
+
+export const updateCourseGradeDistribution = async (
+    request: UpdateCourseGradeDistributionRequest
+): Promise<UpdateCourseGradeDistributionResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', request.courseId);
+
+    return apiRequest<UpdateCourseGradeDistributionResponse>(`/public/courses/grades.php?${query.toString()}`, {
+        method: 'POST',
+        body: JSON.stringify({ distribution: request.distribution }),
+    });
+};
+
+export const updateCourseGrade = async (
+    request: UpdateCourseGradeRequest
+): Promise<UpdateCourseGradeResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', request.courseId);
+
+    return apiRequest<UpdateCourseGradeResponse>(`/public/courses/grades.php?${query.toString()}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            studentId: request.studentId,
+            itemType: request.itemType,
+            itemNumber: request.itemNumber,
+            score: request.score,
+        }),
+    });
 };
 
 export const updateCourseAttendance = async (

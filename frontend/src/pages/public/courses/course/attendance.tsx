@@ -159,7 +159,7 @@ function StudentAttendanceCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7 xl:[grid-template-columns:repeat(14,minmax(0,1fr))]">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7 xl:grid-cols-14">
           {student.weeks.map((week) => (
             <div key={week.weekNumber} className="rounded-2xl border bg-muted/20 p-2 text-center">
               <div className="mb-1 text-xs font-medium text-muted-foreground">

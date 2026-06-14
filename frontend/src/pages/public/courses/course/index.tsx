@@ -30,6 +30,10 @@ const CoursePage = () => {
         return <NotFoundedPage />;
     }
 
+    const canManageGrades = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
+    const canAccessGradesTab = !user || canManageGrades;
+    const gradesTabLabel = 'Notlar';
+
     const tabs = [
         { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title'), locked: false },
         { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title'), locked: false },
@@ -38,7 +42,14 @@ const CoursePage = () => {
             { path: `/courses/${courseId}/students`, value: 'students', label: t('courses.students.title'), locked: false },
         ] : []),
         { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
-        { path: `/courses/${courseId}/grades`, value: 'grades', label: t('courses.grades.title'), locked: true },
+        ...(canAccessGradesTab ? [
+            {
+                path: `/courses/${courseId}/grades`,
+                value: 'grades',
+                label: gradesTabLabel,
+                locked: false,
+            },
+        ] : []),
         { path: `/courses/${courseId}/attendance`, value: 'attendance', label: t('courses.attendance.title'), locked: false },
     ];
 

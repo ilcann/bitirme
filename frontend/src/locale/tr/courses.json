@@ -114,7 +114,10 @@
     "grades": {
         "title": "Notlarım",
         "description": "Ders notlarınızı ve sınav sonuçlarınızı görüntüleyin",
-        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız"
+        "locked": "Bu içeriği görüntülemek için giriş yapmalısınız",
+        "loginRequiredTitle": "Giriş gerekli",
+        "loginRequiredDescription": "Notları görüntülemek için lütfen giriş yapın.",
+        "loginRequiredAction": "Giriş yap"
     },
     "attendance": {
         "title": "Devamsızlık",

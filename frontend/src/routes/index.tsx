@@ -13,6 +13,7 @@ const CourseMaterialsPage = lazy(() => import("@/pages/public/courses/course/mat
 const CourseAnnouncementsPage = lazy(() => import("@/pages/public/courses/course/announcements"));
 const CourseStudentsPage = lazy(() => import("@/pages/public/courses/course/students"));
 const CourseAttendancePage = lazy(() => import("@/pages/public/courses/course/attendance"));
+const CourseGradesPage = lazy(() => import("@/pages/public/courses/course/grades"));
 const AnnouncementsPage = lazy(() => import("@/pages/public/announcements"));
 const AnnouncementsDetailPage = lazy(() => import("@/pages/public/announcements/detail"));
 const HelpPage = lazy(() => import("@/pages/public/help"));
@@ -61,6 +62,10 @@ const router = createBrowserRouter(
                 {
                   path: "attendance",
                   element: <CourseAttendancePage />,
+                },
+                {
+                  path: "grades",
+                  element: <CourseGradesPage />,
                 },
                 {
                   path: "info",

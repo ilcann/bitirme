@@ -45,6 +45,44 @@ CREATE TABLE course_attendance (
     CONSTRAINT fk_course_attendance_marked_by FOREIGN KEY (marked_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+CREATE TABLE course_grade_distributions (
+    course_id VARCHAR(50) PRIMARY KEY,
+    midterm_count TINYINT UNSIGNED NOT NULL DEFAULT 2,
+    final_count TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    project_count TINYINT UNSIGNED NOT NULL DEFAULT 2,
+    homework_count TINYINT UNSIGNED NOT NULL DEFAULT 14,
+    quiz_count TINYINT UNSIGNED NOT NULL DEFAULT 14,
+    midterm_weight TINYINT UNSIGNED NOT NULL DEFAULT 40,
+    final_weight TINYINT UNSIGNED NOT NULL DEFAULT 30,
+    project_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+    homework_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+    quiz_weight TINYINT UNSIGNED NOT NULL DEFAULT 10,
+    updated_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_course_grade_distributions_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_course_grade_distributions_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
+CREATE TABLE course_grade_scores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    item_type ENUM('midterm', 'final', 'project', 'homework', 'quiz') NOT NULL,
+    item_number TINYINT UNSIGNED NOT NULL,
+    score DECIMAL(5,2) NULL DEFAULT NULL,
+    updated_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_course_user_item (course_id, user_id, item_type, item_number),
+    INDEX idx_course_grade_scores_course_id (course_id),
+    INDEX idx_course_grade_scores_user_id (user_id),
+    INDEX idx_course_grade_scores_item_type (item_type),
+    CONSTRAINT fk_course_grade_scores_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_course_grade_scores_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_course_grade_scores_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
 INSERT INTO courses (id, code, title_tr, title_en, color, audience) VALUES
 ('mat103e', 'MAT 103/E', 'Matematik I', 'Mathematics I', 'chart-1', 'common'),
 ('mat104e', 'MAT 104/E', 'Matematik II', 'Mathematics II', 'chart-1', 'common'),
@@ -59,3 +97,6 @@ INSERT INTO courses (id, code, title_tr, title_en, color, audience) VALUES
 ('mat382e', 'MAT 382/E', 'Soyut Matematik II', 'Abstract Mathematics II', 'chart-3', 'department'),
 ('mat491e', 'MAT 491/E', 'Bitirme Projesi I', 'Graduation Project I', 'chart-4', 'department'),
 ('mat492e', 'MAT 492/E', 'Bitirme Projesi II', 'Graduation Project II', 'chart-4', 'department');
+
+INSERT INTO course_grade_distributions (course_id, midterm_count, final_count, project_count, homework_count, quiz_count, midterm_weight, final_weight, project_weight, homework_weight, quiz_weight)
+SELECT id, 2, 1, 2, 14, 14, 40, 30, 10, 10, 10 FROM courses;
