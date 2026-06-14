@@ -9,7 +9,7 @@ CREATE TABLE courses (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_courses_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 CREATE TABLE course_enrollments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE course_enrollments (
     CONSTRAINT fk_course_enrollments_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     CONSTRAINT fk_course_enrollments_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_course_enrollments_enrolled_by FOREIGN KEY (enrolled_by) REFERENCES users(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 INSERT INTO courses (id, code, title_tr, title_en, color, audience) VALUES
 ('mat103e', 'MAT 103/E', 'Matematik I', 'Mathematics I', 'chart-1', 'common'),

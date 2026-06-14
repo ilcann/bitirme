@@ -4,7 +4,7 @@ require_once __DIR__ . '/env.php';
 
 function createDatabasePdo($host, $port, $name, $user, $pass, $useDatabase)
 {
-    $dsn = 'mysql:host=' . $host . ';port=' . $port . ';charset=utf8';
+    $dsn = 'mysql:host=' . $host . ';port=' . $port . ';charset=utf8mb4';
 
     if ($useDatabase) {
         $dsn .= ';dbname=' . $name;
