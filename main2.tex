@@ -1,0 +1,349 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[turkish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\geometry{margin=2.5cm}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={const, let, var, function, return, if, else, for, while, switch, case, break,
+  import, from, export, default, async, await, try, catch, throw, new, class, extends, super},
+  keywordstyle=\color{blue!60!black}\bfseries,
+  ndkeywords={true,false,null,undefined},
+  ndkeywordstyle=\color{teal!60!black}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{green!45!black},
+  stringstyle=\color{red!55!black},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\title{İTÜ Matematik Bölümü Ders Yönetim Sisteminin\\
+MAT 4902 Kapsamında Uçtan Uca Tamamlanması}
+
+\author{
+    \textbf{Recep İlcan}\\[0.5em]
+    090210303\\[1.5em]
+    İstanbul Teknik Üniversitesi\\
+    Fen Edebiyat Fakültesi\\
+    Matematik Mühendisliği Bölümü\\[1.5em]
+    \textbf{MAT 4902}\\
+    \textbf{Matematik Müh. Tasarımı II}\\
+    \textbf{2025-2026 Bahar Dönemi}
+}
+
+\date{Haziran 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Bu rapor, MAT 4901 kapsamında modern frontend mimarisi ile yeniden tasarlanan İTÜ Matematik Bölümü ders yönetim sisteminin, MAT 4902 döneminde gerçek backend ile bütünleştirilerek üretime daha yakın bir yapıya taşınmasını sunmaktadır. MAT 4901'de mock veri ile doğrulanan kullanıcı deneyimi, MAT 4902'de PHP tabanlı API katmanı, MySQL veri modeli, kimlik doğrulama, rol tabanlı yetkilendirme, ders notları ve devamsızlık modülleri ile tamamlanmıştır. Ayrıca önceki raporda gelecek çalışma olarak belirtilen ders bilgileri entegrasyonu gerçekleştirilmiş, bunun da ötesinde not ve devamsızlık tablolarının Türkçe karakter destekli PDF dışa aktarımı gibi ek fonksiyonlar sisteme kazandırılmıştır. Sonuçta proje, gerçek İTÜ merkezi kimlik doğrulama (SSO) hariç, hedeflenen ana fonksiyonelliği uçtan uca sağlayan bir düzeye ulaşmıştır.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Giriş}
+MAT 4901 raporunda sistemin frontend odaklı modernizasyonu tamamlanmış; React, TypeScript ve component tabanlı yapı ile eski monolitik arayüz başarılı biçimde yeniden tasarlanmıştır. Ancak o aşamada veri katmanı mock servisler üzerinden ilerlemekteydi.
+
+MAT 4902 çalışmasının temel amacı, bu modern arayüzü gerçek backend ile birleştirerek sistemi operasyonel bir ürün seviyesine yaklaştırmaktır. Bu kapsamda:
+
+\begin{itemize}[leftmargin=*]
+    \item Mock veriden gerçek veritabanına geçiş,
+    \item API uç noktalarının tasarlanması,
+    \item Rol tabanlı yetkilendirme,
+    \item Not ve devamsızlık yönetimi,
+    \item Ders bilgileri ve materyal yönetiminin gerçek veriye bağlanması,
+    \item PDF dışa aktarım gibi ileri kullanım özellikleri
+\end{itemize}
+
+gerçekleştirilmiştir.
+
+\subsection{Proje Bağlantıları}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Açıklama} & \textbf{URL} \\
+\midrule
+Eski Sistem (Mevcut) & \url{https://mathavuz.itu.edu.tr/} \\
+Yeni Sistem (Bu Proje) & \url{https://web.itu.edu.tr/ilcan21/} \\
+GitHub Deposu & \url{https://github.com/ilcann/bitirme} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{MAT 4901'den MAT 4902'ye Geçiş Stratejisi}
+Geçiş sürecinde mevcut frontend mimarisi korunmuş, yalnızca veri sağlayıcı katmanı gerçek API'ye yönlendirilmiştir. Bu yaklaşım sayesinde:
+
+\begin{enumerate}[leftmargin=*]
+    \item Arayüzde büyük kırılımlar yaşanmamış,
+    \item Test edilmiş kullanıcı akışları korunmuş,
+    \item Geliştirme maliyeti düşürülmüş,
+    \item Bakım kolaylığı sürdürülebilir kalmıştır.
+\end{enumerate}
+
+Bu strateji, MAT 4901'de kurulan servis soyutlama yaklaşımının pratikte doğru bir mimari karar olduğunu göstermiştir.
+
+\section{Gerçek Backend Entegrasyonu}
+
+\subsection{Backend Mimari Yapısı}
+Backend katmanı PHP ile geliştirilmiş ve proje içinde yapılandırılmıştır:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+backend/
+|-- config/
+|   |-- env.php
+|   `-- db.php
+|-- src/
+|   |-- auth.php
+|   |-- courses.php
+|   |-- announcements.php
+|   `-- materials.php
+|-- public/
+|   |-- auth/
+|   |-- courses/
+|   `-- announcements/
+`-- database/
+    |-- seeds/
+    |   `-- users.example.sql
+    |-- users.sql
+    |-- courses.sql
+    |-- announcements.sql
+    `-- course_materials.sql
+\end{lstlisting}
+
+Root seviyedeki wrapper dosyalar ile geriye dönük erişim korunmuştur.
+
+\subsection{Veritabanı ve Şema Evrimi}
+MySQL üzerinde çalışan yapı, geliştirme sürecinde aşağıdaki gereksinimleri karşılayacak şekilde evrilmiştir:
+
+\begin{itemize}[leftmargin=*]
+    \item Kullanıcı, ders, duyuru ve materyal tablolarının net ilişkilendirilmesi,
+    \item Ders bazlı not dağılımı (adet + ağırlık) desteği,
+    \item Haftalık devamsızlık kayıtlarının course-user-week düzeyinde tutulması,
+    \item Legacy şema farklılıklarının migration benzeri helper fonksiyonlarla yönetimi.
+\end{itemize}
+
+\subsection{Seed Yapısı ve Örnek Kullanıcılar}
+Veritabanının hızlı biçimde kurulabilmesi için örnek kullanıcılar tek bir seed klasöründe toplanmıştır. Bu klasör altında yer alan \texttt{users.example.sql} dosyası üç temel rol için örnek hesapları içermektedir:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Rol} & \textbf{E-posta} & \textbf{Ad Soyad} & \textbf{Bilgi} \\
+\midrule
+ADMIN & \texttt{admin@bitirme.local} & Recep İlcan & Parola: \texttt{Bitirme123!} \\
+INSTRUCTOR & \texttt{instructor@bitirme.local} & Deneme Eğitmen & Parola: \texttt{Bitirme123!} \\
+STUDENT & \texttt{student@bitirme.local} & Deneme Öğrenci & Öğrenci no: \texttt{20240000} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Bu yapı, geliştirme ortamında rol bazlı erişim testlerinin hızlı biçimde yapılabilmesini sağlamaktadır.
+
+\subsection{API Uç Noktaları}
+MAT 4902 ile aktif olarak kullanılan başlıca endpoint grupları Tablo~\ref{tab:api} içinde özetlenmiştir.
+
+\begin{table}[H]
+\centering
+\caption{Başlıca API Uç Noktaları}
+\label{tab:api}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Grup} & \textbf{Örnek Endpoint} & \textbf{Amaç} \\
+\midrule
+auth & /public/auth/login.php & Giriş, oturum yönetimi \\
+courses & /public/courses/index.php & Ders listeleme ve detay \\
+materials & /public/courses/materials.php & Materyal CRUD \\
+announcements & /public/announcements/index.php & Duyuru listeleme/işleme \\
+grades & /public/courses/grades.php & Not görüntüleme/güncelleme \\
+attendance & /public/courses/attendance.php & Yoklama görüntüleme/güncelleme \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Frontend-Backend Bütünleşmesi}
+
+\subsection{Servis Katmanı Dönüşümü}
+MAT 4901'de mock veri kullanan servisler, MAT 4902'de gerçek HTTP çağrılarına taşınmıştır. Hook katmanı korunarak yalnızca servis implementasyonları değiştirilmiştir.
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+// Ornek yaklasim
+const { data, isLoading } = useQuery({
+  queryKey: ['course-grades', courseId],
+  queryFn: () => getCourseGrades(courseId),
+  enabled: Boolean(courseId),
+});
+\end{lstlisting}
+
+Bu sayede UI bileşenleri veri kaynağından bağımsız kalmıştır.
+
+\subsection{Kimlik Doğrulama ve Rol Tabanlı Erişim}
+Sistem, üç temel rol etrafında çalışmaktadır:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{ADMIN:} Tam yetki (yönetim, not/devamsızlık düzenleme, dağılım güncelleme),
+    \item \textbf{INSTRUCTOR:} Ders operasyon yetkisi (not/devamsızlık düzenleme),
+    \item \textbf{STUDENT:} Kısıtlı görüntüleme (kendi not/devamsızlık verisi).
+\end{itemize}
+
+Rol bazlı kısıtlar hem frontend'de görünürlük yönetimi hem de backend'de güvenlik kontrolü ile uygulanmıştır.
+
+\section{MAT 4902 Kapsamında Gerçekleştirilen Ana Fonksiyonlar}
+
+\subsection{Ders Bilgileri Sekmesinin Gerçek Veri ile Tamamlanması}
+Önceki raporda gelecek çalışma olarak belirtilen ders bilgileri/özeti tarafı gerçek API ile doldurulmuştur. Dersin dönem, şube, öğretim üyeleri, tarih aralığı ve özet alanları backend'den dinamik olarak çekilmektedir.
+
+\subsection{Materyal Yönetiminin Mock'tan Gerçeğe Taşınması}
+Materyal listesi, yükleme ve silme işlevleri tamamen backend destekli hale getirilmiştir. Ayrıca eski şema alan adları ile yeni alan adları arasındaki uyum problemi migration mantığı ile çözülmüştür.
+
+\subsection{Duyuru Akışının Üretim Benzeri Çalışması}
+Duyuru listesi, detay, oluşturma ve silme işlemleri backend üzerinden çalışır hale getirilmiş; ders bazlı filtreleme korunmuştur.
+
+\subsection{Not Modülü}
+Not modülü MAT 4902'nin en kritik tamamlamalarından biridir:
+
+\begin{itemize}[leftmargin=*]
+    \item Ders bazlı not kalemleri (vize, final, proje, ödev, kısa sınav),
+    \item Kalem adet ve ağırlık yönetimi,
+    \item Öğrenci ve sınıf ortalaması hesapları,
+    \item Rol tabanlı düzenleme/yalnızca görüntüleme davranışı.
+\end{itemize}
+
+Ayrıca öğrenci rolü için yalnızca kendi satırını görebileceği güvenli görünüm eklenmiştir.
+
+\subsection{Devamsızlık Modülü}
+Haftalık yoklama yönetimi ders bazında uygulanmıştır:
+
+\begin{itemize}[leftmargin=*]
+    \item Hafta sütunları üzerinden ``Var/Yok'' işaretleme,
+    \item Öğrenci bazlı devam oranı hesaplama,
+    \item Sayfalama ve sıralama,
+    \item Öğrenci görünümünde kişisel devamsızlık kartı.
+\end{itemize}
+
+\subsection{PDF Dışa Aktarım (Ek Geliştirme)}
+MAT 4901'de planlanmayan ancak MAT 4902'de eklenen önemli özelliklerden biri not ve devamsızlık tablolarının PDF'e aktarılmasıdır.
+
+\begin{itemize}[leftmargin=*]
+    \item Sadece \textbf{ADMIN} ve \textbf{INSTRUCTOR} için erişim,
+    \item Türkçe karakter desteği için Unicode TTF font gömme,
+    \item Not tablosunda iki satırlı ve gruplanmış başlık yapısı,
+    \item Devamsızlık tablosunda hafta bazlı geniş export desteği.
+\end{itemize}
+
+\section{Kullanıcı Deneyimi ve Arayüz İyileştirmeleri}
+MAT 4902 sürecinde yalnızca backend bağlantısı yapılmamış, mevcut UX de geliştirilmeye devam edilmiştir.
+
+\begin{itemize}[leftmargin=*]
+    \item Ders sekmesi sıralaması akademik akışa uygun yeniden düzenlenmiştir:
+    Ders Özeti $\rightarrow$ Ders Bilgileri $\rightarrow$ Ders Materyalleri $\rightarrow$ Duyurular $\rightarrow$ Öğrenciler $\rightarrow$ Notlar $\rightarrow$ Devamsızlık.
+
+    \item Not tablosu PDF başlık hizası ve görsel düzeni iyileştirilmiştir.
+
+    \item Sistemdeki çok dilli yapı ve tema desteği korunmuştur.
+\end{itemize}
+
+\section{Dağıtım ve Çalışma Ortamı}
+Yerel geliştirme için Docker Compose tabanlı bir akış benimsenmiştir. Frontend Vite dev server üzerinden, backend ise PHP+MySQL servisleri üzerinden çalıştırılmıştır. Bu yaklaşım farklı makinelerde tutarlı geliştirme ortamı sağlamıştır.
+
+\section{Sonuç ve Değerlendirme}
+MAT 4902 çıktılarıyla birlikte proje, MAT 4901'de kurulan modern frontend temelini gerçek backend ile birleştirerek uçtan uca çalışan bir ders yönetim sistemi haline gelmiştir.
+
+Bu dönemde özellikle şu hedefler tamamlanmıştır:
+
+\begin{enumerate}[leftmargin=*]
+    \item Mock veri bağımlılığının kaldırılması,
+    \item Gerçek veri modeli ve API akışının devreye alınması,
+    \item Not ve devamsızlık modüllerinin rol tabanlı biçimde tamamlanması,
+    \item Daha önce gelecek çalışma olarak belirtilen ders bilgileri entegrasyonunun gerçekleştirilmesi,
+    \item Plan dışı ek değer olarak PDF dışa aktarım özelliğinin eklenmesi.
+\end{enumerate}
+
+Proje mevcut haliyle akademik kullanım için güçlü bir prototip/yarı-üretim düzeyine ulaşmıştır.
+
+\section{Sınırlılıklar}
+Bu aşamada tamamlanmayan ana başlık, gerçek İTÜ merkezi kimlik doğrulama sistemi ile (SSO) entegrasyondur. Giriş mekanizması uygulama içinde çalışmakla birlikte kurum içi kimlik altyapısı ile birleşim henüz yapılmamıştır.
+
+\section{Gelecek Çalışmalar}
+
+\begin{itemize}[leftmargin=*]
+    \item İTÜ merkezi kimlik doğrulama (SSO) entegrasyonu,
+    \item Yetkilendirme logları ve yönetim paneli genişletmeleri,
+    \item Bildirim sistemi (e-posta/uygulama içi),
+    \item Gelişmiş raporlama ve analitik (ders bazlı başarı/devam metrikleri),
+    \item Otomatik test kapsamının artırılması (integration/e2e).
+\end{itemize}
+
+\section{Kaynakça}
+
+\begin{thebibliography}{99}
+
+\bibitem{react}
+React - A JavaScript library for building user interfaces.
+\url{https://react.dev}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{typescript}
+TypeScript - JavaScript with syntax for types.
+\url{https://www.typescriptlang.org}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{tanstack}
+TanStack Query - Powerful asynchronous state management.
+\url{https://tanstack.com/query}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{vite}
+Vite - Next Generation Frontend Tooling.
+\url{https://vite.dev}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{php}
+PHP Documentation.
+\url{https://www.php.net/docs.php}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{mysql}
+MySQL Reference Manual.
+\url{https://dev.mysql.com/doc/}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{docker}
+Docker Documentation.
+\url{https://docs.docker.com}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{i18next}
+i18next - internationalization framework.
+\url{https://i18next.com}
+(Erişim Tarihi: Haziran 2026)
+
+\bibitem{jspdf}
+jsPDF Library.
+\url{https://github.com/parallax/jsPDF}
+(Erişim Tarihi: Haziran 2026)
+
+\end{thebibliography}
+
+\end{document}
