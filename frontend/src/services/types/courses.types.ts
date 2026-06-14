@@ -23,6 +23,31 @@ export interface GetCoursesResponse {
     hasMore: boolean;
 }
 
+export interface GetCourseResponse {
+    course: Course;
+}
+
+export interface CreateCourseRequest {
+    code: string;
+    titleTr: string;
+    titleEn: string;
+    audience: AudienceKey;
+    color: string;
+    id?: string;
+}
+
+export interface CreateCourseResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+}
+
+export interface DeleteCourseResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+}
+
 export interface GetCoursesCompactParams {
     audience?: AudienceKey;
 }

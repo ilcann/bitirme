@@ -3,6 +3,7 @@ import { GradientButton } from "@/components/common/gradient-button";
 import { BookOpen, FileText, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { CourseDeleteModal } from "@/components/common/course-delete-modal";
 
 type CourseCardProps = {
   id: string;
@@ -11,9 +12,10 @@ type CourseCardProps = {
   students: number;
   color: string;
   variant?: "compact" | "wide";
+  canDelete?: boolean;
 };
 
-export function CourseCard({ id, code, title, students, color, variant = "compact" }: CourseCardProps) {
+export function CourseCard({ id, code, title, students, color, variant = "compact", canDelete = false }: CourseCardProps) {
   const { t } = useTranslation();
 
   // Map color names to actual Tailwind classes
@@ -75,6 +77,11 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
       )}>
         {/* Gradient background overlay */}
         <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+        {canDelete ? (
+          <div className="absolute right-4 top-4 z-10">
+            <CourseDeleteModal courseId={id} courseCode={code} courseTitle={title} />
+          </div>
+        ) : null}
         
         <CardContent className="relative p-6">
           <div className="flex flex-col sm:flex-row gap-6">
@@ -136,6 +143,11 @@ export function CourseCard({ id, code, title, students, color, variant = "compac
     )}>
       {/* Gradient background overlay */}
       <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+        {canDelete ? (
+          <div className="absolute right-3 top-3 z-10">
+            <CourseDeleteModal courseId={id} courseCode={code} courseTitle={title} />
+          </div>
+        ) : null}
       
       <CardContent className="relative p-5">
         {/* Header */}

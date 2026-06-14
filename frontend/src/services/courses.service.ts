@@ -1,9 +1,13 @@
-import { MockCourses } from "@/mock/courses";
 import type { Course, CompactCourse } from "@/types/course";
+import { apiRequest } from "./api";
 import type { AudienceKey } from "@/config/audiences";
 import type {
+    CreateCourseRequest,
+    CreateCourseResponse,
+    DeleteCourseResponse,
     GetCoursesParams,
-    GetCoursesResponse
+    GetCoursesResponse,
+    GetCoursesCompactResponse
 } from "./types";
 
 /**
@@ -28,60 +32,36 @@ export const getCourses = async (params: GetCoursesParams): Promise<GetCoursesRe
         sortBy = "students"
     } = params;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const query = new URLSearchParams();
 
-    let courses = MockCourses;
-
-    // Filter by audience if provided
     if (audience) {
-        courses = courses.filter(course => course.audience === audience);
+        query.set('audience', audience);
     }
 
-    // Search in code and title
+    query.set('offset', String(offset));
+    query.set('limit', String(limit));
+    query.set('sortBy', sortBy);
+
     if (search && search.trim()) {
-        const searchQuery = search.toLowerCase();
-        courses = courses.filter(course => 
-            course.code.toLowerCase().includes(searchQuery) ||
-            course.title.tr.toLowerCase().includes(searchQuery) ||
-            course.title.en.toLowerCase().includes(searchQuery)
-        );
+        query.set('search', search.trim());
     }
 
-    // Sort courses
-    const sortedCourses = [...courses].sort((a, b) => {
-        switch (sortBy) {
-            case "students":
-                return b.students - a.students;
-            case "code":
-                return a.code.localeCompare(b.code);
-            case "title":
-                return a.title.en.localeCompare(b.title.en);
-            default:
-                return 0;
-        }
-    });
+    const response = await apiRequest<{ data: GetCoursesResponse }>(`/public/courses/index.php?${query.toString()}`);
 
-    const total = sortedCourses.length;
-    const paginatedCourses = sortedCourses.slice(offset, offset + limit);
-    const hasMore = offset + limit < total;
-
-    return {
-        data: paginatedCourses,
-        total,
-        offset,
-        limit,
-        hasMore
-    };
+    return response.data;
 };
 
 /**
  * Get a single course by ID
  */
 export const getCourseById = async (courseId: string): Promise<Course | null> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return MockCourses.find(course => course.id === courseId) || null;
+    try {
+        const response = await apiRequest<{ course: Course }>(`/public/courses/index.php?courseId=${encodeURIComponent(courseId)}`);
+
+        return response.course;
+    } catch {
+        return null;
+    }
 };
 
 /**
@@ -92,24 +72,29 @@ export const getCourseById = async (courseId: string): Promise<Course | null> =>
  * @returns Compact course list
  */
 export const getCoursesCompact = async (audience?: AudienceKey): Promise<CompactCourse[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 50));
+    const query = new URLSearchParams();
 
-    let courses = MockCourses;
+    query.set('compact', '1');
 
-    // Filter by audience if provided
     if (audience) {
-        courses = courses.filter(course => course.audience === audience);
+        query.set('audience', audience);
     }
 
-    // Map to compact format and sort by code
-    return courses
-        .map(course => ({
-            id: course.id,
-            code: course.code,
-            title: course.title,
-            color: course.color,
-            audience: course.audience
-        }))
-        .sort((a, b) => a.code.localeCompare(b.code));
+    const response = await apiRequest<GetCoursesCompactResponse>(`/public/courses/index.php?${query.toString()}`);
+
+    return response.data;
+};
+
+export const createCourse = async (course: CreateCourseRequest): Promise<CreateCourseResponse> => {
+    return apiRequest<CreateCourseResponse>('/public/courses/create.php', {
+        method: 'POST',
+        body: JSON.stringify(course),
+    });
+};
+
+export const deleteCourse = async (courseId: string): Promise<DeleteCourseResponse> => {
+    return apiRequest<DeleteCourseResponse>('/public/courses/delete.php', {
+        method: 'POST',
+        body: JSON.stringify({ id: courseId }),
+    });
 };

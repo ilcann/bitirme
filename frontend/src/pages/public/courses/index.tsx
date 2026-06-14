@@ -12,11 +12,14 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { PageHeader } from "@/components/common/page-header";
 import { motion } from "framer-motion";
+import { useAuth } from "@/providers/auth-provider";
+import { CourseCreateModal } from "@/components/common/course-create-modal";
 
 const CoursesPage = () => {
   const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   
@@ -64,15 +67,24 @@ const CoursesPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <PageHeader
-          variant="wide"
-          title={t("courses.list.title")}
-          description={t("courses.list.description")}
-          icon={BookOpen}
-          iconBgColor="bg-chart-1/20"
-          iconColor="text-chart-1"
-          showAudienceBadge={true}
-        />
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <PageHeader
+              variant="wide"
+              title={t("courses.list.title")}
+              description={t("courses.list.description")}
+              icon={BookOpen}
+              iconBgColor="bg-chart-1/20"
+              iconColor="text-chart-1"
+              showAudienceBadge={true}
+              className="flex-1"
+            />
+
+            {user?.role === 'ADMIN' ? (
+              <div className="lg:pt-1 lg:self-start">
+                <CourseCreateModal triggerClassName="w-full lg:w-auto" />
+              </div>
+            ) : null}
+          </div>
         </motion.div>
 
         {/* Search & Controls */}
@@ -179,6 +191,7 @@ const CoursesPage = () => {
                     students={course.students}
                     color={course.color}
                     variant={viewMode}
+                    canDelete={user?.role === 'ADMIN'}
                   />
                 </motion.div>
               ))}

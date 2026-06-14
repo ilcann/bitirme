@@ -13,7 +13,11 @@ export type {
 
 // Courses
 export type {
+    CreateCourseRequest,
+    CreateCourseResponse,
+    DeleteCourseResponse,
     CourseSortBy,
+    GetCourseResponse,
     GetCoursesParams,
     GetCoursesResponse,
     GetCoursesCompactParams,

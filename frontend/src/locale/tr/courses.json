@@ -2,6 +2,7 @@
     "list": {
         "title": "Dersler",
         "description": "Mevcut derslere göz atın ve keşfedin",
+        "create": "Yeni ders ekle",
         "view": {
             "compact": "Kompakt",
             "wide": "Geniş"
@@ -67,5 +68,43 @@
         "title": "Devamsızlık",
         "description": "Devamsızlık durumunuzu takip edin",
         "locked": "Bu içeriği görüntülemek için giriş yapmalısınız"
+    },
+    "createModal": {
+        "trigger": "Yeni ders ekle",
+        "title": "Yeni ders oluştur",
+        "description": "Ders bilgilerini girerek yeni bir ders oluşturun.",
+        "fields": {
+            "code": "Ders Kodu",
+            "titleTr": "Türkçe Başlık",
+            "titleEn": "İngilizce Başlık",
+            "audience": "Hedef Kitle",
+            "color": "Renk"
+        },
+        "placeholders": {
+            "titleTr": "Örn. Matematik I",
+            "titleEn": "Örn. Mathematics I"
+        },
+        "options": {
+            "department": "Bölüm dersi",
+            "common": "Ortak ders"
+        },
+        "validation": {
+            "required": "Bu alan zorunludur."
+        },
+        "submit": "Dersi Oluştur",
+        "submitting": "Oluşturuluyor...",
+        "success": "Ders başarıyla oluşturuldu.",
+        "error": "Ders oluşturulamadı."
+    },
+    "deleteModal": {
+        "triggerLabel": "Dersi sil",
+        "title": "Dersi sil",
+        "description": "Bu işlem geri alınamaz. Ders ve bağlı kayıtlar silinecek.",
+        "courseLabel": "Seçili ders",
+        "confirm": "Sil",
+        "cancel": "İptal",
+        "deleting": "Siliniyor...",
+        "success": "Ders başarıyla silindi.",
+        "error": "Ders silinemedi."
     }
 }

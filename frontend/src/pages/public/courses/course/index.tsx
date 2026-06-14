@@ -1,5 +1,4 @@
 import { Outlet, useParams, useNavigate, useLocation } from "react-router";
-import { MockCourses } from "@/mock/courses";
 import { useTranslation } from "react-i18next";
 import { BookOpen, Users, Lock } from "lucide-react";
 import { useLanguage } from "@/providers/language-provider";
@@ -9,6 +8,8 @@ import { PageHeader } from "@/components/common/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
+import { useCourse } from "@/hooks/use-course";
+import { LoadingScreen } from "@/components/common/loading-screen";
 
 const CoursePage = () => {
     const { courseId } = useParams<{ courseId: string }>();
@@ -17,7 +18,11 @@ const CoursePage = () => {
     const location = useLocation();
     const { lang } = useLanguage();
     
-    const course = MockCourses.find(c => c.id === courseId);
+    const { course, isLoading } = useCourse(courseId);
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
     
     if (!course) {
         return <NotFoundedPage />;

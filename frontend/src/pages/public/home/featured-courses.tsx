@@ -1,24 +1,18 @@
 import { CourseCard } from "@/components/common/course-card";
+import { CourseCardSkeleton } from "@/components/common/course-card-skeleton";
 import { Button } from "@/components/ui/button";
-import { MockCourses } from "@/mock/courses";
 import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { ArrowRight, TrendingUp } from "lucide-react";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { useCourses } from "@/hooks/use-courses";
 
 const FeaturedCourses = () => {
   const { lang } = useLanguage();
   const { t } = useTranslation();
   const { audience } = useAudience();
-
-  const featuredCourses = React.useMemo(() => {
-    return MockCourses
-      .filter(course => course.audience === audience)
-      .sort((a, b) => b.students - a.students)
-      .slice(0, 3);
-  }, [audience]);
+  const { courses, isLoading } = useCourses({ audience, initialLimit: 3 });
 
   return (
     <section className="space-y-6">
@@ -45,19 +39,27 @@ const FeaturedCourses = () => {
       </div>
 
       {/* Compact Cards Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {featuredCourses.map((course) => (
-          <CourseCard
-            key={course.id}
-            id={course.id}
-            code={course.code}
-            title={course.title[lang]}
-            students={course.students}
-            color={course.color}
-            variant="compact"
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <CourseCardSkeleton key={index} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {courses.map((course) => (
+            <CourseCard
+              key={course.id}
+              id={course.id}
+              code={course.code}
+              title={course.title[lang]}
+              students={course.students}
+              color={course.color}
+              variant="compact"
+            />
+          ))}
+        </div>
+      )}
 
       <Button asChild variant="outline" className="w-full sm:hidden rounded-xl border-2">
         <Link to="/courses">

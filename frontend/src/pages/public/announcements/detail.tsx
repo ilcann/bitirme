@@ -2,7 +2,6 @@ import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router";
 import { MockAnnouncements } from "@/mock/announcements";
-import { MockCourses } from "@/mock/courses";
 import { useLanguage } from "@/providers/language-provider";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import { Bell, Clock, BookOpen, ArrowLeft } from "lucide-react";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import { motion } from "framer-motion";
 import { formatRelativeDate } from "@/lib/date";
+import { useCourse } from "@/hooks/use-course";
 
 const AnnouncementsDetailPage = () => {
     const { t } = useTranslation();
@@ -18,7 +18,7 @@ const AnnouncementsDetailPage = () => {
     const { lang } = useLanguage();
 
     const announcement = MockAnnouncements.find(a => a.id === announcementId);
-    const course = announcement ? MockCourses.find(c => c.id === announcement.courseId) : null;
+    const { course } = useCourse(announcement?.courseId);
 
     useDocumentTitle(
         announcement ? announcement.title[lang] : t('announcements.detail.title'),
