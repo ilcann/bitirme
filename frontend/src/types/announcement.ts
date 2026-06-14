@@ -14,6 +14,7 @@ interface Announcement {
     courseId: string;
     audience: AudienceKey;
     isNew: boolean;
+    createdBy?: number | null;
 }
 
 export type { Announcement };

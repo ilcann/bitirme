@@ -27,6 +27,47 @@
     "title": "Announcement Detail",
     "description": "View detailed information about this announcement"
   },
+  "createModal": {
+    "trigger": "Add announcement",
+    "title": "Create new announcement",
+    "description": "Create a course announcement visible to the selected audience.",
+    "fields": {
+      "course": "Course",
+      "titleTr": "Turkish Title",
+      "titleEn": "English Title",
+      "descriptionTr": "Turkish Description",
+      "descriptionEn": "English Description",
+      "audience": "Audience",
+      "isNew": "Mark as new"
+    },
+    "placeholders": {
+      "titleTr": "e.g. Midterm exam schedule published",
+      "titleEn": "e.g. Midterm exam schedule published",
+      "descriptionTr": "Write the announcement details in Turkish...",
+      "descriptionEn": "Write the announcement details in English..."
+    },
+    "options": {
+      "department": "Department audience",
+      "common": "Common audience"
+    },
+    "validation": {
+      "required": "This field is required."
+    },
+    "submit": "Create Announcement",
+    "submitting": "Creating...",
+    "success": "Announcement created successfully.",
+    "error": "Failed to create announcement."
+  },
+  "deleteModal": {
+    "triggerLabel": "Delete announcement",
+    "title": "Delete announcement",
+    "description": "This action cannot be undone. The announcement will be removed permanently.",
+    "announcementLabel": "Selected announcement",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "deleting": "Deleting...",
+    "error": "Failed to delete announcement."
+  },
   "titles": {
     "midterm": "Midterm exam schedule published",
     "officeHours": "Office hours updated",

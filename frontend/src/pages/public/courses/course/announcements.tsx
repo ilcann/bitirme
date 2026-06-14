@@ -6,6 +6,7 @@ import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { AnnouncementCard } from "@/components/common/announcement-card";
 import { AnnouncementCardSkeleton } from "@/components/common/announcement-card-skeleton";
+import { AnnouncementCreateModal } from "@/components/common/announcement-create-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +29,13 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/types/course";
+import { useAuth } from "@/providers/auth-provider";
 
 const CourseAnnouncementsPage = () => {
     const { t } = useTranslation();
     const { lang } = useLanguage();
     const { audience } = useAudience();
+    const { user } = useAuth();
     const { course } = useOutletContext<{ course: Course }>();
 
     useDocumentTitle(
@@ -69,6 +72,12 @@ const CourseAnnouncementsPage = () => {
 
     return (
         <section className="space-y-6">
+            {(user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR') ? (
+                <div className="flex justify-end">
+                    <AnnouncementCreateModal courseId={course?.id} audience={audience} />
+                </div>
+            ) : null}
+
             {/* Search & Filters */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -219,6 +228,7 @@ const CourseAnnouncementsPage = () => {
                                     description={announcement.description[lang]}
                                     date={announcement.date}
                                     isNew={announcement.isNew}
+                                    canDelete={Boolean(user && (user.role === 'ADMIN' || (user.role === 'INSTRUCTOR' && announcement.createdBy === user.id)))}
                                     variant="wide"
                                 />
                             </motion.div>

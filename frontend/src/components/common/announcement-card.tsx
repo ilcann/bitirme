@@ -3,6 +3,7 @@ import { Badge } from "../ui/badge";
 import { GradientButton } from "@/components/common/gradient-button";
 import { ArrowRight, Bell, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AnnouncementDeleteModal } from "@/components/common/announcement-delete-modal";
 
 interface AnnouncementCardProps {
     id: string;
@@ -11,10 +12,11 @@ interface AnnouncementCardProps {
     description: string;
     date: string;
     isNew?: boolean;
+    canDelete?: boolean;
     variant?: 'compact' | 'wide';
 }
 
-export const AnnouncementCard = ({ id, courseId, title, description, date, isNew, variant = 'compact' }: AnnouncementCardProps) => {
+export const AnnouncementCard = ({ id, courseId, title, description, date, isNew, canDelete = false, variant = 'compact' }: AnnouncementCardProps) => {
     const { t } = useTranslation('announcements');
 
     // Define color scheme based on announcement status
@@ -40,6 +42,11 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
         return (
             <Card className={`group relative rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${colors.hoverBorder} overflow-hidden`}>
                 <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                {canDelete ? (
+                    <div className="absolute right-4 top-4 z-10">
+                        <AnnouncementDeleteModal announcementId={id} announcementTitle={title} courseId={courseId} />
+                    </div>
+                ) : null}
                 
                 <CardContent className="relative p-6">
                     <div className="flex flex-col sm:flex-row gap-6">
@@ -97,6 +104,11 @@ export const AnnouncementCard = ({ id, courseId, title, description, date, isNew
         <Card className={`group relative rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${colors.hoverBorder} overflow-hidden`}>
             {/* Gradient background overlay */}
             <div className={`absolute inset-0 bg-linear-to-br ${colors.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+            {canDelete ? (
+                <div className="absolute right-3 top-3 z-10">
+                    <AnnouncementDeleteModal announcementId={id} announcementTitle={title} courseId={courseId} />
+                </div>
+            ) : null}
             
             <CardContent className="relative p-5">
                 {/* Header */}

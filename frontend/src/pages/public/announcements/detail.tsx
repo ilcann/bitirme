@@ -1,7 +1,6 @@
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router";
-import { MockAnnouncements } from "@/mock/announcements";
 import { useLanguage } from "@/providers/language-provider";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,19 +10,25 @@ import NotFoundedPage from "@/pages/errors/not-founded";
 import { motion } from "framer-motion";
 import { formatRelativeDate } from "@/lib/date";
 import { useCourse } from "@/hooks/use-course";
+import { useAnnouncement } from "@/hooks/use-announcement";
+import { LoadingScreen } from "@/components/common/loading-screen";
 
 const AnnouncementsDetailPage = () => {
     const { t } = useTranslation();
     const { announcementId } = useParams();
     const { lang } = useLanguage();
 
-    const announcement = MockAnnouncements.find(a => a.id === announcementId);
+    const { announcement, isLoading } = useAnnouncement(announcementId);
     const { course } = useCourse(announcement?.courseId);
 
     useDocumentTitle(
         announcement ? announcement.title[lang] : t('announcements.detail.title'),
         announcement ? announcement.description[lang] : t('announcements.detail.description')
     );
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
 
     if (!announcement) {
         return <NotFoundedPage />;

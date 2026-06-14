@@ -8,7 +8,10 @@ export type {
     AnnouncementSortBy,
     DateFilter,
     GetAnnouncementsParams,
-    GetAnnouncementsResponse
+    GetAnnouncementsResponse,
+    AnnouncementCreateRequest,
+    AnnouncementMutationResponse,
+    GetAnnouncementResponse
 } from "./announcements.types";
 
 // Courses

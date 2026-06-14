@@ -1,5 +1,8 @@
-import { MockAnnouncements } from "@/mock/announcements";
+import { apiRequest } from "./api";
 import type {
+    AnnouncementCreateRequest,
+    AnnouncementMutationResponse,
+    GetAnnouncementResponse,
     GetAnnouncementsParams,
     GetAnnouncementsResponse
 } from "./types";
@@ -29,78 +32,53 @@ export const getAnnouncements = async (params: GetAnnouncementsParams): Promise<
         sortBy = "newest"
     } = params;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const query = new URLSearchParams();
 
-    let announcements = [...MockAnnouncements];
-
-    // Filter by audience
     if (audience) {
-        announcements = announcements.filter(a => a.audience === audience);
+        query.set('audience', audience);
     }
 
-    // Filter by new
-    if (showOnlyNew) {
-        announcements = announcements.filter(a => a.isNew);
-    }
+    query.set('offset', String(offset));
+    query.set('limit', String(limit));
 
-    // Filter by course IDs
-    if (courseIds && courseIds.length > 0) {
-        announcements = announcements.filter(a => courseIds.includes(a.courseId));
-    }
-
-    // Filter by date
-    if (dateFilter !== "all") {
-        const today = new Date("2026-01-18");
-        announcements = announcements.filter(a => {
-            const announcementDate = new Date(a.date);
-            const diffDays = Math.floor((today.getTime() - announcementDate.getTime()) / (1000 * 60 * 60 * 24));
-            
-            if (dateFilter === "today") return diffDays === 0;
-            if (dateFilter === "week") return diffDays <= 7;
-            if (dateFilter === "month") return diffDays <= 30;
-            return true;
-        });
-    }
-
-    // Filter by search query
     if (search && search.trim()) {
-        const searchQuery = search.toLowerCase();
-        announcements = announcements.filter(a => 
-            a.title.tr.toLowerCase().includes(searchQuery) ||
-            a.title.en.toLowerCase().includes(searchQuery) ||
-            a.description.tr.toLowerCase().includes(searchQuery) ||
-            a.description.en.toLowerCase().includes(searchQuery) ||
-            a.courseId.toLowerCase().includes(searchQuery)
-        );
+        query.set('search', search.trim());
     }
 
-    // Sort announcements
-    const sorted = [...announcements].sort((a, b) => {
-        switch (sortBy) {
-            case "newest":
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-            case "oldest":
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            default:
-                return 0;
-        }
+    if (courseIds && courseIds.length > 0) {
+        query.set('courseIds', courseIds.join(','));
+    }
+
+    if (showOnlyNew) {
+        query.set('showOnlyNew', '1');
+    }
+
+    query.set('dateFilter', dateFilter);
+    query.set('sortBy', sortBy);
+
+    const response = await apiRequest<{ data: GetAnnouncementsResponse }>(`/public/announcements/index.php?${query.toString()}`);
+
+    return response.data;
+};
+
+export const getAnnouncementById = async (announcementId: string): Promise<GetAnnouncementResponse | null> => {
+    try {
+        return await apiRequest<GetAnnouncementResponse>(`/public/announcements/index.php?announcementId=${encodeURIComponent(announcementId)}`);
+    } catch {
+        return null;
+    }
+};
+
+export const createAnnouncement = async (announcement: AnnouncementCreateRequest): Promise<AnnouncementMutationResponse> => {
+    return apiRequest<AnnouncementMutationResponse>('/public/announcements/create.php', {
+        method: 'POST',
+        body: JSON.stringify(announcement),
     });
+};
 
-    // Get total count
-    const total = sorted.length;
-
-    // Apply pagination
-    const paginatedData = sorted.slice(offset, offset + limit);
-
-    // Check if there are more items
-    const hasMore = offset + limit < total;
-
-    return {
-        data: paginatedData,
-        total,
-        offset,
-        limit,
-        hasMore
-    };
+export const deleteAnnouncement = async (announcementId: string): Promise<AnnouncementMutationResponse> => {
+    return apiRequest<AnnouncementMutationResponse>('/public/announcements/delete.php', {
+        method: 'POST',
+        body: JSON.stringify({ id: announcementId }),
+    });
 };

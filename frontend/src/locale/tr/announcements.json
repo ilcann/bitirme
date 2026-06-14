@@ -27,6 +27,47 @@
     "title": "Duyuru Detayı",
     "description": "Bu duyuru hakkında detaylı bilgileri görüntüleyin"
   },
+  "createModal": {
+    "trigger": "Duyuru ekle",
+    "title": "Yeni duyuru oluştur",
+    "description": "Seçili hedef kitle için ders duyurusu oluşturun.",
+    "fields": {
+      "course": "Ders",
+      "titleTr": "Türkçe Başlık",
+      "titleEn": "İngilizce Başlık",
+      "descriptionTr": "Türkçe Açıklama",
+      "descriptionEn": "İngilizce Açıklama",
+      "audience": "Hedef Kitle",
+      "isNew": "Yeni olarak işaretle"
+    },
+    "placeholders": {
+      "titleTr": "Örn. Vize sınavı programı yayınlandı",
+      "titleEn": "Örn. Midterm exam schedule published",
+      "descriptionTr": "Duyuru detaylarını Türkçe olarak yazın...",
+      "descriptionEn": "Duyuru detaylarını İngilizce olarak yazın..."
+    },
+    "options": {
+      "department": "Bölüm kitlesi",
+      "common": "Ortak kitle"
+    },
+    "validation": {
+      "required": "Bu alan zorunludur."
+    },
+    "submit": "Duyuru Oluştur",
+    "submitting": "Oluşturuluyor...",
+    "success": "Duyuru başarıyla oluşturuldu.",
+    "error": "Duyuru oluşturulamadı."
+  },
+  "deleteModal": {
+    "triggerLabel": "Duyuruyu sil",
+    "title": "Duyuruyu sil",
+    "description": "Bu işlem geri alınamaz. Duyuru kalıcı olarak silinecek.",
+    "announcementLabel": "Seçili duyuru",
+    "confirm": "Sil",
+    "cancel": "İptal",
+    "deleting": "Siliniyor...",
+    "error": "Duyuru silinemedi."
+  },
   "viewTheAnnouncement": "Duyuruyu Görüntüle",
   "new": "Yeni"
 }

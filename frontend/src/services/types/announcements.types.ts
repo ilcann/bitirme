@@ -26,3 +26,25 @@ export interface GetAnnouncementsResponse {
     limit: number;
     hasMore: boolean;
 }
+
+export interface AnnouncementCreateRequest {
+    courseId: string;
+    titleTr: string;
+    titleEn: string;
+    descriptionTr: string;
+    descriptionEn: string;
+    audience: AudienceKey;
+    isNew?: boolean;
+}
+
+export interface AnnouncementMutationResponse {
+    success: boolean;
+    message: string;
+    announcement: Announcement;
+}
+
+export interface GetAnnouncementResponse {
+    success: boolean;
+    message: string;
+    announcement: Announcement;
+}

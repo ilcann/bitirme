@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { AnnouncementCard } from "@/components/common/announcement-card";
 import { AnnouncementCardSkeleton } from "@/components/common/announcement-card-skeleton";
+import { AnnouncementCreateModal } from "@/components/common/announcement-create-modal";
 import { CourseFilter } from "@/components/common/course-filter";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Calendar, Search, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
@@ -11,6 +12,7 @@ import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useAnnouncements } from "@/hooks/use-announcements";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import { useAuth } from "@/providers/auth-provider";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,6 +27,7 @@ const AnnouncementsPage = () => {
     const { t } = useTranslation();
     const { lang } = useLanguage();
     const { audience } = useAudience();
+    const { user } = useAuth();
 
     useDocumentTitle(
         t('announcements.list.title'),
@@ -77,15 +80,24 @@ const AnnouncementsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                 >
-                    <PageHeader
-                    variant="wide"
-                    title={t('announcements.list.title')}
-                    description={t('announcements.list.description')}
-                    icon={Bell}
-                    iconBgColor="bg-chart-5/20"
-                    iconColor="text-chart-5"
-                    showAudienceBadge={true}
-                />
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <PageHeader
+                            variant="wide"
+                            title={t('announcements.list.title')}
+                            description={t('announcements.list.description')}
+                            icon={Bell}
+                            iconBgColor="bg-chart-5/20"
+                            iconColor="text-chart-5"
+                            showAudienceBadge={true}
+                            className="flex-1"
+                        />
+
+                        {user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR' ? (
+                            <div className="lg:pt-1 lg:self-start">
+                                <AnnouncementCreateModal audience={audience} triggerClassName="w-full lg:w-auto" />
+                            </div>
+                        ) : null}
+                    </div>
                 </motion.div>
 
                 {/* Search & Filters */}
@@ -239,13 +251,14 @@ const AnnouncementsPage = () => {
                                 >
                                     <AnnouncementCard
                                         id={announcement.id}
-                                    courseId={announcement.courseId}
-                                    title={announcement.title[lang]}
-                                    description={announcement.description[lang]}
-                                    date={announcement.date}
-                                    isNew={announcement.isNew}
-                                    variant="wide"
-                                />
+                                        courseId={announcement.courseId}
+                                        title={announcement.title[lang]}
+                                        description={announcement.description[lang]}
+                                        date={announcement.date}
+                                        isNew={announcement.isNew}
+                                        canDelete={Boolean(user && (user.role === 'ADMIN' || (user.role === 'INSTRUCTOR' && announcement.createdBy === user.id)))}
+                                        variant="wide"
+                                    />
                                 </motion.div>
                             ))}
                         </motion.div>
