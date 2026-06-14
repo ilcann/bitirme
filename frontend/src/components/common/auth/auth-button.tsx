@@ -74,6 +74,11 @@ const AuthButton = ({ className, onAfterAction }: AuthButtonProps) => {
           <span className="text-xs font-normal text-muted-foreground">
             {roleLabel}
           </span>
+          {user?.role === 'STUDENT' && user.studentNumber ? (
+            <span className="text-xs font-normal text-muted-foreground">
+              Öğrenci No: {user.studentNumber}
+            </span>
+          ) : null}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="gap-2 px-2 py-2">

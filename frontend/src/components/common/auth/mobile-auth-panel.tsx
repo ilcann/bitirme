@@ -48,6 +48,11 @@ const MobileAuthPanel = ({ className, onAfterAction }: MobileAuthPanelProps) => 
         <div className="text-xs text-muted-foreground">
           {roleLabel}
         </div>
+        {user?.role === 'STUDENT' && user.studentNumber ? (
+          <div className="text-xs text-muted-foreground">
+            Öğrenci No: {user.studentNumber}
+          </div>
+        ) : null}
       </div>
 
       <Button

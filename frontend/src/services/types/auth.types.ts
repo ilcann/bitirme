@@ -6,6 +6,7 @@ export interface AuthUser {
   firstName: string;
   lastName: string;
   role: AuthRole;
+  studentNumber?: string | null;
   isActive: boolean;
   createdAt: string;
 }

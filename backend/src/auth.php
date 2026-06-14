@@ -21,7 +21,7 @@ function readJsonRequestBody()
 
 function normalizeAuthenticatedUser(array $user)
 {
-    return array(
+    $normalizedUser = array(
         'id' => (int) $user['id'],
         'email' => $user['email'],
         'firstName' => $user['first_name'],
@@ -30,6 +30,12 @@ function normalizeAuthenticatedUser(array $user)
         'isActive' => (bool) $user['is_active'],
         'createdAt' => $user['created_at'],
     );
+
+    if ($user['role'] === 'STUDENT') {
+        $normalizedUser['studentNumber'] = isset($user['student_number']) ? $user['student_number'] : null;
+    }
+
+    return $normalizedUser;
 }
 
 function normalizeSession(array $session)
@@ -128,6 +134,7 @@ function fetchAuthenticatedUserByToken($pdo, $token)
             u.first_name,
             u.last_name,
             u.role,
+            u.student_number,
             u.is_active,
             u.created_at,
             s.expires_at,
@@ -208,7 +215,7 @@ function loginUser()
 
     $pdo = createDatabasePdo($dbHost, $dbPort, $dbName, $dbUser, $dbPass, true);
 
-    $statement = $pdo->prepare('SELECT id, email, password_hash, first_name, last_name, role, is_active, created_at FROM users WHERE email = :email LIMIT 1');
+    $statement = $pdo->prepare('SELECT id, email, password_hash, first_name, last_name, role, student_number, is_active, created_at FROM users WHERE email = :email LIMIT 1');
     $statement->execute(array(':email' => $email));
 
     $user = $statement->fetch();
