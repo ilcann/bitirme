@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { getCourses } from "@/services/courses.service";
 import type { GetCoursesParams, CourseSortBy } from "@/services/types";
@@ -33,7 +33,6 @@ export const useCourses = ({ audience, initialLimit = 20, initialSearch = "" }: 
     const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: ["courses", queryParams],
         queryFn: () => getCourses(queryParams),
-        placeholderData: keepPreviousData,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 

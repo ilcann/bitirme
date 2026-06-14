@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { getAnnouncements } from "@/services/announcements.service";
 import type { GetAnnouncementsParams, DateFilter } from "@/services/types";
@@ -34,7 +34,6 @@ export const useAnnouncements = ({ audience, initialLimit = 10, courseId }: UseA
     const { data, isLoading, isFetching, error } = useQuery({
         queryKey: ["announcements", queryParams],
         queryFn: () => getAnnouncements(queryParams),
-        placeholderData: keepPreviousData,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
