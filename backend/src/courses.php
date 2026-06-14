@@ -101,6 +101,27 @@ function buildCourseInfo(array $course)
 {
     $hasInfoField = array_key_exists('summary_tr', $course)
         || array_key_exists('summary_en', $course)
+        || array_key_exists('language', $course)
+        || array_key_exists('credits', $course)
+        || array_key_exists('lecture_hours', $course)
+        || array_key_exists('practice_hours', $course)
+        || array_key_exists('lab_hours', $course)
+        || array_key_exists('semester', $course)
+        || array_key_exists('coordinator', $course)
+        || array_key_exists('objectives_tr', $course)
+        || array_key_exists('objectives_en', $course)
+        || array_key_exists('description_tr', $course)
+        || array_key_exists('description_en', $course)
+        || array_key_exists('outcomes_tr', $course)
+        || array_key_exists('outcomes_en', $course)
+        || array_key_exists('prerequisites_tr', $course)
+        || array_key_exists('prerequisites_en', $course)
+        || array_key_exists('other_notes_tr', $course)
+        || array_key_exists('other_notes_en', $course)
+        || array_key_exists('textbook_tr', $course)
+        || array_key_exists('textbook_en', $course)
+        || array_key_exists('references_tr', $course)
+        || array_key_exists('references_en', $course)
         || array_key_exists('section_name', $course)
         || array_key_exists('crn', $course)
         || array_key_exists('term_tr', $course)
@@ -118,9 +139,44 @@ function buildCourseInfo(array $course)
     }
 
     return array(
+        'language' => isset($course['language']) && $course['language'] !== '' ? $course['language'] : null,
+        'credits' => isset($course['credits']) && $course['credits'] !== '' ? (int) $course['credits'] : null,
+        'lectureHours' => isset($course['lecture_hours']) && $course['lecture_hours'] !== '' ? (int) $course['lecture_hours'] : null,
+        'practiceHours' => isset($course['practice_hours']) && $course['practice_hours'] !== '' ? (int) $course['practice_hours'] : null,
+        'labHours' => isset($course['lab_hours']) && $course['lab_hours'] !== '' ? (int) $course['lab_hours'] : null,
+        'semester' => isset($course['semester']) && $course['semester'] !== '' ? (int) $course['semester'] : null,
+        'coordinator' => isset($course['coordinator']) && $course['coordinator'] !== '' ? $course['coordinator'] : null,
         'summary' => array(
             'tr' => isset($course['summary_tr']) && $course['summary_tr'] !== '' ? $course['summary_tr'] : null,
             'en' => isset($course['summary_en']) && $course['summary_en'] !== '' ? $course['summary_en'] : null,
+        ),
+        'objectives' => array(
+            'tr' => isset($course['objectives_tr']) && $course['objectives_tr'] !== '' ? $course['objectives_tr'] : null,
+            'en' => isset($course['objectives_en']) && $course['objectives_en'] !== '' ? $course['objectives_en'] : null,
+        ),
+        'description' => array(
+            'tr' => isset($course['description_tr']) && $course['description_tr'] !== '' ? $course['description_tr'] : null,
+            'en' => isset($course['description_en']) && $course['description_en'] !== '' ? $course['description_en'] : null,
+        ),
+        'outcomes' => array(
+            'tr' => isset($course['outcomes_tr']) && $course['outcomes_tr'] !== '' ? $course['outcomes_tr'] : null,
+            'en' => isset($course['outcomes_en']) && $course['outcomes_en'] !== '' ? $course['outcomes_en'] : null,
+        ),
+        'prerequisites' => array(
+            'tr' => isset($course['prerequisites_tr']) && $course['prerequisites_tr'] !== '' ? $course['prerequisites_tr'] : null,
+            'en' => isset($course['prerequisites_en']) && $course['prerequisites_en'] !== '' ? $course['prerequisites_en'] : null,
+        ),
+        'otherNotes' => array(
+            'tr' => isset($course['other_notes_tr']) && $course['other_notes_tr'] !== '' ? $course['other_notes_tr'] : null,
+            'en' => isset($course['other_notes_en']) && $course['other_notes_en'] !== '' ? $course['other_notes_en'] : null,
+        ),
+        'textbook' => array(
+            'tr' => isset($course['textbook_tr']) && $course['textbook_tr'] !== '' ? $course['textbook_tr'] : null,
+            'en' => isset($course['textbook_en']) && $course['textbook_en'] !== '' ? $course['textbook_en'] : null,
+        ),
+        'references' => array(
+            'tr' => isset($course['references_tr']) && $course['references_tr'] !== '' ? $course['references_tr'] : null,
+            'en' => isset($course['references_en']) && $course['references_en'] !== '' ? $course['references_en'] : null,
         ),
         'sectionName' => isset($course['section_name']) && $course['section_name'] !== '' ? $course['section_name'] : null,
         'crn' => isset($course['crn']) && $course['crn'] !== '' ? $course['crn'] : null,
@@ -143,8 +199,29 @@ function buildCourseInfo(array $course)
 function ensureCourseInfoSchema($pdo)
 {
     $columns = array(
+        'language' => 'VARCHAR(100) DEFAULT NULL',
+        'credits' => 'TINYINT UNSIGNED DEFAULT NULL',
+        'lecture_hours' => 'TINYINT UNSIGNED DEFAULT NULL',
+        'practice_hours' => 'TINYINT UNSIGNED DEFAULT NULL',
+        'lab_hours' => 'TINYINT UNSIGNED DEFAULT NULL',
+        'semester' => 'TINYINT UNSIGNED DEFAULT NULL',
+        'coordinator' => 'VARCHAR(255) DEFAULT NULL',
         'summary_tr' => 'TEXT NULL',
         'summary_en' => 'TEXT NULL',
+        'objectives_tr' => 'TEXT NULL',
+        'objectives_en' => 'TEXT NULL',
+        'description_tr' => 'TEXT NULL',
+        'description_en' => 'TEXT NULL',
+        'outcomes_tr' => 'TEXT NULL',
+        'outcomes_en' => 'TEXT NULL',
+        'prerequisites_tr' => 'TEXT NULL',
+        'prerequisites_en' => 'TEXT NULL',
+        'other_notes_tr' => 'TEXT NULL',
+        'other_notes_en' => 'TEXT NULL',
+        'textbook_tr' => 'TEXT NULL',
+        'textbook_en' => 'TEXT NULL',
+        'references_tr' => 'TEXT NULL',
+        'references_en' => 'TEXT NULL',
         'section_name' => 'VARCHAR(120) DEFAULT NULL',
         'crn' => 'VARCHAR(50) DEFAULT NULL',
         'term_tr' => 'VARCHAR(120) DEFAULT NULL',
@@ -912,8 +989,29 @@ function fetchCourseById($courseId)
             c.title_en,
             c.color,
             c.audience,
+            c.language,
+            c.credits,
+            c.lecture_hours,
+            c.practice_hours,
+            c.lab_hours,
+            c.semester,
+            c.coordinator,
             c.summary_tr,
             c.summary_en,
+            c.objectives_tr,
+            c.objectives_en,
+            c.description_tr,
+            c.description_en,
+            c.outcomes_tr,
+            c.outcomes_en,
+            c.prerequisites_tr,
+            c.prerequisites_en,
+            c.other_notes_tr,
+            c.other_notes_en,
+            c.textbook_tr,
+            c.textbook_en,
+            c.references_tr,
+            c.references_en,
             c.section_name,
             c.crn,
             c.term_tr,
@@ -984,15 +1082,35 @@ function updateCourseInfo($courseId)
     }
 
     $info = isset($body['info']) && is_array($body['info']) ? $body['info'] : array();
-    $summary = isset($info['summary']) && is_array($info['summary']) ? $info['summary'] : array();
-    $term = isset($info['term']) && is_array($info['term']) ? $info['term'] : array();
-    $schedule = isset($info['schedule']) && is_array($info['schedule']) ? $info['schedule'] : array();
+    $existingInfo = isset($course['info']) && is_array($course['info']) ? $course['info'] : array();
+    $mergedInfo = array_replace_recursive($existingInfo, $info);
 
     $statement = $pdo->prepare('
         UPDATE courses
         SET
+            language = :language,
+            credits = :credits,
+            lecture_hours = :lecture_hours,
+            practice_hours = :practice_hours,
+            lab_hours = :lab_hours,
+            semester = :semester,
+            coordinator = :coordinator,
             summary_tr = :summary_tr,
             summary_en = :summary_en,
+            objectives_tr = :objectives_tr,
+            objectives_en = :objectives_en,
+            description_tr = :description_tr,
+            description_en = :description_en,
+            outcomes_tr = :outcomes_tr,
+            outcomes_en = :outcomes_en,
+            prerequisites_tr = :prerequisites_tr,
+            prerequisites_en = :prerequisites_en,
+            other_notes_tr = :other_notes_tr,
+            other_notes_en = :other_notes_en,
+            textbook_tr = :textbook_tr,
+            textbook_en = :textbook_en,
+            references_tr = :references_tr,
+            references_en = :references_en,
             section_name = :section_name,
             crn = :crn,
             term_tr = :term_tr,
@@ -1009,19 +1127,40 @@ function updateCourseInfo($courseId)
         LIMIT 1
     ');
     $statement->execute(array(
-        ':summary_tr' => normalizeNullableCourseInfoText(isset($summary['tr']) ? $summary['tr'] : ''),
-        ':summary_en' => normalizeNullableCourseInfoText(isset($summary['en']) ? $summary['en'] : ''),
-        ':section_name' => normalizeNullableCourseInfoText(isset($info['sectionName']) ? $info['sectionName'] : ''),
-        ':crn' => normalizeNullableCourseInfoText(isset($info['crn']) ? $info['crn'] : ''),
-        ':term_tr' => normalizeNullableCourseInfoText(isset($term['tr']) ? $term['tr'] : ''),
-        ':term_en' => normalizeNullableCourseInfoText(isset($term['en']) ? $term['en'] : ''),
-        ':start_date' => normalizeCourseInfoDateValue(isset($info['startDate']) ? $info['startDate'] : ''),
-        ':end_date' => normalizeCourseInfoDateValue(isset($info['endDate']) ? $info['endDate'] : ''),
-        ':last_access_date' => normalizeCourseInfoDateValue(isset($info['lastAccessDate']) ? $info['lastAccessDate'] : ''),
-        ':instructors' => normalizeCourseInfoListValue(isset($info['instructors']) ? $info['instructors'] : ''),
-        ':assistants' => normalizeCourseInfoListValue(isset($info['assistants']) ? $info['assistants'] : ''),
-        ':schedule_tr' => normalizeCourseInfoListValue(isset($schedule['tr']) ? $schedule['tr'] : ''),
-        ':schedule_en' => normalizeCourseInfoListValue(isset($schedule['en']) ? $schedule['en'] : ''),
+        ':language' => normalizeNullableCourseInfoText(isset($mergedInfo['language']) ? $mergedInfo['language'] : ''),
+        ':credits' => isset($mergedInfo['credits']) && $mergedInfo['credits'] !== '' ? (int) $mergedInfo['credits'] : null,
+        ':lecture_hours' => isset($mergedInfo['lectureHours']) && $mergedInfo['lectureHours'] !== '' ? (int) $mergedInfo['lectureHours'] : null,
+        ':practice_hours' => isset($mergedInfo['practiceHours']) && $mergedInfo['practiceHours'] !== '' ? (int) $mergedInfo['practiceHours'] : null,
+        ':lab_hours' => isset($mergedInfo['labHours']) && $mergedInfo['labHours'] !== '' ? (int) $mergedInfo['labHours'] : null,
+        ':semester' => isset($mergedInfo['semester']) && $mergedInfo['semester'] !== '' ? (int) $mergedInfo['semester'] : null,
+        ':coordinator' => normalizeNullableCourseInfoText(isset($mergedInfo['coordinator']) ? $mergedInfo['coordinator'] : ''),
+        ':summary_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['summary']['tr']) ? $mergedInfo['summary']['tr'] : ''),
+        ':summary_en' => normalizeNullableCourseInfoText(isset($mergedInfo['summary']['en']) ? $mergedInfo['summary']['en'] : ''),
+        ':objectives_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['objectives']['tr']) ? $mergedInfo['objectives']['tr'] : ''),
+        ':objectives_en' => normalizeNullableCourseInfoText(isset($mergedInfo['objectives']['en']) ? $mergedInfo['objectives']['en'] : ''),
+        ':description_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['description']['tr']) ? $mergedInfo['description']['tr'] : ''),
+        ':description_en' => normalizeNullableCourseInfoText(isset($mergedInfo['description']['en']) ? $mergedInfo['description']['en'] : ''),
+        ':outcomes_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['outcomes']['tr']) ? $mergedInfo['outcomes']['tr'] : ''),
+        ':outcomes_en' => normalizeNullableCourseInfoText(isset($mergedInfo['outcomes']['en']) ? $mergedInfo['outcomes']['en'] : ''),
+        ':prerequisites_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['prerequisites']['tr']) ? $mergedInfo['prerequisites']['tr'] : ''),
+        ':prerequisites_en' => normalizeNullableCourseInfoText(isset($mergedInfo['prerequisites']['en']) ? $mergedInfo['prerequisites']['en'] : ''),
+        ':other_notes_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['otherNotes']['tr']) ? $mergedInfo['otherNotes']['tr'] : ''),
+        ':other_notes_en' => normalizeNullableCourseInfoText(isset($mergedInfo['otherNotes']['en']) ? $mergedInfo['otherNotes']['en'] : ''),
+        ':textbook_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['textbook']['tr']) ? $mergedInfo['textbook']['tr'] : ''),
+        ':textbook_en' => normalizeNullableCourseInfoText(isset($mergedInfo['textbook']['en']) ? $mergedInfo['textbook']['en'] : ''),
+        ':references_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['references']['tr']) ? $mergedInfo['references']['tr'] : ''),
+        ':references_en' => normalizeNullableCourseInfoText(isset($mergedInfo['references']['en']) ? $mergedInfo['references']['en'] : ''),
+        ':section_name' => normalizeNullableCourseInfoText(isset($mergedInfo['sectionName']) ? $mergedInfo['sectionName'] : ''),
+        ':crn' => normalizeNullableCourseInfoText(isset($mergedInfo['crn']) ? $mergedInfo['crn'] : ''),
+        ':term_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['term']['tr']) ? $mergedInfo['term']['tr'] : ''),
+        ':term_en' => normalizeNullableCourseInfoText(isset($mergedInfo['term']['en']) ? $mergedInfo['term']['en'] : ''),
+        ':start_date' => normalizeCourseInfoDateValue(isset($mergedInfo['startDate']) ? $mergedInfo['startDate'] : ''),
+        ':end_date' => normalizeCourseInfoDateValue(isset($mergedInfo['endDate']) ? $mergedInfo['endDate'] : ''),
+        ':last_access_date' => normalizeCourseInfoDateValue(isset($mergedInfo['lastAccessDate']) ? $mergedInfo['lastAccessDate'] : ''),
+        ':instructors' => normalizeCourseInfoListValue(isset($mergedInfo['instructors']) ? $mergedInfo['instructors'] : ''),
+        ':assistants' => normalizeCourseInfoListValue(isset($mergedInfo['assistants']) ? $mergedInfo['assistants'] : ''),
+        ':schedule_tr' => normalizeCourseInfoListValue(isset($mergedInfo['schedule']['tr']) ? $mergedInfo['schedule']['tr'] : ''),
+        ':schedule_en' => normalizeCourseInfoListValue(isset($mergedInfo['schedule']['en']) ? $mergedInfo['schedule']['en'] : ''),
         ':updated_by' => $admin['id'],
         ':course_id' => $courseId,
     ));

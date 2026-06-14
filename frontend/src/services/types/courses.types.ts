@@ -142,7 +142,7 @@ export interface GetCourseInfoResponse {
 
 export interface UpdateCourseInfoRequest {
     courseId: string;
-    info: NonNullable<Course['info']>;
+    info: Partial<NonNullable<Course['info']>>;
 }
 
 export interface UpdateCourseInfoResponse {

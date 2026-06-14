@@ -6,7 +6,21 @@ interface CourseLocalizedText {
 }
 
 interface CourseInfo {
+    language: string | null;
+    credits: number | null;
+    lectureHours: number | null;
+    practiceHours: number | null;
+    labHours: number | null;
+    semester: number | null;
+    coordinator: string | null;
     summary: CourseLocalizedText;
+    objectives: CourseLocalizedText;
+    description: CourseLocalizedText;
+    outcomes: CourseLocalizedText;
+    prerequisites: CourseLocalizedText;
+    otherNotes: CourseLocalizedText;
+    textbook: CourseLocalizedText;
+    references: CourseLocalizedText;
     sectionName: string | null;
     crn: string | null;
     term: CourseLocalizedText;
