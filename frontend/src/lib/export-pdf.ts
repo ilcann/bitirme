@@ -5,7 +5,7 @@ import notoSansRegularUrl from '@/assets/fonts/NotoSans-Regular.ttf?url';
 type ExportTablePdfOptions = {
   title: string;
   fileName: string;
-  head: string[];
+  head: RowInput[];
   body: RowInput[];
   orientation?: 'portrait' | 'landscape';
 };
@@ -76,7 +76,7 @@ export async function exportTablePdf({
   doc.text(`Exported: ${exportedAt}`, 32, 50);
 
   autoTable(doc, {
-    head: [head],
+    head,
     body,
     startY: 62,
     theme: 'grid',
@@ -93,6 +93,8 @@ export async function exportTablePdf({
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       font: NOTO_SANS_FONT_NAME,
+      halign: 'center',
+      valign: 'middle',
     },
   });
 

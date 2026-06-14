@@ -267,7 +267,7 @@ const CourseAttendancePage = () => {
     void exportTablePdf({
       title: `${course.code} - ${t('courses.attendance.title')}`,
       fileName: `${course.code.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-attendance.pdf`,
-      head,
+      head: [head],
       body,
       orientation: 'landscape',
     });

@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import type { RowInput } from 'jspdf-autotable';
 import type { Course } from '@/types/course';
 import type { CourseGradeDistribution, CourseGradeItemType, CourseGradeStudent } from '@/services/types';
 
@@ -302,13 +303,32 @@ const CourseGradesPage = () => {
       return;
     }
 
-    const head = [
-      t('courses.students.table.studentNumber'),
-      t('courses.students.table.name'),
-      'Email',
-      ...gradeColumns.map((column) => `${column.label} ${column.itemNumber}`),
-      t('courses.grades.average', { defaultValue: 'Ortalama' }),
+    const headTopRow: RowInput = [
+      {
+        content: t('courses.students.table.studentNumber'),
+        rowSpan: 2,
+      },
+      {
+        content: t('courses.students.table.name'),
+        rowSpan: 2,
+      },
+      {
+        content: 'Email',
+        rowSpan: 2,
+      },
+      ...groupedColumns.map((column) => ({
+        content: `${column.label} (${column.count})`,
+        colSpan: column.count,
+      })),
+      {
+        content: t('courses.grades.average', { defaultValue: 'Ortalama' }),
+        rowSpan: 2,
+      },
     ];
+
+    const headBottomRow: RowInput = gradeColumns.map((column) => String(column.itemNumber));
+
+    const head: RowInput[] = [headTopRow, headBottomRow];
 
     const body = sortedStudents.map((student) => [
       student.studentNumber || '-',
