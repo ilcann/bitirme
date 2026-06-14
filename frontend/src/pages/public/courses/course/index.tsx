@@ -36,12 +36,12 @@ const CoursePage = () => {
 
     const tabs = [
         { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title'), locked: false },
+        { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
         { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title'), locked: false },
         { path: `/courses/${courseId}/announcements`, value: 'announcements', label: t('announcements.list.title'), locked: false },
         ...(user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR' ? [
             { path: `/courses/${courseId}/students`, value: 'students', label: t('courses.students.title'), locked: false },
         ] : []),
-        { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
         ...(canAccessGradesTab ? [
             {
                 path: `/courses/${courseId}/grades`,
