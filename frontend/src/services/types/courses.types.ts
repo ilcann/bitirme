@@ -134,6 +134,12 @@ export interface GetCourseResponse {
     course: Course;
 }
 
+export interface GetCourseInfoResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+}
+
 export interface CreateCourseRequest {
     code: string;
     titleTr: string;

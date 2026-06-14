@@ -19,7 +19,107 @@ function normalizeCourse(array $course)
         'students' => isset($course['students']) ? (int) $course['students'] : 0,
         'color' => $course['color'],
         'audience' => $course['audience'],
+        'info' => buildCourseInfo($course),
     );
+}
+
+function splitCourseInfoLines($value)
+{
+    $value = trim((string) $value);
+
+    if ($value === '') {
+        return array();
+    }
+
+    $separatorPattern = '/\r\n|\r|\n|\s*,\s*|\s*;\s*/';
+    $items = preg_split($separatorPattern, $value);
+    $normalized = array();
+
+    if (!is_array($items)) {
+        return $normalized;
+    }
+
+    foreach ($items as $item) {
+        $item = trim((string) $item);
+
+        if ($item === '') {
+            continue;
+        }
+
+        $normalized[] = $item;
+    }
+
+    return $normalized;
+}
+
+function buildCourseInfo(array $course)
+{
+    $hasInfoField = array_key_exists('summary_tr', $course)
+        || array_key_exists('summary_en', $course)
+        || array_key_exists('section_name', $course)
+        || array_key_exists('crn', $course)
+        || array_key_exists('term_tr', $course)
+        || array_key_exists('term_en', $course)
+        || array_key_exists('start_date', $course)
+        || array_key_exists('end_date', $course)
+        || array_key_exists('last_access_date', $course)
+        || array_key_exists('instructors', $course)
+        || array_key_exists('assistants', $course)
+        || array_key_exists('schedule_tr', $course)
+        || array_key_exists('schedule_en', $course);
+
+    if (!$hasInfoField) {
+        return null;
+    }
+
+    return array(
+        'summary' => array(
+            'tr' => isset($course['summary_tr']) && $course['summary_tr'] !== '' ? $course['summary_tr'] : null,
+            'en' => isset($course['summary_en']) && $course['summary_en'] !== '' ? $course['summary_en'] : null,
+        ),
+        'sectionName' => isset($course['section_name']) && $course['section_name'] !== '' ? $course['section_name'] : null,
+        'crn' => isset($course['crn']) && $course['crn'] !== '' ? $course['crn'] : null,
+        'term' => array(
+            'tr' => isset($course['term_tr']) && $course['term_tr'] !== '' ? $course['term_tr'] : null,
+            'en' => isset($course['term_en']) && $course['term_en'] !== '' ? $course['term_en'] : null,
+        ),
+        'startDate' => isset($course['start_date']) && $course['start_date'] !== '' ? $course['start_date'] : null,
+        'endDate' => isset($course['end_date']) && $course['end_date'] !== '' ? $course['end_date'] : null,
+        'lastAccessDate' => isset($course['last_access_date']) && $course['last_access_date'] !== '' ? $course['last_access_date'] : null,
+        'instructors' => splitCourseInfoLines(isset($course['instructors']) ? $course['instructors'] : ''),
+        'assistants' => splitCourseInfoLines(isset($course['assistants']) ? $course['assistants'] : ''),
+        'schedule' => array(
+            'tr' => splitCourseInfoLines(isset($course['schedule_tr']) ? $course['schedule_tr'] : ''),
+            'en' => splitCourseInfoLines(isset($course['schedule_en']) ? $course['schedule_en'] : ''),
+        ),
+    );
+}
+
+function ensureCourseInfoSchema($pdo)
+{
+    $columns = array(
+        'summary_tr' => 'TEXT NULL',
+        'summary_en' => 'TEXT NULL',
+        'section_name' => 'VARCHAR(120) DEFAULT NULL',
+        'crn' => 'VARCHAR(50) DEFAULT NULL',
+        'term_tr' => 'VARCHAR(120) DEFAULT NULL',
+        'term_en' => 'VARCHAR(120) DEFAULT NULL',
+        'start_date' => 'DATE DEFAULT NULL',
+        'end_date' => 'DATE DEFAULT NULL',
+        'last_access_date' => 'DATE DEFAULT NULL',
+        'instructors' => 'TEXT NULL',
+        'assistants' => 'TEXT NULL',
+        'schedule_tr' => 'TEXT NULL',
+        'schedule_en' => 'TEXT NULL'
+    );
+
+    foreach ($columns as $columnName => $columnDefinition) {
+        $columnResult = $pdo->query("SHOW COLUMNS FROM courses LIKE '{$columnName}'");
+
+        if (!$columnResult || !$columnResult->fetch()) {
+            $pdo->exec("ALTER TABLE courses ADD COLUMN {$columnName} {$columnDefinition}");
+        }
+    }
 }
 
 function getCourseGradeTypes()
@@ -757,6 +857,7 @@ function fetchCourses($filters)
 function fetchCourseById($courseId)
 {
     $pdo = getCoursesPdo();
+    ensureCourseInfoSchema($pdo);
 
     $statement = $pdo->prepare('
         SELECT
@@ -766,6 +867,19 @@ function fetchCourseById($courseId)
             c.title_en,
             c.color,
             c.audience,
+            c.summary_tr,
+            c.summary_en,
+            c.section_name,
+            c.crn,
+            c.term_tr,
+            c.term_en,
+            c.start_date,
+            c.end_date,
+            c.last_access_date,
+            c.instructors,
+            c.assistants,
+            c.schedule_tr,
+            c.schedule_en,
             COALESCE(enrollment_counts.students, 0) AS students
         FROM courses c
         LEFT JOIN (
@@ -781,6 +895,27 @@ function fetchCourseById($courseId)
     $row = $statement->fetch();
 
     return $row ? normalizeCourse($row) : null;
+}
+
+function fetchCourseInfo($courseId)
+{
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Course info loaded successfully.',
+        'course' => $course,
+    );
 }
 
 function fetchCourseStudents($courseId, $sortBy = 'name')

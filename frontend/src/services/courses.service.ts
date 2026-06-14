@@ -12,6 +12,7 @@ import type {
     GetEnrolledCourseStudentsParams,
     CourseStudentSortBy,
     DeleteCourseResponse,
+    GetCourseInfoResponse,
     GetCoursesParams,
     GetCoursesResponse,
     GetCoursesCompactResponse,
@@ -74,6 +75,16 @@ export const getCourses = async (params: GetCoursesParams): Promise<GetCoursesRe
 export const getCourseById = async (courseId: string): Promise<Course | null> => {
     try {
         const response = await apiRequest<{ course: Course }>(`/public/courses/index.php?courseId=${encodeURIComponent(courseId)}`);
+
+        return response.course;
+    } catch {
+        return null;
+    }
+};
+
+export const getCourseInfo = async (courseId: string): Promise<Course | null> => {
+    try {
+        const response = await apiRequest<GetCourseInfoResponse>(`/public/courses/info.php?courseId=${encodeURIComponent(courseId)}`);
 
         return response.course;
     } catch {
