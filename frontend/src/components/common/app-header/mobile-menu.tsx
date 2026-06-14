@@ -7,7 +7,7 @@ import { Menubar } from "@/components/ui/menubar";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Navbar from "./navbar";
-import AuthButton from "../auth/auth-button";
+import MobileAuthPanel from "../auth/mobile-auth-panel";
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,11 +31,10 @@ const MobileMenu = () => {
         className="w-screen max-w-none h-screen overflow-hidden p-4 lg:hidden"
       >
         {/* Üstte close sabit */}
-        <Menubar className="border-0 mb-6 bg-transparent">
+        <Menubar className="border-0 mb-6 bg-transparent flex-wrap gap-2">
             <AudienceToggle align="start"/>
             <LanguageToggle align="start"/>
             <ThemeToggle align="start"/>
-          <AuthButton onAfterAction={closeMenu} />
             <Button
                 variant="ghost"
                 size="icon"
@@ -46,6 +45,8 @@ const MobileMenu = () => {
                 <X className="h-6 w-6" />
             </Button>
         </Menubar>
+
+        <MobileAuthPanel onAfterAction={closeMenu} />
 
         {/* Navbar mobile variant: kendi içinde scroll var */}
         <Navbar

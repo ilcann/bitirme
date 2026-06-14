@@ -37,7 +37,7 @@ const AuthButton = ({ className, onAfterAction }: AuthButtonProps) => {
     onAfterAction?.();
   };
 
-  const roleLabel = user ? t(`roles.${user.role}`) : '';
+  const roleLabel = user ? t(`role_${user.role.toLowerCase()}`) : '';
 
   if (!isAuthenticated) {
     return (
