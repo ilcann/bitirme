@@ -6,3 +6,4 @@
 export * from './courses.service';
 export * from './materials.service';
 export * from './announcements.service';
+export * from './auth.service';

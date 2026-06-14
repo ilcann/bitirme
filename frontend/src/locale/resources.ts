@@ -12,6 +12,8 @@ import enHelp from './en/help.json';
 import trHelp from './tr/help.json';
 import enMe from './en/me.json';
 import trMe from './tr/me.json';
+import enAuth from './en/auth.json';
+import trAuth from './tr/auth.json';
 
 export const resources = {
   en: { 
@@ -21,7 +23,8 @@ export const resources = {
     announcements: enAnnouncements,
     courses: enCourses,
     help: enHelp,
-    me: enMe
+    me: enMe,
+    auth: enAuth
   },
   tr: { 
     common: trCommon,
@@ -30,9 +33,10 @@ export const resources = {
     announcements: trAnnouncements,
     courses: trCourses,
     help: trHelp,
-    me: trMe
+    me: trMe,
+    auth: trAuth
   }
 } as const;
 
-export const ns = ['common', 'home', 'errors', 'announcements', 'courses', 'help', 'me'] as const;
+export const ns = ['common', 'home', 'errors', 'announcements', 'courses', 'help', 'me', 'auth'] as const;
 export type Namespace = typeof ns[number];

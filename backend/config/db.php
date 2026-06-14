@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/env.php';
 
-function connectDatabase($host, $port, $name, $user, $pass, $useDatabase)
+function createDatabasePdo($host, $port, $name, $user, $pass, $useDatabase)
 {
     $dsn = 'mysql:host=' . $host . ';port=' . $port . ';charset=utf8';
 
@@ -20,9 +20,7 @@ function connectDatabase($host, $port, $name, $user, $pass, $useDatabase)
         )
     );
 
-    $statement = $pdo->query('SELECT DATABASE() AS database_name, VERSION() AS server_version');
-
-    return $statement->fetch();
+    return $pdo;
 }
 
 function testDatabaseConnection()
@@ -45,7 +43,9 @@ function testDatabaseConnection()
     foreach ($credentials as $credential) {
         foreach (array(true, false) as $databaseMode) {
             try {
-                $result = connectDatabase($dbHost, $dbPort, $dbName, $credential['user'], $credential['pass'], $databaseMode);
+                $pdo = createDatabasePdo($dbHost, $dbPort, $dbName, $credential['user'], $credential['pass'], $databaseMode);
+                $statement = $pdo->query('SELECT DATABASE() AS database_name, VERSION() AS server_version');
+                $result = $statement->fetch();
 
                 return array(
                     'success' => true,

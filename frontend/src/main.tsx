@@ -7,6 +7,7 @@ import './locale/i18n'
 import { ThemeProvider } from './providers/theme-provider'
 import { LanguageProvider } from './providers/language-provider'
 import { AudienceProvider } from './providers/audience-provider'
+import { AuthProvider } from './providers/auth-provider'
 import {
   QueryClient,
   QueryClientProvider,
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <LanguageProvider>
           <AudienceProvider defaultAudience="department" storageKey="user-audience">
-            <RouterProvider router={router} />
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
           </AudienceProvider>
         </LanguageProvider>
       </ThemeProvider>

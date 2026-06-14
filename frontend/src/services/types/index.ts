@@ -26,3 +26,11 @@ export type {
     GetMaterialsParams,
     GetMaterialsResponse
 } from "./materials.types";
+
+// Auth
+export type {
+    AuthRole,
+    AuthUser,
+    LoginRequest,
+    LoginResponse
+} from "./auth.types";

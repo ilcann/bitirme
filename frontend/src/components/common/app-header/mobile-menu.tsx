@@ -7,6 +7,7 @@ import { Menubar } from "@/components/ui/menubar";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Navbar from "./navbar";
+import AuthButton from "../auth/auth-button";
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,6 +35,7 @@ const MobileMenu = () => {
             <AudienceToggle align="start"/>
             <LanguageToggle align="start"/>
             <ThemeToggle align="start"/>
+          <AuthButton onAfterAction={closeMenu} />
             <Button
                 variant="ghost"
                 size="icon"
