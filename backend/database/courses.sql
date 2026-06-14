@@ -116,21 +116,3 @@ CREATE TABLE course_grade_scores (
     CONSTRAINT fk_course_grade_scores_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_course_grade_scores_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
-
-INSERT INTO courses (id, code, title_tr, title_en, color, audience) VALUES
-('mat103e', 'MAT 103/E', 'Matematik I', 'Mathematics I', 'chart-1', 'common'),
-('mat104e', 'MAT 104/E', 'Matematik II', 'Mathematics II', 'chart-1', 'common'),
-('mat345e', 'MAT 345/E', 'Olasılık ve İstatistik', 'Probability and Statistics', 'chart-3', 'department'),
-('mat471e', 'MAT 471/E', 'Sayısal Analiz', 'Numerical Analysis', 'chart-4', 'department'),
-('mate', 'MATE', 'Mühendislik Matematiği', 'Engineering Mathematics', 'chart-5', 'department'),
-('mat251e', 'MAT 251/E', 'Diferansiyel Denklemler', 'Differential Equations', 'chart-2', 'department'),
-('mat252e', 'MAT 252/E', 'Lineer Cebir', 'Linear Algebra', 'chart-2', 'department'),
-('mat361e', 'MAT 361/E', 'Kompleks Fonksiyonlar Teorisi', 'Complex Functions Theory', 'chart-3', 'department'),
-('mat362e', 'MAT 362/E', 'Reel Analiz', 'Real Analysis', 'chart-3', 'department'),
-('mat381e', 'MAT 381/E', 'Soyut Matematik I', 'Abstract Mathematics I', 'chart-3', 'department'),
-('mat382e', 'MAT 382/E', 'Soyut Matematik II', 'Abstract Mathematics II', 'chart-3', 'department'),
-('mat491e', 'MAT 491/E', 'Bitirme Projesi I', 'Graduation Project I', 'chart-4', 'department'),
-('mat492e', 'MAT 492/E', 'Bitirme Projesi II', 'Graduation Project II', 'chart-4', 'department');
-
-INSERT INTO course_grade_distributions (course_id, midterm_count, final_count, project_count, homework_count, quiz_count, midterm_weight, final_weight, project_weight, homework_weight, quiz_weight)
-SELECT id, 2, 1, 2, 14, 14, 40, 30, 10, 10, 10 FROM courses;
