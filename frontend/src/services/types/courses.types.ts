@@ -7,6 +7,8 @@ import type { Course, CompactCourse } from "@/types/course";
 
 export type CourseSortBy = "students" | "code" | "title";
 
+export type CourseStudentSortBy = "name" | "studentNumber";
+
 export interface GetCoursesParams {
     audience?: AudienceKey;
     offset?: number;
@@ -46,6 +48,23 @@ export interface DeleteCourseResponse {
     success: boolean;
     message: string;
     course: Course;
+}
+
+export interface CourseStudent {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    studentNumber: string | null;
+    enrolledAt: string;
+}
+
+export interface GetCourseStudentsResponse {
+    success: boolean;
+    message: string;
+    course: Course;
+    data: CourseStudent[];
+    total: number;
 }
 
 export interface GetCoursesCompactParams {

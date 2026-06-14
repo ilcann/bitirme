@@ -18,11 +18,14 @@ export type {
 export type {
     CreateCourseRequest,
     CreateCourseResponse,
+    CourseStudent,
+    CourseStudentSortBy,
     DeleteCourseResponse,
     CourseSortBy,
     GetCourseResponse,
     GetCoursesParams,
     GetCoursesResponse,
+    GetCourseStudentsResponse,
     GetCoursesCompactParams,
     GetCoursesCompactResponse
 } from "./courses.types";

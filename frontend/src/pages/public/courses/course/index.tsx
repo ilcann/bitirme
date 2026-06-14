@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { motion } from "framer-motion";
 import { useCourse } from "@/hooks/use-course";
 import { LoadingScreen } from "@/components/common/loading-screen";
+import { useAuth } from "@/providers/auth-provider";
 
 const CoursePage = () => {
     const { courseId } = useParams<{ courseId: string }>();
@@ -17,6 +18,7 @@ const CoursePage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { lang } = useLanguage();
+    const { user } = useAuth();
     
     const { course, isLoading } = useCourse(courseId);
 
@@ -32,6 +34,9 @@ const CoursePage = () => {
         { path: `/courses/${courseId}`, value: 'overview', label: t('courses.overview.title'), locked: false },
         { path: `/courses/${courseId}/materials`, value: 'materials', label: t('courses.materials.title'), locked: false },
         { path: `/courses/${courseId}/announcements`, value: 'announcements', label: t('announcements.list.title'), locked: false },
+        ...(user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR' ? [
+            { path: `/courses/${courseId}/students`, value: 'students', label: t('courses.students.title'), locked: false },
+        ] : []),
         { path: `/courses/${courseId}/info`, value: 'info', label: t('courses.info.title'), locked: false },
         { path: `/courses/${courseId}/grades`, value: 'grades', label: t('courses.grades.title'), locked: true },
         { path: `/courses/${courseId}/attendance`, value: 'attendance', label: t('courses.attendance.title'), locked: true },

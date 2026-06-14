@@ -21,6 +21,34 @@
         "title": "Ders Bilgileri",
         "description": "Bu ders hakkında detaylı bilgiler"
     },
+    "students": {
+        "title": "Öğrenciler",
+        "description": "Bu derse kayıtlı öğrencileri görüntüleyin",
+        "count": "öğrenci",
+        "loading": "Öğrenciler yükleniyor...",
+        "search": {
+            "placeholder": "Ad, soyad, e-posta veya öğrenci no ile ara",
+            "help": "Arama isim, e-posta ve öğrenci numarası üzerinde çalışır.",
+            "results": "{{count}} sonuç"
+        },
+        "sortingHint": "Sıralama: {{sortLabel}}",
+        "sort": {
+            "asc": "artan",
+            "desc": "azalan"
+        },
+        "table": {
+            "studentNumber": "Öğrenci No",
+            "name": "Ad Soyad",
+            "email": "E-posta",
+            "enrolledAt": "Kayıt Tarihi"
+        },
+        "empty": {
+            "title": "Kayıtlı öğrenci yok",
+            "description": "Bu derse henüz öğrenci eklenmemiş.",
+            "searchTitle": "Sonuç bulunamadı",
+            "searchDescription": "Arama teriminize uyan öğrenci yok."
+        }
+    },
     "materials": {
         "title": "Ders Materyalleri",
         "description": "Ders materyallerine ve kaynaklara erişin",

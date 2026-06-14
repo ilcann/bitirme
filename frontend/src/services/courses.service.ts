@@ -4,10 +4,12 @@ import type { AudienceKey } from "@/config/audiences";
 import type {
     CreateCourseRequest,
     CreateCourseResponse,
+    CourseStudentSortBy,
     DeleteCourseResponse,
     GetCoursesParams,
     GetCoursesResponse,
-    GetCoursesCompactResponse
+    GetCoursesCompactResponse,
+    GetCourseStudentsResponse
 } from "./types";
 
 /**
@@ -97,4 +99,17 @@ export const deleteCourse = async (courseId: string): Promise<DeleteCourseRespon
         method: 'POST',
         body: JSON.stringify({ id: courseId }),
     });
+};
+
+export const getCourseStudents = async (
+    courseId: string,
+    sortBy: CourseStudentSortBy = 'name'
+): Promise<GetCourseStudentsResponse> => {
+    const query = new URLSearchParams();
+
+    query.set('courseId', courseId);
+    query.set('students', '1');
+    query.set('sortBy', sortBy);
+
+    return apiRequest<GetCourseStudentsResponse>(`/public/courses/students.php?${query.toString()}`);
 };

@@ -173,6 +173,68 @@ function fetchCourseById($courseId)
     return $row ? normalizeCourse($row) : null;
 }
 
+function fetchCourseStudents($courseId, $sortBy = 'name')
+{
+    $pdo = getCoursesPdo();
+    requireAuthenticatedUser($pdo, array('ADMIN', 'INSTRUCTOR'));
+
+    $courseId = trim($courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
+    }
+
+    $orderBy = 'u.first_name ASC, u.last_name ASC, u.student_number ASC';
+
+    if ($sortBy === 'studentNumber') {
+        $orderBy = 'u.student_number ASC, u.first_name ASC, u.last_name ASC';
+    }
+
+    $statement = $pdo->prepare('
+        SELECT
+            u.id,
+            u.email,
+            u.first_name,
+            u.last_name,
+            u.student_number,
+            e.created_at AS enrolled_at
+        FROM course_enrollments e
+        INNER JOIN users u ON u.id = e.user_id
+        WHERE e.course_id = :course_id
+          AND u.role = \'STUDENT\'
+          AND u.is_active = 1
+        ORDER BY ' . $orderBy . '
+    ');
+    $statement->execute(array(':course_id' => $courseId));
+
+    $students = array();
+
+    while ($row = $statement->fetch()) {
+        $students[] = array(
+            'id' => (int) $row['id'],
+            'email' => $row['email'],
+            'firstName' => $row['first_name'],
+            'lastName' => $row['last_name'],
+            'studentNumber' => $row['student_number'],
+            'enrolledAt' => $row['enrolled_at'],
+        );
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Course students loaded successfully.',
+        'course' => $course,
+        'data' => $students,
+        'total' => count($students),
+    );
+}
+
 function fetchCompactCourses($audience = null)
 {
     $pdo = getCoursesPdo();

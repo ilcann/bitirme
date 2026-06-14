@@ -21,6 +21,34 @@
         "title": "Course Information",
         "description": "Detailed information about this course"
     },
+    "students": {
+        "title": "Students",
+        "description": "View students enrolled in this course",
+        "count": "students",
+        "loading": "Loading students...",
+        "search": {
+            "placeholder": "Search by name, email, or student number",
+            "help": "Search works across name, email, and student number.",
+            "results": "{{count}} results"
+        },
+        "sortingHint": "Sorting: {{sortLabel}}",
+        "sort": {
+            "asc": "ascending",
+            "desc": "descending"
+        },
+        "table": {
+            "studentNumber": "Student No",
+            "name": "Full Name",
+            "email": "Email",
+            "enrolledAt": "Enrolled At"
+        },
+        "empty": {
+            "title": "No enrolled students",
+            "description": "No students have been enrolled in this course yet.",
+            "searchTitle": "No results found",
+            "searchDescription": "No students match your search term."
+        }
+    },
     "materials": {
         "title": "Course Materials",
         "description": "Access course materials and resources",

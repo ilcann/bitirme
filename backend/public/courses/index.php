@@ -5,6 +5,11 @@ require_once __DIR__ . '/../../src/courses.php';
 header('Content-Type: application/json; charset=utf-8');
 
 try {
+    if (isset($_GET['students']) && $_GET['students'] === '1' && isset($_GET['courseId']) && trim($_GET['courseId']) !== '') {
+        echo json_encode(fetchCourseStudents(trim($_GET['courseId']), isset($_GET['sortBy']) ? trim($_GET['sortBy']) : 'name'), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        return;
+    }
+
     if (isset($_GET['courseId']) && trim($_GET['courseId']) !== '') {
         $course = fetchCourseById(trim($_GET['courseId']));
 
