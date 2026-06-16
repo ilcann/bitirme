@@ -100,6 +100,13 @@ export function CourseCreateModal({ triggerClassName }: CourseCreateModalProps) 
       await createCourse(values);
       await queryClient.invalidateQueries({ queryKey: ['courses'] });
       await queryClient.invalidateQueries({ queryKey: ['courses-compact'] });
+      reset({
+        code: '',
+        titleTr: '',
+        titleEn: '',
+        audience: 'department',
+        color: 'chart-1',
+      });
       setSubmitSuccess(copy.success);
       setOpen(false);
     } catch (error) {
