@@ -103,6 +103,15 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
         courseId: courseId || values.courseId,
       });
       await queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      reset({
+        courseId: courseId || '',
+        titleTr: '',
+        titleEn: '',
+        descriptionTr: '',
+        descriptionEn: '',
+        audience: audience || 'department',
+        isNew: false,
+      });
       setSubmitSuccess(copy.success);
       setOpen(false);
     } catch (error) {
