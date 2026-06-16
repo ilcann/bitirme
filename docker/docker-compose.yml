@@ -2,8 +2,8 @@ services:
   # PHP 5.4 ve Apache Sunucusu
   web:
     build:
-      context: .
-      dockerfile: php54.Dockerfile
+      context: ..
+      dockerfile: docker/php54.Dockerfile
     container_name: php_server
     ports:
       - "8080:80"

@@ -88,9 +88,9 @@ git clone https://github.com/ilcann/bitirme.git
 cd bitirme
 ```
 
-### 2. Backend servislerini başlatın
+### 2. Docker servislerini başlatın
 
-Docker tabanlı geliştirme ortamı backend ve veritabanını birlikte çalıştırır.
+Docker tabanlı ortam, frontend (Vite build), backend (PHP/Apache) ve veritabanını birlikte çalıştırır.
 
 ```bash
 docker compose -f docker/docker-compose.yml up -d --build
@@ -98,10 +98,16 @@ docker compose -f docker/docker-compose.yml up -d --build
 
 Bu komut şu servisleri ayağa kaldırır:
 
-- `web` → PHP/Apache API servisi
+- `web` → PHP/Apache servisi (frontend `/ilcan21` + API `/ilcan21/api`)
 - `db` → MySQL veritabanı servisi
 
-Backend API yerel ortamda şu adresten erişilebilir:
+Uygulama yerel ortamda şu adresten erişilebilir:
+
+```text
+http://localhost:8080/ilcan21/
+```
+
+Backend API şu adresten erişilebilir:
 
 ```text
 http://localhost:8080/ilcan21/api/index.php
@@ -131,7 +137,11 @@ docker exec -i mysql_db mysql -uroot -proot_password bitirme_db < backend/databa
 docker exec -i mysql_db mysql -uroot -proot_password bitirme_db < backend/database/seeds/users.example.sql
 ```
 
-### 4. Frontend bağımlılıklarını yükleyin
+### 4. Frontend geliştirme (opsiyonel)
+
+Frontend artık Docker image build aşamasında otomatik derlenir ve Apache üzerinden servis edilir.
+
+Vite geliştirme sunucusunu sadece local geliştirme (HMR) için kullanmak isterseniz:
 
 ```bash
 cd frontend
@@ -148,6 +158,12 @@ Uygulama geliştirme modunda genellikle şu adresten açılır:
 
 ```text
 http://localhost:5173
+```
+
+Docker içindeki production sürümünü güncellemek için frontend tarafında değişiklik yaptığınızda image'ı yeniden build edin:
+
+```bash
+docker compose -f docker/docker-compose.yml up -d --build web
 ```
 
 ## Kullanılabilir Komutlar
@@ -175,7 +191,8 @@ Seed klasöründe yer alan örnek kullanıcılar:
 
 - Backend, `backend/database/seeds/` klasöründeki örnek SQL dosyaları ile hızlı başlangıç için desteklenir. Bu klasörde kullanıcı, ders, duyuru ve materyal seed dosyaları ayrı ayrı tutulur.
 - Not ve devamsızlık dışa aktarımları Türkçe karakter desteği için gömülü Unicode font kullanır.
-- API istekleri geliştirme ortamında `/ilcan21/api` yoluna yönlendirilir.
+- Frontend production ortamında API'ye doğrudan `/ilcan21/api` üzerinden erişir.
+- Vite proxy ayarı sadece `npm run dev` ile çalışan geliştirme sunucusu için kullanılır.
 
 ## Lisans
 
