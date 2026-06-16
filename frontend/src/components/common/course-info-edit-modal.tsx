@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronDown, Pencil } from 'lucide-react';
+import { Check, ChevronDown, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,9 @@ type CourseInfoFormValues = {
     scheduleEn: string;
 };
 
+const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+type WeekdayKey = (typeof WEEKDAY_KEYS)[number];
+
 function toMultilineValue(items: string[] | undefined) {
     return items && items.length > 0 ? items.join('\n') : '';
 }
@@ -63,6 +66,10 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
     const isTurkish = lang === 'tr';
     const [open, setOpen] = useState(false);
     const [submitError, setSubmitError] = useState('');
+    const [selectedDays, setSelectedDays] = useState<WeekdayKey[]>([]);
+    const [startTime, setStartTime] = useState('09:00');
+    const [endTime, setEndTime] = useState('10:00');
+    const [scheduleBuilderError, setScheduleBuilderError] = useState('');
     const { options: instructorOptions, isLoading: instructorOptionsLoading } = useCourseInstructorOptions({ enabled: open });
     const { updateInfo, isUpdating } = useCourseInfoMutation(course.id);
 
@@ -84,7 +91,7 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
                     termTr: 'Dönem (TR)',
                     termEn: 'Term (EN)',
                     startDate: 'Başlangıç',
-                    endDate: 'Bitis',
+                    endDate: 'Bitiş',
                     lastAccessDate: 'Son erişim',
                     instructors: 'Eğitmenler',
                     assistants: 'Yardımcılar',
@@ -96,6 +103,16 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
                     academic: 'Akademik',
                     team: 'Ekip',
                     schedule: 'Plan',
+                },
+                scheduleBuilder: {
+                    days: 'Günler',
+                    start: 'Başlangıç saati',
+                    end: 'Bitiş saati',
+                    add: 'Blok ekle',
+                    addedBlocks: 'Eklenen bloklar',
+                    emptyBlocks: 'Henüz blok eklenmedi.',
+                    selectDay: 'En az bir gün seçin.',
+                    invalidTime: 'Bitiş saati başlangıç saatinden sonra olmalıdır.',
                 },
                 help: {
                     multiSelect: 'Birden fazla seçim yapabilirsiniz.',
@@ -137,6 +154,16 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
                 team: 'Team',
                 schedule: 'Schedule',
             },
+            scheduleBuilder: {
+                days: 'Days',
+                start: 'Start time',
+                end: 'End time',
+                add: 'Add block',
+                addedBlocks: 'Added blocks',
+                emptyBlocks: 'No blocks added yet.',
+                selectDay: 'Select at least one day.',
+                invalidTime: 'End time must be later than start time.',
+            },
             help: {
                 multiSelect: 'You can select multiple instructors.',
                 loadingInstructors: 'Loading instructor options...',
@@ -161,6 +188,37 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
 
     const selectedInstructorIds = watch('instructorIds');
     const selectedAssistantIds = watch('assistantIds');
+    const scheduleTrValue = watch('scheduleTr');
+    const scheduleEnValue = watch('scheduleEn');
+
+    const scheduleLinesTr = useMemo(
+        () => (scheduleTrValue || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean),
+        [scheduleTrValue],
+    );
+    const scheduleLinesEn = useMemo(
+        () => (scheduleEnValue || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean),
+        [scheduleEnValue],
+    );
+
+    const dayLabelTr: Record<WeekdayKey, string> = {
+        mon: 'Pazartesi',
+        tue: 'Salı',
+        wed: 'Çarşamba',
+        thu: 'Perşembe',
+        fri: 'Cuma',
+        sat: 'Cumartesi',
+        sun: 'Pazar',
+    };
+
+    const dayLabelEn: Record<WeekdayKey, string> = {
+        mon: 'Monday',
+        tue: 'Tuesday',
+        wed: 'Wednesday',
+        thu: 'Thursday',
+        fri: 'Friday',
+        sat: 'Saturday',
+        sun: 'Sunday',
+    };
 
     useEffect(() => {
         register('instructorIds');
@@ -180,15 +238,23 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
     useEffect(() => {
         if (open) {
             reset(defaultValuesFromCourse(course));
+            setSelectedDays([]);
+            setStartTime('09:00');
+            setEndTime('10:00');
+            setScheduleBuilderError('');
         }
     }, [course, open, reset]);
 
     const handleOpenChange = (nextOpen: boolean) => {
         setOpen(nextOpen);
         setSubmitError('');
+        setScheduleBuilderError('');
 
         if (!nextOpen) {
             reset(defaultValuesFromCourse(course));
+            setSelectedDays([]);
+            setStartTime('09:00');
+            setEndTime('10:00');
         }
     };
 
@@ -230,6 +296,45 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
     };
 
     const textAreaClassName = 'min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring';
+
+    const toggleDay = (day: WeekdayKey) => {
+        setSelectedDays((previous) => {
+            if (previous.includes(day)) {
+                return previous.filter((item) => item !== day);
+            }
+
+            return WEEKDAY_KEYS.filter((item) => [...previous, day].includes(item));
+        });
+    };
+
+    const addScheduleBlock = () => {
+        if (selectedDays.length === 0) {
+            setScheduleBuilderError(copy.scheduleBuilder.selectDay);
+            return;
+        }
+
+        if (!startTime || !endTime || endTime <= startTime) {
+            setScheduleBuilderError(copy.scheduleBuilder.invalidTime);
+            return;
+        }
+
+        const orderedDays = WEEKDAY_KEYS.filter((day) => selectedDays.includes(day));
+        const scheduleLineTr = `${orderedDays.map((day) => dayLabelTr[day]).join(', ')} ${startTime}-${endTime}`;
+        const scheduleLineEn = `${orderedDays.map((day) => dayLabelEn[day]).join(', ')} ${startTime}-${endTime}`;
+
+        setValue('scheduleTr', [...scheduleLinesTr, scheduleLineTr].join('\n'), { shouldDirty: true });
+        setValue('scheduleEn', [...scheduleLinesEn, scheduleLineEn].join('\n'), { shouldDirty: true });
+        setSelectedDays([]);
+        setScheduleBuilderError('');
+    };
+
+    const removeScheduleBlock = (index: number) => {
+        const nextTr = scheduleLinesTr.filter((_, itemIndex) => itemIndex !== index);
+        const nextEn = scheduleLinesEn.filter((_, itemIndex) => itemIndex !== index);
+
+        setValue('scheduleTr', nextTr.join('\n'), { shouldDirty: true });
+        setValue('scheduleEn', nextEn.join('\n'), { shouldDirty: true });
+    };
 
     const toggleUserSelection = (field: 'instructorIds' | 'assistantIds', userId: number) => {
         const current = field === 'instructorIds' ? selectedInstructorIds : selectedAssistantIds;
@@ -416,18 +521,63 @@ export function CourseInfoEditModal({ course }: CourseInfoEditModalProps) {
                         </TabsContent>
 
                         <TabsContent value="schedule" className="space-y-4">
-                            <div className="grid gap-4 lg:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="course-schedule-tr">{copy.labels.scheduleTr}</Label>
-                                    <textarea id="course-schedule-tr" className={textAreaClassName} {...register('scheduleTr')} />
-                                    <p className="text-xs text-muted-foreground">{isTurkish ? 'Her satıra bir kayıt yazın.' : 'Use one item per line.'}</p>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="course-schedule-en">{copy.labels.scheduleEn}</Label>
-                                    <textarea id="course-schedule-en" className={textAreaClassName} {...register('scheduleEn')} />
-                                    <p className="text-xs text-muted-foreground">{isTurkish ? 'Her satıra bir kayıt yazın.' : 'Use one item per line.'}</p>
+                            <div className="grid gap-3">
+                                <Label>{copy.scheduleBuilder.days}</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {WEEKDAY_KEYS.map((day) => (
+                                        <Button
+                                            key={day}
+                                            type="button"
+                                            variant={selectedDays.includes(day) ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="rounded-full"
+                                            onClick={() => toggleDay(day)}
+                                        >
+                                            {isTurkish ? dayLabelTr[day] : dayLabelEn[day]}
+                                        </Button>
+                                    ))}
                                 </div>
                             </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="schedule-start-time">{copy.scheduleBuilder.start}</Label>
+                                    <Input id="schedule-start-time" type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="schedule-end-time">{copy.scheduleBuilder.end}</Label>
+                                    <Input id="schedule-end-time" type="time" value={endTime} onChange={(event) => setEndTime(event.target.value)} />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <Button type="button" onClick={addScheduleBlock}>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    {copy.scheduleBuilder.add}
+                                </Button>
+                                {scheduleBuilderError ? <p className="text-sm text-destructive">{scheduleBuilderError}</p> : null}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{copy.scheduleBuilder.addedBlocks}</Label>
+                                {scheduleLinesTr.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {scheduleLinesTr.map((line, index) => (
+                                            <div key={`${line}-${index}`} className="flex items-center justify-between rounded-md border border-input bg-background px-3 py-2">
+                                                <span className="text-sm">{line}</span>
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeScheduleBlock(index)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground">{copy.scheduleBuilder.emptyBlocks}</p>
+                                )}
+                            </div>
+
+                            <input type="hidden" {...register('scheduleTr')} />
+                            <input type="hidden" {...register('scheduleEn')} />
                         </TabsContent>
                     </Tabs>
 
