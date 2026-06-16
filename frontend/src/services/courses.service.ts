@@ -13,6 +13,7 @@ import type {
     CourseStudentSortBy,
     DeleteCourseResponse,
     GetCourseInfoResponse,
+    GetCourseInstructorOptionsResponse,
     UpdateCourseInfoRequest,
     UpdateCourseInfoResponse,
     GetCoursesParams,
@@ -92,6 +93,14 @@ export const getCourseInfo = async (courseId: string): Promise<Course | null> =>
     } catch {
         return null;
     }
+};
+
+export const getCourseInstructorOptions = async () => {
+    const response = await apiRequest<GetCourseInstructorOptionsResponse>('/public/courses/instructors.php', {
+        method: 'GET',
+    });
+
+    return response.data;
 };
 
 export const updateCourseInfo = async (

@@ -82,6 +82,280 @@ function normalizeCourseInfoListValue($value)
     return $value === '' ? null : $value;
 }
 
+function normalizeCourseStaffUserId($value)
+{
+    if ($value === null || $value === '') {
+        return null;
+    }
+
+    $normalized = (int) $value;
+
+    return $normalized > 0 ? $normalized : null;
+}
+
+function normalizeCourseStaffUserIds($value)
+{
+    if (!is_array($value)) {
+        return array();
+    }
+
+    $normalized = array();
+
+    foreach ($value as $item) {
+        $userId = normalizeCourseStaffUserId($item);
+
+        if ($userId === null) {
+            continue;
+        }
+
+        $normalized[$userId] = $userId;
+    }
+
+    return array_values($normalized);
+}
+
+function buildCourseStaffDisplayName(array $row)
+{
+    $firstName = trim(isset($row['first_name']) ? (string) $row['first_name'] : '');
+    $lastName = trim(isset($row['last_name']) ? (string) $row['last_name'] : '');
+    $fullName = trim($firstName . ' ' . $lastName);
+
+    if ($fullName !== '') {
+        return $fullName;
+    }
+
+    return isset($row['email']) ? (string) $row['email'] : '';
+}
+
+function ensureCourseStaffSchema($pdo)
+{
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS course_instructors (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            course_id VARCHAR(50) NOT NULL,
+            user_id INT NOT NULL,
+            role ENUM(\'COORDINATOR\', \'INSTRUCTOR\', \'ASSISTANT\') NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_course_user_role (course_id, user_id, role),
+            INDEX idx_course_instructors_course_id (course_id),
+            INDEX idx_course_instructors_user_id (user_id),
+            INDEX idx_course_instructors_role (role)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci
+    ');
+}
+
+function fetchCourseInstructorUsersByIds($pdo, array $userIds)
+{
+    if (empty($userIds)) {
+        return array();
+    }
+
+    $placeholders = array();
+    $params = array();
+
+    foreach ($userIds as $index => $userId) {
+        $key = ':id_' . $index;
+        $placeholders[] = $key;
+        $params[$key] = $userId;
+    }
+
+    $statement = $pdo->prepare('
+        SELECT id, first_name, last_name, email
+        FROM users
+        WHERE role = \'INSTRUCTOR\'
+          AND is_active = 1
+          AND id IN (' . implode(', ', $placeholders) . ')
+    ');
+    $statement->execute($params);
+
+    $usersById = array();
+
+    while ($row = $statement->fetch()) {
+        $userId = (int) $row['id'];
+        $usersById[$userId] = array(
+            'id' => $userId,
+            'email' => $row['email'],
+            'first_name' => $row['first_name'],
+            'last_name' => $row['last_name'],
+            'fullName' => buildCourseStaffDisplayName($row),
+        );
+    }
+
+    return $usersById;
+}
+
+function fetchCourseStaffAssignments($pdo, $courseId)
+{
+    ensureCourseStaffSchema($pdo);
+
+    $statement = $pdo->prepare('
+        SELECT
+            ci.user_id,
+            ci.role,
+            u.first_name,
+            u.last_name,
+            u.email
+        FROM course_instructors ci
+        INNER JOIN users u ON u.id = ci.user_id
+        WHERE ci.course_id = :course_id
+          AND u.role = \'INSTRUCTOR\'
+        ORDER BY u.first_name ASC, u.last_name ASC, u.email ASC
+    ');
+    $statement->execute(array(':course_id' => $courseId));
+
+    $coordinatorId = null;
+    $coordinatorName = null;
+    $instructorIds = array();
+    $assistantIds = array();
+    $instructorNames = array();
+    $assistantNames = array();
+
+    while ($row = $statement->fetch()) {
+        $userId = (int) $row['user_id'];
+        $role = strtoupper((string) $row['role']);
+        $displayName = buildCourseStaffDisplayName($row);
+
+        if ($role === 'COORDINATOR') {
+            if ($coordinatorId === null) {
+                $coordinatorId = $userId;
+                $coordinatorName = $displayName;
+            }
+
+            continue;
+        }
+
+        if ($role === 'INSTRUCTOR') {
+            $instructorIds[$userId] = $userId;
+            if ($displayName !== '') {
+                $instructorNames[$displayName] = $displayName;
+            }
+            continue;
+        }
+
+        if ($role === 'ASSISTANT') {
+            $assistantIds[$userId] = $userId;
+            if ($displayName !== '') {
+                $assistantNames[$displayName] = $displayName;
+            }
+        }
+    }
+
+    return array(
+        'coordinatorId' => $coordinatorId,
+        'coordinatorName' => $coordinatorName,
+        'instructorIds' => array_values($instructorIds),
+        'assistantIds' => array_values($assistantIds),
+        'instructorNames' => array_values($instructorNames),
+        'assistantNames' => array_values($assistantNames),
+    );
+}
+
+function upsertCourseStaffAssignments($pdo, $courseId, $coordinatorId, array $instructorIds, array $assistantIds)
+{
+    ensureCourseStaffSchema($pdo);
+
+    $allUserIds = array_values(array_unique(array_merge(
+        $coordinatorId !== null ? array($coordinatorId) : array(),
+        $instructorIds,
+        $assistantIds
+    )));
+
+    $usersById = fetchCourseInstructorUsersByIds($pdo, $allUserIds);
+
+    foreach ($allUserIds as $userId) {
+        if (!isset($usersById[$userId])) {
+            throw new InvalidArgumentException('Selected staff members must be active instructors.');
+        }
+    }
+
+    $deleteStatement = $pdo->prepare('DELETE FROM course_instructors WHERE course_id = :course_id');
+    $deleteStatement->execute(array(':course_id' => $courseId));
+
+    $insertStatement = $pdo->prepare('INSERT INTO course_instructors (course_id, user_id, role) VALUES (:course_id, :user_id, :role)');
+
+    if ($coordinatorId !== null) {
+        $insertStatement->execute(array(
+            ':course_id' => $courseId,
+            ':user_id' => $coordinatorId,
+            ':role' => 'COORDINATOR',
+        ));
+    }
+
+    foreach ($instructorIds as $userId) {
+        $insertStatement->execute(array(
+            ':course_id' => $courseId,
+            ':user_id' => $userId,
+            ':role' => 'INSTRUCTOR',
+        ));
+    }
+
+    foreach ($assistantIds as $userId) {
+        $insertStatement->execute(array(
+            ':course_id' => $courseId,
+            ':user_id' => $userId,
+            ':role' => 'ASSISTANT',
+        ));
+    }
+
+    $instructorNames = array();
+    $assistantNames = array();
+
+    foreach ($instructorIds as $userId) {
+        if (isset($usersById[$userId])) {
+            $instructorNames[] = $usersById[$userId]['fullName'];
+        }
+    }
+
+    foreach ($assistantIds as $userId) {
+        if (isset($usersById[$userId])) {
+            $assistantNames[] = $usersById[$userId]['fullName'];
+        }
+    }
+
+    return array(
+        'coordinatorId' => $coordinatorId,
+        'coordinatorName' => $coordinatorId !== null && isset($usersById[$coordinatorId]) ? $usersById[$coordinatorId]['fullName'] : null,
+        'instructorIds' => $instructorIds,
+        'assistantIds' => $assistantIds,
+        'instructorNames' => $instructorNames,
+        'assistantNames' => $assistantNames,
+    );
+}
+
+function fetchInstructorOptions()
+{
+    $pdo = getCoursesPdo();
+    requireAuthenticatedUser($pdo, array('ADMIN'));
+
+    $statement = $pdo->prepare('
+        SELECT id, email, first_name, last_name
+        FROM users
+        WHERE role = \'INSTRUCTOR\'
+          AND is_active = 1
+        ORDER BY first_name ASC, last_name ASC, email ASC
+    ');
+    $statement->execute();
+
+    $rows = array();
+
+    while ($row = $statement->fetch()) {
+        $rows[] = array(
+            'id' => (int) $row['id'],
+            'email' => $row['email'],
+            'firstName' => $row['first_name'],
+            'lastName' => $row['last_name'],
+            'fullName' => buildCourseStaffDisplayName($row),
+        );
+    }
+
+    return array(
+        'success' => true,
+        'message' => 'Instructor options loaded successfully.',
+        'data' => $rows,
+    );
+}
+
 function normalizeCourseInfoDateValue($value)
 {
     $value = trim((string) $value);
@@ -138,6 +412,29 @@ function buildCourseInfo(array $course)
         return null;
     }
 
+    $staffAssignments = array(
+        'coordinatorId' => null,
+        'coordinatorName' => null,
+        'instructorIds' => array(),
+        'assistantIds' => array(),
+        'instructorNames' => array(),
+        'assistantNames' => array(),
+    );
+
+    if (isset($course['id']) && trim((string) $course['id']) !== '') {
+        $staffAssignments = fetchCourseStaffAssignments(getCoursesPdo(), $course['id']);
+    }
+
+    $resolvedCoordinator = $staffAssignments['coordinatorName'] !== null
+        ? $staffAssignments['coordinatorName']
+        : (isset($course['coordinator']) && $course['coordinator'] !== '' ? $course['coordinator'] : null);
+    $resolvedInstructors = !empty($staffAssignments['instructorNames'])
+        ? $staffAssignments['instructorNames']
+        : splitCourseInfoLines(isset($course['instructors']) ? $course['instructors'] : '');
+    $resolvedAssistants = !empty($staffAssignments['assistantNames'])
+        ? $staffAssignments['assistantNames']
+        : splitCourseInfoLines(isset($course['assistants']) ? $course['assistants'] : '');
+
     return array(
         'language' => isset($course['language']) && $course['language'] !== '' ? $course['language'] : null,
         'credits' => isset($course['credits']) && $course['credits'] !== '' ? (int) $course['credits'] : null,
@@ -145,7 +442,8 @@ function buildCourseInfo(array $course)
         'practiceHours' => isset($course['practice_hours']) && $course['practice_hours'] !== '' ? (int) $course['practice_hours'] : null,
         'labHours' => isset($course['lab_hours']) && $course['lab_hours'] !== '' ? (int) $course['lab_hours'] : null,
         'semester' => isset($course['semester']) && $course['semester'] !== '' ? (int) $course['semester'] : null,
-        'coordinator' => isset($course['coordinator']) && $course['coordinator'] !== '' ? $course['coordinator'] : null,
+        'coordinator' => $resolvedCoordinator,
+        'coordinatorId' => $staffAssignments['coordinatorId'],
         'summary' => array(
             'tr' => isset($course['summary_tr']) && $course['summary_tr'] !== '' ? $course['summary_tr'] : null,
             'en' => isset($course['summary_en']) && $course['summary_en'] !== '' ? $course['summary_en'] : null,
@@ -187,8 +485,10 @@ function buildCourseInfo(array $course)
         'startDate' => isset($course['start_date']) && $course['start_date'] !== '' ? $course['start_date'] : null,
         'endDate' => isset($course['end_date']) && $course['end_date'] !== '' ? $course['end_date'] : null,
         'lastAccessDate' => isset($course['last_access_date']) && $course['last_access_date'] !== '' ? $course['last_access_date'] : null,
-        'instructors' => splitCourseInfoLines(isset($course['instructors']) ? $course['instructors'] : ''),
-        'assistants' => splitCourseInfoLines(isset($course['assistants']) ? $course['assistants'] : ''),
+        'instructors' => $resolvedInstructors,
+        'instructorIds' => $staffAssignments['instructorIds'],
+        'assistants' => $resolvedAssistants,
+        'assistantIds' => $staffAssignments['assistantIds'],
         'schedule' => array(
             'tr' => splitCourseInfoLines(isset($course['schedule_tr']) ? $course['schedule_tr'] : ''),
             'en' => splitCourseInfoLines(isset($course['schedule_en']) ? $course['schedule_en'] : ''),
@@ -1068,6 +1368,7 @@ function updateCourseInfo($courseId)
     $body = readJsonRequestBody();
 
     ensureCourseInfoSchema($pdo);
+    ensureCourseStaffSchema($pdo);
 
     $courseId = trim($courseId);
 
@@ -1084,6 +1385,26 @@ function updateCourseInfo($courseId)
     $info = isset($body['info']) && is_array($body['info']) ? $body['info'] : array();
     $existingInfo = isset($course['info']) && is_array($course['info']) ? $course['info'] : array();
     $mergedInfo = array_replace_recursive($existingInfo, $info);
+
+    // array_replace_recursive keeps old numeric array entries when the incoming array is empty.
+    // For relation-backed staff fields, explicit payload values must always win.
+    if (array_key_exists('coordinatorId', $info)) {
+        $mergedInfo['coordinatorId'] = $info['coordinatorId'];
+    }
+
+    if (array_key_exists('instructorIds', $info)) {
+        $mergedInfo['instructorIds'] = is_array($info['instructorIds']) ? $info['instructorIds'] : array();
+    }
+
+    if (array_key_exists('assistantIds', $info)) {
+        $mergedInfo['assistantIds'] = is_array($info['assistantIds']) ? $info['assistantIds'] : array();
+    }
+
+    $coordinatorId = normalizeCourseStaffUserId(isset($mergedInfo['coordinatorId']) ? $mergedInfo['coordinatorId'] : null);
+    $instructorIds = normalizeCourseStaffUserIds(isset($mergedInfo['instructorIds']) ? $mergedInfo['instructorIds'] : array());
+    $assistantIds = normalizeCourseStaffUserIds(isset($mergedInfo['assistantIds']) ? $mergedInfo['assistantIds'] : array());
+
+    $staffAssignments = upsertCourseStaffAssignments($pdo, $courseId, $coordinatorId, $instructorIds, $assistantIds);
 
     $statement = $pdo->prepare('
         UPDATE courses
@@ -1133,7 +1454,7 @@ function updateCourseInfo($courseId)
         ':practice_hours' => isset($mergedInfo['practiceHours']) && $mergedInfo['practiceHours'] !== '' ? (int) $mergedInfo['practiceHours'] : null,
         ':lab_hours' => isset($mergedInfo['labHours']) && $mergedInfo['labHours'] !== '' ? (int) $mergedInfo['labHours'] : null,
         ':semester' => isset($mergedInfo['semester']) && $mergedInfo['semester'] !== '' ? (int) $mergedInfo['semester'] : null,
-        ':coordinator' => normalizeNullableCourseInfoText(isset($mergedInfo['coordinator']) ? $mergedInfo['coordinator'] : ''),
+        ':coordinator' => normalizeNullableCourseInfoText($staffAssignments['coordinatorName']),
         ':summary_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['summary']['tr']) ? $mergedInfo['summary']['tr'] : ''),
         ':summary_en' => normalizeNullableCourseInfoText(isset($mergedInfo['summary']['en']) ? $mergedInfo['summary']['en'] : ''),
         ':objectives_tr' => normalizeNullableCourseInfoText(isset($mergedInfo['objectives']['tr']) ? $mergedInfo['objectives']['tr'] : ''),
@@ -1157,8 +1478,8 @@ function updateCourseInfo($courseId)
         ':start_date' => normalizeCourseInfoDateValue(isset($mergedInfo['startDate']) ? $mergedInfo['startDate'] : ''),
         ':end_date' => normalizeCourseInfoDateValue(isset($mergedInfo['endDate']) ? $mergedInfo['endDate'] : ''),
         ':last_access_date' => normalizeCourseInfoDateValue(isset($mergedInfo['lastAccessDate']) ? $mergedInfo['lastAccessDate'] : ''),
-        ':instructors' => normalizeCourseInfoListValue(isset($mergedInfo['instructors']) ? $mergedInfo['instructors'] : ''),
-        ':assistants' => normalizeCourseInfoListValue(isset($mergedInfo['assistants']) ? $mergedInfo['assistants'] : ''),
+        ':instructors' => normalizeCourseInfoListValue($staffAssignments['instructorNames']),
+        ':assistants' => normalizeCourseInfoListValue($staffAssignments['assistantNames']),
         ':schedule_tr' => normalizeCourseInfoListValue(isset($mergedInfo['schedule']['tr']) ? $mergedInfo['schedule']['tr'] : ''),
         ':schedule_en' => normalizeCourseInfoListValue(isset($mergedInfo['schedule']['en']) ? $mergedInfo['schedule']['en'] : ''),
         ':updated_by' => $admin['id'],

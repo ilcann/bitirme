@@ -13,6 +13,7 @@ interface CourseInfo {
     labHours: number | null;
     semester: number | null;
     coordinator: string | null;
+    coordinatorId: number | null;
     summary: CourseLocalizedText;
     objectives: CourseLocalizedText;
     description: CourseLocalizedText;
@@ -28,7 +29,9 @@ interface CourseInfo {
     endDate: string | null;
     lastAccessDate: string | null;
     instructors: string[];
+    instructorIds: number[];
     assistants: string[];
+    assistantIds: number[];
     schedule: {
         tr: string[];
         en: string[];

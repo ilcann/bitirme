@@ -47,6 +47,19 @@ CREATE TABLE courses (
     CONSTRAINT fk_courses_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+CREATE TABLE course_instructors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('COORDINATOR', 'INSTRUCTOR', 'ASSISTANT') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_course_user_role (course_id, user_id, role),
+    INDEX idx_course_instructors_course_id (course_id),
+    INDEX idx_course_instructors_user_id (user_id),
+    INDEX idx_course_instructors_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
 CREATE TABLE course_enrollments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     course_id VARCHAR(50) NOT NULL,

@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCourseInstructorOptions } from '@/hooks/use-course-instructor-options';
 import { useCourseInfoMutation } from '@/hooks/use-course-info-mutation';
 import { useLanguage } from '@/providers/language-provider';
 import type { Course } from '@/types/course';
@@ -22,7 +24,7 @@ type CourseDetailedInfoFormValues = {
     practiceHours: string;
     labHours: string;
     semester: string;
-    coordinator: string;
+    coordinatorId: string;
     objectivesTr: string;
     objectivesEn: string;
     descriptionTr: string;
@@ -53,7 +55,7 @@ function defaultValuesFromCourse(course: Course): CourseDetailedInfoFormValues {
         practiceHours: safeString(info?.practiceHours),
         labHours: safeString(info?.labHours),
         semester: safeString(info?.semester),
-        coordinator: safeString(info?.coordinator),
+        coordinatorId: safeString(info?.coordinatorId),
         objectivesTr: safeString(info?.objectives.tr),
         objectivesEn: safeString(info?.objectives.en),
         descriptionTr: safeString(info?.description.tr),
@@ -77,17 +79,18 @@ export function CourseDetailedInfoEditModal({ course }: CourseDetailedInfoEditMo
     const isTurkish = lang === 'tr';
     const [open, setOpen] = useState(false);
     const [submitError, setSubmitError] = useState('');
+    const { options: instructorOptions, isLoading: instructorOptionsLoading } = useCourseInstructorOptions({ enabled: open });
     const { updateInfo, isUpdating } = useCourseInfoMutation(course.id);
 
     const copy = useMemo(() => {
         if (isTurkish) {
             return {
-                trigger: 'Duzenle',
-                title: 'Ders bilgilerini duzenle',
-                description: 'Bu form ders bilgileri sayfasindaki alanlari gunceller.',
+                trigger: 'Düzenle',
+                title: 'Ders bilgilerini düzenle',
+                description: 'Bu form ders bilgileri sayfasındaki alanları günceller.',
                 save: 'Kaydet',
                 saving: 'Kaydediliyor...',
-                error: 'Ders bilgileri guncellenemedi.',
+                error: 'Ders bilgileri güncellenemedi.',
                 labels: {
                     language: 'Dersin Dili',
                     credits: 'Kredi',
@@ -110,6 +113,12 @@ export function CourseDetailedInfoEditModal({ course }: CourseDetailedInfoEditMo
                     textbookEn: 'Textbook (EN)',
                     referencesTr: 'Diğer Referanslar (TR)',
                     referencesEn: 'Other References (EN)',
+                },
+                tabs: {
+                    basic: 'Temel Bilgiler',
+                    content: 'İçerik',
+                    outcomes: 'Çıktılar',
+                    resources: 'Kaynaklar',
                 },
             };
         }
@@ -143,6 +152,12 @@ export function CourseDetailedInfoEditModal({ course }: CourseDetailedInfoEditMo
                 textbookEn: 'Textbook (EN)',
                 referencesTr: 'Other References (TR)',
                 referencesEn: 'Other References (EN)',
+            },
+            tabs: {
+                basic: 'Basic Info',
+                content: 'Content',
+                outcomes: 'Outcomes',
+                resources: 'Resources',
             },
         };
     }, [isTurkish]);
@@ -184,7 +199,7 @@ export function CourseDetailedInfoEditModal({ course }: CourseDetailedInfoEditMo
                     practiceHours: values.practiceHours ? Number(values.practiceHours) : null,
                     labHours: values.labHours ? Number(values.labHours) : null,
                     semester: values.semester ? Number(values.semester) : null,
-                    coordinator: values.coordinator || null,
+                    coordinatorId: values.coordinatorId ? Number(values.coordinatorId) : null,
                     objectives: {
                         tr: values.objectivesTr || null,
                         en: values.objectivesEn || null,
@@ -242,117 +257,146 @@ export function CourseDetailedInfoEditModal({ course }: CourseDetailedInfoEditMo
                 </DialogHeader>
 
                 <form className="grid gap-5 pt-2" onSubmit={handleSubmit(onSubmit)}>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-language">{copy.labels.language}</Label>
-                            <Input id="course-language" {...register('language')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-credits">{copy.labels.credits}</Label>
-                            <Input id="course-credits" type="number" min="0" {...register('credits')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-semester">{copy.labels.semester}</Label>
-                            <Input id="course-semester" type="number" min="0" {...register('semester')} />
-                        </div>
-                    </div>
+                    <Tabs defaultValue="basic" className="space-y-4">
+                        <TabsList className="grid h-auto w-full grid-cols-2 gap-2 p-1 sm:grid-cols-4">
+                            <TabsTrigger value="basic">{copy.tabs.basic}</TabsTrigger>
+                            <TabsTrigger value="content">{copy.tabs.content}</TabsTrigger>
+                            <TabsTrigger value="outcomes">{copy.tabs.outcomes}</TabsTrigger>
+                            <TabsTrigger value="resources">{copy.tabs.resources}</TabsTrigger>
+                        </TabsList>
 
-                    <div className="grid gap-4 sm:grid-cols-3">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-lecture-hours">{copy.labels.lectureHours}</Label>
-                            <Input id="course-lecture-hours" type="number" min="0" {...register('lectureHours')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-practice-hours">{copy.labels.practiceHours}</Label>
-                            <Input id="course-practice-hours" type="number" min="0" {...register('practiceHours')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-lab-hours">{copy.labels.labHours}</Label>
-                            <Input id="course-lab-hours" type="number" min="0" {...register('labHours')} />
-                        </div>
-                    </div>
+                        <TabsContent value="basic" className="space-y-4">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-language">{copy.labels.language}</Label>
+                                    <Input id="course-language" {...register('language')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-credits">{copy.labels.credits}</Label>
+                                    <Input id="course-credits" type="number" min="0" {...register('credits')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-semester">{copy.labels.semester}</Label>
+                                    <Input id="course-semester" type="number" min="0" {...register('semester')} />
+                                </div>
+                            </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="course-coordinator">{copy.labels.coordinator}</Label>
-                        <Input id="course-coordinator" {...register('coordinator')} />
-                    </div>
+                            <div className="grid gap-4 sm:grid-cols-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-lecture-hours">{copy.labels.lectureHours}</Label>
+                                    <Input id="course-lecture-hours" type="number" min="0" {...register('lectureHours')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-practice-hours">{copy.labels.practiceHours}</Label>
+                                    <Input id="course-practice-hours" type="number" min="0" {...register('practiceHours')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-lab-hours">{copy.labels.labHours}</Label>
+                                    <Input id="course-lab-hours" type="number" min="0" {...register('labHours')} />
+                                </div>
+                            </div>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-objectives-tr">{copy.labels.objectivesTr}</Label>
-                            <textarea id="course-objectives-tr" className={textareaClassName} {...register('objectivesTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-objectives-en">{copy.labels.objectivesEn}</Label>
-                            <textarea id="course-objectives-en" className={textareaClassName} {...register('objectivesEn')} />
-                        </div>
-                    </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="course-coordinator">{copy.labels.coordinator}</Label>
+                                <select
+                                    id="course-coordinator"
+                                    className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    {...register('coordinatorId')}
+                                    disabled={instructorOptionsLoading}
+                                >
+                                    <option value="">{isTurkish ? 'Seçiniz' : 'Select'}</option>
+                                    {instructorOptions.map((option) => (
+                                        <option key={option.id} value={String(option.id)}>
+                                            {option.fullName} ({option.email})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </TabsContent>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-description-tr">{copy.labels.descriptionTr}</Label>
-                            <textarea id="course-description-tr" className={textareaClassName} {...register('descriptionTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-description-en">{copy.labels.descriptionEn}</Label>
-                            <textarea id="course-description-en" className={textareaClassName} {...register('descriptionEn')} />
-                        </div>
-                    </div>
+                        <TabsContent value="content" className="space-y-4">
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-objectives-tr">{copy.labels.objectivesTr}</Label>
+                                    <textarea id="course-objectives-tr" className={textareaClassName} {...register('objectivesTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-objectives-en">{copy.labels.objectivesEn}</Label>
+                                    <textarea id="course-objectives-en" className={textareaClassName} {...register('objectivesEn')} />
+                                </div>
+                            </div>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-outcomes-tr">{copy.labels.outcomesTr}</Label>
-                            <textarea id="course-outcomes-tr" className={textareaClassName} {...register('outcomesTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-outcomes-en">{copy.labels.outcomesEn}</Label>
-                            <textarea id="course-outcomes-en" className={textareaClassName} {...register('outcomesEn')} />
-                        </div>
-                    </div>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-description-tr">{copy.labels.descriptionTr}</Label>
+                                    <textarea id="course-description-tr" className={textareaClassName} {...register('descriptionTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-description-en">{copy.labels.descriptionEn}</Label>
+                                    <textarea id="course-description-en" className={textareaClassName} {...register('descriptionEn')} />
+                                </div>
+                            </div>
+                        </TabsContent>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-prerequisites-tr">{copy.labels.prerequisitesTr}</Label>
-                            <textarea id="course-prerequisites-tr" className={textareaClassName} {...register('prerequisitesTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-prerequisites-en">{copy.labels.prerequisitesEn}</Label>
-                            <textarea id="course-prerequisites-en" className={textareaClassName} {...register('prerequisitesEn')} />
-                        </div>
-                    </div>
+                        <TabsContent value="outcomes" className="space-y-4">
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-outcomes-tr">{copy.labels.outcomesTr}</Label>
+                                    <textarea id="course-outcomes-tr" className={textareaClassName} {...register('outcomesTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-outcomes-en">{copy.labels.outcomesEn}</Label>
+                                    <textarea id="course-outcomes-en" className={textareaClassName} {...register('outcomesEn')} />
+                                </div>
+                            </div>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-other-notes-tr">{copy.labels.otherNotesTr}</Label>
-                            <textarea id="course-other-notes-tr" className={textareaClassName} {...register('otherNotesTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-other-notes-en">{copy.labels.otherNotesEn}</Label>
-                            <textarea id="course-other-notes-en" className={textareaClassName} {...register('otherNotesEn')} />
-                        </div>
-                    </div>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-prerequisites-tr">{copy.labels.prerequisitesTr}</Label>
+                                    <textarea id="course-prerequisites-tr" className={textareaClassName} {...register('prerequisitesTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-prerequisites-en">{copy.labels.prerequisitesEn}</Label>
+                                    <textarea id="course-prerequisites-en" className={textareaClassName} {...register('prerequisitesEn')} />
+                                </div>
+                            </div>
+                        </TabsContent>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-textbook-tr">{copy.labels.textbookTr}</Label>
-                            <textarea id="course-textbook-tr" className={textareaClassName} {...register('textbookTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-textbook-en">{copy.labels.textbookEn}</Label>
-                            <textarea id="course-textbook-en" className={textareaClassName} {...register('textbookEn')} />
-                        </div>
-                    </div>
+                        <TabsContent value="resources" className="space-y-4">
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-other-notes-tr">{copy.labels.otherNotesTr}</Label>
+                                    <textarea id="course-other-notes-tr" className={textareaClassName} {...register('otherNotesTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-other-notes-en">{copy.labels.otherNotesEn}</Label>
+                                    <textarea id="course-other-notes-en" className={textareaClassName} {...register('otherNotesEn')} />
+                                </div>
+                            </div>
 
-                    <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-references-tr">{copy.labels.referencesTr}</Label>
-                            <textarea id="course-references-tr" className={textareaClassName} {...register('referencesTr')} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="course-references-en">{copy.labels.referencesEn}</Label>
-                            <textarea id="course-references-en" className={textareaClassName} {...register('referencesEn')} />
-                        </div>
-                    </div>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-textbook-tr">{copy.labels.textbookTr}</Label>
+                                    <textarea id="course-textbook-tr" className={textareaClassName} {...register('textbookTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-textbook-en">{copy.labels.textbookEn}</Label>
+                                    <textarea id="course-textbook-en" className={textareaClassName} {...register('textbookEn')} />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-references-tr">{copy.labels.referencesTr}</Label>
+                                    <textarea id="course-references-tr" className={textareaClassName} {...register('referencesTr')} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="course-references-en">{copy.labels.referencesEn}</Label>
+                                    <textarea id="course-references-en" className={textareaClassName} {...register('referencesEn')} />
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
 
                     {submitError ? <p className="text-sm text-destructive">{submitError}</p> : null}
 

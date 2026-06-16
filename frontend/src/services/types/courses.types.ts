@@ -140,6 +140,20 @@ export interface GetCourseInfoResponse {
     course: Course;
 }
 
+export interface CourseInstructorOption {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+}
+
+export interface GetCourseInstructorOptionsResponse {
+    success: boolean;
+    message: string;
+    data: CourseInstructorOption[];
+}
+
 export interface UpdateCourseInfoRequest {
     courseId: string;
     info: Partial<NonNullable<Course['info']>>;
