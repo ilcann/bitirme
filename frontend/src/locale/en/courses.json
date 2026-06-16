@@ -7,6 +7,14 @@
             "compact": "Compact",
             "wide": "Wide"
         },
+        "sort": {
+            "by": "Sort",
+            "options": {
+                "students": "Student count",
+                "code": "Course code",
+                "title": "Course name"
+            }
+        },
         "resultsFound": "courses found",
         "noResults": {
             "title": "No Courses Found",

@@ -921,7 +921,7 @@ function fetchCourses($filters)
             $orderBy = 'c.code ASC';
             break;
         case 'title':
-            $orderBy = 'c.title_en ASC';
+            $orderBy = 'c.title_tr ASC, c.title_en ASC';
             break;
         case 'students':
         default:

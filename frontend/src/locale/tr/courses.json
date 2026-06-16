@@ -7,6 +7,14 @@
             "compact": "Kompakt",
             "wide": "Geniş"
         },
+        "sort": {
+            "by": "Sırala",
+            "options": {
+                "students": "Öğrenci sayısı",
+                "code": "Ders kodu",
+                "title": "Ders adı"
+            }
+        },
         "resultsFound": "ders bulundu",
         "noResults": {
             "title": "Ders bulunamadı",

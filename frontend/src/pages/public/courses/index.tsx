@@ -6,14 +6,14 @@ import { useAudience } from "@/providers/audience-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useCourses } from "@/hooks/use-courses";
-import { useViewMode } from "@/hooks/use-view-mode";
-import { BookOpen, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { BookOpen, Search, ChevronLeft, ChevronRight, Loader2, ArrowUpDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { PageHeader } from "@/components/common/page-header";
 import { motion } from "framer-motion";
 import { useAuth } from "@/providers/auth-provider";
 import { CourseCreateModal } from "@/components/common/course-create-modal";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const CoursesPage = () => {
   const { lang } = useLanguage();
@@ -34,7 +34,9 @@ const CoursesPage = () => {
     isLoading,
     isFetching,
     searchQuery,
+    sortBy,
     updateSearch,
+    updateSortBy,
     currentPage,
     totalPages,
     hasNextPage,
@@ -46,9 +48,6 @@ const CoursesPage = () => {
     initialLimit: 9,
     initialSearch: initialQuery
   });
-
-  const { viewMode, setViewMode } = useViewMode("compact");
-  const isMobile = window.innerWidth < 768; // sm breakpoint
 
   const handleNextPage = () => {
     goToNextPage();
@@ -104,21 +103,26 @@ const CoursesPage = () => {
               className="pl-10 h-11 rounded-xl border-2"
             />
           </div>
-          <div className="hidden md:flex gap-2">
-            <Button
-              variant={viewMode === "compact" ? "default" : "outline"}
-              onClick={() => setViewMode("compact")}
-              className="rounded-xl"
-            >
-              {t("courses.list.view.compact")}
-            </Button>
-            <Button
-              variant={viewMode === "wide" ? "default" : "outline"}
-              onClick={() => setViewMode("wide")}
-              className="rounded-xl"
-            >
-              {t("courses.list.view.wide")}
-            </Button>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="rounded-xl">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  {t("courses.list.sort.by")}: {t(`courses.list.sort.options.${sortBy}`)}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => updateSortBy("students")}>
+                  {t("courses.list.sort.options.students")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSortBy("code")}>
+                  {t("courses.list.sort.options.code")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => updateSortBy("title")}>
+                  {t("courses.list.sort.options.title")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         </motion.div>
@@ -148,24 +152,16 @@ const CoursesPage = () => {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className={
-            (!isMobile && viewMode === "wide")
-              ? "space-y-4"
-              : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          }>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 9 }).map((_, index) => (
-              <CourseCardSkeleton key={index} variant={viewMode} />
+              <CourseCardSkeleton key={index} variant="compact" />
             ))}
           </div>
         ) : courses.length > 0 ? (
           <>
             <motion.div
-              key={`${searchQuery}-${viewMode}-${currentPage}`}
-              className={
-                (!isMobile && viewMode === "wide")
-                  ? "space-y-4"
-                  : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-              }
+              key={`${searchQuery}-${currentPage}`}
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
               initial="hidden"
               animate="visible"
               variants={{
@@ -191,7 +187,7 @@ const CoursesPage = () => {
                     title={course.title[lang]}
                     students={course.students}
                     color={course.color}
-                    variant={!isMobile && viewMode === "wide" ? "wide" : "compact"}
+                    variant="compact"
                     canDelete={user?.role === 'ADMIN'}
                   />
                 </motion.div>
