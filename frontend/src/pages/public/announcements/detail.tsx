@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, Clock, BookOpen, ArrowLeft } from "lucide-react";
 import NotFoundedPage from "@/pages/errors/not-founded";
 import { motion } from "framer-motion";
-import { formatRelativeDate } from "@/lib/date";
+import { formatRelativeDate, isWithinLastWeek } from "@/lib/date";
 import { useCourse } from "@/hooks/use-course";
 import { useAnnouncement } from "@/hooks/use-announcement";
 import { LoadingScreen } from "@/components/common/loading-screen";
@@ -67,7 +67,7 @@ const AnnouncementsDetailPage = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            {announcement.isNew && (
+                                            {isWithinLastWeek(announcement.date) && (
                                                 <Badge variant="default" className="bg-chart-5 hover:bg-chart-5/90">
                                                     {t('announcements.new')}
                                                 </Badge>

@@ -19,7 +19,6 @@ function normalizeAnnouncement(array $announcement)
         'date' => substr($announcement['published_at'], 0, 10),
         'courseId' => $announcement['course_id'],
         'audience' => $announcement['audience'],
-        'isNew' => isset($announcement['is_new']) ? ((int) $announcement['is_new'] === 1) : false,
         'createdBy' => isset($announcement['created_by']) && $announcement['created_by'] !== null ? (int) $announcement['created_by'] : null,
     );
 }
@@ -46,7 +45,7 @@ function buildAnnouncementFilters(array $filters)
     }
 
     if (!empty($filters['showOnlyNew'])) {
-        $where[] = 'a.is_new = 1';
+        $where[] = 'a.published_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)';
     }
 
     if (!empty($filters['courseIds']) && is_array($filters['courseIds'])) {
@@ -137,7 +136,6 @@ function fetchAnnouncements($filters)
             a.description_tr,
             a.description_en,
             a.audience,
-            a.is_new,
             a.created_by,
             a.published_at,
             c.code AS course_code
@@ -190,7 +188,6 @@ function fetchAnnouncementById($announcementId)
             a.description_tr,
             a.description_en,
             a.audience,
-            a.is_new,
             a.created_by,
             a.published_at
         FROM announcements a
@@ -215,26 +212,32 @@ function createAnnouncement()
     $titleEn = isset($body['titleEn']) ? trim($body['titleEn']) : '';
     $descriptionTr = isset($body['descriptionTr']) ? trim($body['descriptionTr']) : '';
     $descriptionEn = isset($body['descriptionEn']) ? trim($body['descriptionEn']) : '';
-    $audience = isset($body['audience']) ? trim($body['audience']) : '';
-    $isNew = !empty($body['isNew']) ? 1 : 0;
 
-    if ($courseId === '' || $titleTr === '' || $titleEn === '' || $descriptionTr === '' || $descriptionEn === '' || $audience === '') {
+    if ($courseId === '' || $titleTr === '' || $titleEn === '' || $descriptionTr === '' || $descriptionEn === '') {
         throw new InvalidArgumentException('Announcement fields are required.');
     }
 
-    if (!in_array($audience, array('common', 'department'), true)) {
-        throw new InvalidArgumentException('Invalid announcement audience.');
+    $course = fetchCourseById($courseId);
+
+    if (!$course) {
+        throw new RuntimeException('Course not found.');
     }
 
-    if (!fetchCourseById($courseId)) {
-        throw new RuntimeException('Course not found.');
+    $audience = isset($course['audience']) ? trim((string) $course['audience']) : '';
+
+    if (!in_array($audience, array('common', 'department'), true)) {
+        throw new InvalidArgumentException('Course audience is invalid.');
+    }
+
+    if (strtoupper((string) $user['role']) === 'INSTRUCTOR') {
+        ensureInstructorCanAccessCourse($pdo, $courseId, $user);
     }
 
     $announcementId = 'ann-' . preg_replace('/[^a-zA-Z0-9]+/', '', uniqid('', true));
 
     $statement = $pdo->prepare('
-        INSERT INTO announcements (id, course_id, title_tr, title_en, description_tr, description_en, audience, is_new, created_by)
-        VALUES (:id, :course_id, :title_tr, :title_en, :description_tr, :description_en, :audience, :is_new, :created_by)
+        INSERT INTO announcements (id, course_id, title_tr, title_en, description_tr, description_en, audience, created_by)
+        VALUES (:id, :course_id, :title_tr, :title_en, :description_tr, :description_en, :audience, :created_by)
     ');
 
     $statement->execute(array(
@@ -245,7 +248,6 @@ function createAnnouncement()
         ':description_tr' => $descriptionTr,
         ':description_en' => $descriptionEn,
         ':audience' => $audience,
-        ':is_new' => $isNew,
         ':created_by' => $user['id'],
     ));
 

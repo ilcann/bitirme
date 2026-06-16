@@ -251,6 +251,31 @@ function fetchCourseStaffAssignments($pdo, $courseId)
     );
 }
 
+function ensureInstructorCanAccessCourse($pdo, $courseId, array $user)
+{
+    $courseId = trim((string) $courseId);
+
+    if ($courseId === '') {
+        throw new InvalidArgumentException('Course id is required.');
+    }
+
+    if (!isset($user['role']) || strtoupper((string) $user['role']) !== 'INSTRUCTOR') {
+        return;
+    }
+
+    ensureCourseStaffSchema($pdo);
+
+    $statement = $pdo->prepare('SELECT 1 FROM course_instructors WHERE course_id = :course_id AND user_id = :user_id LIMIT 1');
+    $statement->execute(array(
+        ':course_id' => $courseId,
+        ':user_id' => (int) $user['id'],
+    ));
+
+    if (!$statement->fetchColumn()) {
+        throw new RuntimeException('Forbidden.');
+    }
+}
+
 function upsertCourseStaffAssignments($pdo, $courseId, $coordinatorId, array $instructorIds, array $assistantIds)
 {
     ensureCourseStaffSchema($pdo);
@@ -920,6 +945,10 @@ function fetchCourseGrades($courseId)
         throw new RuntimeException('Course not found.');
     }
 
+    if (strtoupper((string) $viewer['role']) === 'INSTRUCTOR') {
+        ensureInstructorCanAccessCourse($pdo, $courseId, $viewer);
+    }
+
     $distribution = fetchCourseGradeDistributionRow($pdo, $courseId);
 
     $sql = '
@@ -1109,6 +1138,10 @@ function updateCourseGrade($courseId, $studentId, $itemType, $itemNumber, $score
 
     if (!$course) {
         throw new RuntimeException('Course not found.');
+    }
+
+    if (strtoupper((string) $actor['role']) === 'INSTRUCTOR') {
+        ensureInstructorCanAccessCourse($pdo, $courseId, $actor);
     }
 
     $studentStatement = $pdo->prepare('SELECT u.id FROM course_enrollments e INNER JOIN users u ON u.id = e.user_id WHERE e.course_id = :course_id AND e.user_id = :student_id AND u.role = \'STUDENT\' AND u.is_active = 1 LIMIT 1');
@@ -1642,6 +1675,10 @@ function fetchCourseAttendance($courseId)
         throw new RuntimeException('Course not found.');
     }
 
+    if (strtoupper((string) $viewer['role']) === 'INSTRUCTOR') {
+        ensureInstructorCanAccessCourse($pdo, $courseId, $viewer);
+    }
+
     $sql = '
         SELECT
             u.id,
@@ -1751,6 +1788,10 @@ function updateCourseAttendance($courseId, $studentId, $weekNumber, $isPresent)
 
     if (!$course) {
         throw new RuntimeException('Course not found.');
+    }
+
+    if (strtoupper((string) $actor['role']) === 'INSTRUCTOR') {
+        ensureInstructorCanAccessCourse($pdo, $courseId, $actor);
     }
 
     $statement = $pdo->prepare('
@@ -2029,15 +2070,27 @@ function enrollStudentsToCourse($courseId, array $studentIds)
 function fetchCompactCourses($audience = null)
 {
     $pdo = getCoursesPdo();
-    $sql = 'SELECT id, code, title_tr, title_en, color, audience FROM courses';
+    $viewer = fetchAuthenticatedUserByToken($pdo, getBearerToken());
+    $sql = 'SELECT c.id, c.code, c.title_tr, c.title_en, c.color, c.audience FROM courses c';
     $params = array();
+    $where = array();
 
     if (!empty($audience)) {
-        $sql .= ' WHERE audience = :audience';
+        $where[] = 'c.audience = :audience';
         $params[':audience'] = $audience;
     }
 
-    $sql .= ' ORDER BY code ASC';
+    if ($viewer && strtoupper((string) $viewer['role']) === 'INSTRUCTOR') {
+        ensureCourseStaffSchema($pdo);
+        $where[] = 'EXISTS (SELECT 1 FROM course_instructors ci WHERE ci.course_id = c.id AND ci.user_id = :viewer_id)';
+        $params[':viewer_id'] = (int) $viewer['id'];
+    }
+
+    if (!empty($where)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where);
+    }
+
+    $sql .= ' ORDER BY c.code ASC';
 
     $statement = $pdo->prepare($sql);
     $statement->execute($params);

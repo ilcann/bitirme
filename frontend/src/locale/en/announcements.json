@@ -30,25 +30,19 @@
   "createModal": {
     "trigger": "Add announcement",
     "title": "Create new announcement",
-    "description": "Create a course announcement visible to the selected audience.",
+    "description": "Create an announcement for a course. Audience is automatically taken from the selected course.",
     "fields": {
       "course": "Course",
       "titleTr": "Turkish Title",
       "titleEn": "English Title",
       "descriptionTr": "Turkish Description",
-      "descriptionEn": "English Description",
-      "audience": "Audience",
-      "isNew": "Mark as new"
+      "descriptionEn": "English Description"
     },
     "placeholders": {
       "titleTr": "e.g. Midterm exam schedule published",
       "titleEn": "e.g. Midterm exam schedule published",
       "descriptionTr": "Write the announcement details in Turkish...",
       "descriptionEn": "Write the announcement details in English..."
-    },
-    "options": {
-      "department": "Department audience",
-      "common": "Common audience"
     },
     "validation": {
       "required": "This field is required."
@@ -74,7 +68,7 @@
     "projectDeadline": "Project deadline approaching",
     "newMaterials": "New course materials added",
     "labSession": "Laboratory session announcement",
-    "examResults": "Exam results published",
+    
     "lectureCancel": "Lecture cancelled",
     "makeupExam": "Makeup exam announcement",
     "homeworkSubmission": "Homework submission reminder",

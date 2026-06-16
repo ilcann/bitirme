@@ -33,8 +33,6 @@ export interface AnnouncementCreateRequest {
     titleEn: string;
     descriptionTr: string;
     descriptionEn: string;
-    audience: AudienceKey;
-    isNew?: boolean;
 }
 
 export interface AnnouncementMutationResponse {

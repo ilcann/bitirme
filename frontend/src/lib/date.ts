@@ -22,3 +22,17 @@ export const formatRelativeDate = (dateString: string): string => {
     }
     return relativeTimeFormatter.format(diffInDays, 'day'); // e.g., "in 3 days"
 };
+
+export const isWithinLastWeek = (dateString: string): boolean => {
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+
+    return diffInMs >= 0 && diffInMs <= sevenDaysInMs;
+};

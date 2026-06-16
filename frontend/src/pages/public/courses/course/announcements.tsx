@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/types/course";
 import { useAuth } from "@/providers/auth-provider";
+import { isWithinLastWeek } from "@/lib/date";
 
 const CourseAnnouncementsPage = () => {
     const { t } = useTranslation();
@@ -68,7 +69,7 @@ const CourseAnnouncementsPage = () => {
         courseId: course?.id,
     });
 
-    const newCount = announcements.filter(a => a.isNew).length;
+    const newCount = announcements.filter((a) => isWithinLastWeek(a.date)).length;
 
     return (
         <section className="space-y-6">
@@ -227,7 +228,6 @@ const CourseAnnouncementsPage = () => {
                                     title={announcement.title[lang]}
                                     description={announcement.description[lang]}
                                     date={announcement.date}
-                                    isNew={announcement.isNew}
                                     canDelete={Boolean(user && (user.role === 'ADMIN' || (user.role === 'INSTRUCTOR' && announcement.createdBy === user.id)))}
                                     variant="wide"
                                 />

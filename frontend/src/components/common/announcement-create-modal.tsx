@@ -31,18 +31,12 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
       titleEn: string;
       descriptionTr: string;
       descriptionEn: string;
-      audience: string;
-      isNew: string;
     };
     placeholders: {
       titleTr: string;
       titleEn: string;
       descriptionTr: string;
       descriptionEn: string;
-    };
-    options: {
-      department: string;
-      common: string;
     };
     validation: {
       required: string;
@@ -70,8 +64,6 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
       titleEn: '',
       descriptionTr: '',
       descriptionEn: '',
-      audience: audience || 'department',
-      isNew: false,
     },
   });
 
@@ -87,8 +79,6 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
         titleEn: '',
         descriptionTr: '',
         descriptionEn: '',
-        audience: audience || 'department',
-        isNew: false,
       });
     }
   };
@@ -109,8 +99,6 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
         titleEn: '',
         descriptionTr: '',
         descriptionEn: '',
-        audience: audience || 'department',
-        isNew: false,
       });
       setSubmitSuccess(copy.success);
       setOpen(false);
@@ -196,28 +184,6 @@ export function AnnouncementCreateModal({ courseId, audience, triggerClassName }
                 {...register('descriptionEn', { required: copy.validation.required })}
               />
               {errors.descriptionEn?.message && <p className="text-sm text-destructive">{errors.descriptionEn.message}</p>}
-            </div>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="announcement-audience">{copy.fields.audience}</Label>
-              <select
-                id="announcement-audience"
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                {...register('audience', { required: copy.validation.required })}
-              >
-                <option value="department">{copy.options.department}</option>
-                <option value="common">{copy.options.common}</option>
-              </select>
-              {errors.audience?.message && <p className="text-sm text-destructive">{errors.audience.message}</p>}
-            </div>
-
-            <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <input type="checkbox" className="h-4 w-4 rounded border-input" {...register('isNew')} />
-                {copy.fields.isNew}
-              </label>
             </div>
           </div>
 

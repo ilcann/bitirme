@@ -8,7 +8,6 @@ CREATE TABLE announcements (
     description_tr TEXT NOT NULL,
     description_en TEXT NOT NULL,
     audience ENUM('common', 'department') NOT NULL,
-    is_new BOOLEAN DEFAULT FALSE,
     created_by INT NULL,
     published_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

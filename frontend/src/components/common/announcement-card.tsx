@@ -4,6 +4,7 @@ import { GradientButton } from "@/components/common/gradient-button";
 import { ArrowRight, Bell, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AnnouncementDeleteModal } from "@/components/common/announcement-delete-modal";
+import { isWithinLastWeek } from "@/lib/date";
 
 interface AnnouncementCardProps {
     id: string;
@@ -11,13 +12,13 @@ interface AnnouncementCardProps {
     title: string;
     description: string;
     date: string;
-    isNew?: boolean;
     canDelete?: boolean;
     variant?: 'compact' | 'wide';
 }
 
-export const AnnouncementCard = ({ id, courseId, title, description, date, isNew, canDelete = false, variant = 'compact' }: AnnouncementCardProps) => {
+export const AnnouncementCard = ({ id, courseId, title, description, date, canDelete = false, variant = 'compact' }: AnnouncementCardProps) => {
     const { t } = useTranslation('announcements');
+    const isNew = isWithinLastWeek(date);
 
     // Define color scheme based on announcement status
     const colors = isNew ? {

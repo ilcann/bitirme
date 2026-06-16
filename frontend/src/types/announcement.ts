@@ -13,7 +13,6 @@ interface Announcement {
     date: string;
     courseId: string;
     audience: AudienceKey;
-    isNew: boolean;
     createdBy?: number | null;
 }
 

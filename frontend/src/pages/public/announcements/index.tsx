@@ -22,6 +22,7 @@ import {
     DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { PageHeader } from "@/components/common/page-header";
+import { isWithinLastWeek } from "@/lib/date";
 
 const AnnouncementsPage = () => {
     const { t } = useTranslation();
@@ -60,7 +61,7 @@ const AnnouncementsPage = () => {
         initialLimit: 5
     });
 
-    const newCount = announcements.filter(a => a.isNew).length;
+    const newCount = announcements.filter((a) => isWithinLastWeek(a.date)).length;
 
     const handleNextPage = () => {
         goToNextPage();
@@ -255,7 +256,6 @@ const AnnouncementsPage = () => {
                                         title={announcement.title[lang]}
                                         description={announcement.description[lang]}
                                         date={announcement.date}
-                                        isNew={announcement.isNew}
                                         canDelete={Boolean(user && (user.role === 'ADMIN' || (user.role === 'INSTRUCTOR' && announcement.createdBy === user.id)))}
                                         variant="wide"
                                     />

@@ -49,7 +49,6 @@ const LatestAnnouncements = () => {
                 title={a.title[lang]}
                 description={a.description[lang]}
                 date={a.date}
-                isNew={a.isNew}
               />
             ))}
       </div>

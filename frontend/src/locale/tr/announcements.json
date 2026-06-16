@@ -30,25 +30,19 @@
   "createModal": {
     "trigger": "Duyuru ekle",
     "title": "Yeni duyuru oluştur",
-    "description": "Seçili hedef kitle için ders duyurusu oluşturun.",
+    "description": "Ders için duyuru oluşturun. Hedef kitle otomatik olarak dersin hedef kitlesinden alınır.",
     "fields": {
       "course": "Ders",
       "titleTr": "Türkçe Başlık",
       "titleEn": "İngilizce Başlık",
       "descriptionTr": "Türkçe Açıklama",
-      "descriptionEn": "İngilizce Açıklama",
-      "audience": "Hedef Kitle",
-      "isNew": "Yeni olarak işaretle"
+      "descriptionEn": "İngilizce Açıklama"
     },
     "placeholders": {
       "titleTr": "Örn. Vize sınavı programı yayınlandı",
       "titleEn": "Örn. Midterm exam schedule published",
       "descriptionTr": "Duyuru detaylarını Türkçe olarak yazın...",
       "descriptionEn": "Duyuru detaylarını İngilizce olarak yazın..."
-    },
-    "options": {
-      "department": "Bölüm kitlesi",
-      "common": "Ortak kitle"
     },
     "validation": {
       "required": "Bu alan zorunludur."
